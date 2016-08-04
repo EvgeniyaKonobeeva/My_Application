@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">My Application_1</string>
+    <item name="item_click_support" type="id" />
+</resources>
