@@ -24,15 +24,21 @@ public class LoadFromFlickrTask extends AsyncTask<Void, Integer, Void> {
     private String protocol = " https://api.flickr.com/services/rest/?method=flickr.interestingness.getList&api_key=b14e644ffd373999f625f4d2ba244522" +
             "&format=json&nojsoncallback=1";
     private static ArrayList<String> photoUrls = new ArrayList<>();;
-    public MyFragment fragment;
+    private GettingResults fragment;
     private int page = 2;
     private int end;
     private int begin;
 
 
 
-    public LoadFromFlickrTask(){
 
+    public LoadFromFlickrTask(GettingResults fragment, int per_page, int begin, int end){
+        this.begin = begin;
+        this.end = end;
+        this.fragment = fragment;
+        StringBuilder sb = new StringBuilder(protocol);
+        sb.append("&per_page=" + per_page + "&page=");
+        protocol = sb.toString();
     }
 
 
@@ -48,7 +54,7 @@ public class LoadFromFlickrTask extends AsyncTask<Void, Integer, Void> {
 
             //int pages = photos.getInt("pages");
 
-            String query2 = "https://farm[farm_id].staticflickr.com/[server_id]/[ID]_[id_secret].jpg";
+            String query2 = "https://farm[farm_id].staticflickr.com/[server_id]/[ID]_[id_secret]_m.jpg";
 
             for(int k = begin; k <= end; k++) {
                 Log.d("HERE ", "here " + k);
@@ -119,4 +125,11 @@ public class LoadFromFlickrTask extends AsyncTask<Void, Integer, Void> {
         connection.setDoInput(true);
         return connection;
     }
+    public GettingResults getFragment(){
+        return fragment;
+    }
+    public void setFragment(GettingResults fragment){
+        this.fragment = fragment;
+    }
+
 }

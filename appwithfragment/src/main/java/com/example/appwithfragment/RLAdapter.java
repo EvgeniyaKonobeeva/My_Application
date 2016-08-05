@@ -18,8 +18,11 @@ import java.io.InputStream;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -34,11 +37,27 @@ public class RLAdapter extends RecyclerView.Adapter<RLAdapter.ViewHolder> {
     public RLAdapter(List<ListContent> list){
         this.list = list;
     }
+    private Map<Integer, Object> map = new HashMap<>();
+    private Map<Integer, Object> seeMap = new HashMap<>();
 
     private Handler handler = new Handler();
 
 
     private ExecutorService executor = Executors.newFixedThreadPool(5);
+
+    @Override
+    public void onViewAttachedToWindow(ViewHolder holder) {
+        seeMap.put(holder.getAdapterPosition(), list.get(holder.getAdapterPosition()));
+    }
+
+
+
+    @Override
+    public void onViewRecycled(ViewHolder holder) {
+        if(seeMap.containsKey(holder.getAdapterPosition()))
+            seeMap.remove(list.get(holder.getAdapterPosition()));
+
+    }
 
     @Override
     public int getItemCount() {
@@ -55,14 +74,19 @@ public class RLAdapter extends RecyclerView.Adapter<RLAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         final ListContent listContent = list.get(position);
-
+        LoaDImageFromUrlTask task = new LoaDImageFromUrlTask();
 
             if(listContent.getImg()!= null)
                 holder.imageView.setImageDrawable(listContent.getImg());
-            else if(listContent.getImRes() != null)
+            else if(listContent.getImRes() != null && !map.containsKey(position))
             {
-                new LoaDImageFromUrlTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, listContent);
+                holder.imageView.setImageDrawable(null);
+                map.put(position, listContent);
+                task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, listContent);
+
             }
+
+
 
 
         holder.textView.setText(listContent.getString());
@@ -103,6 +127,11 @@ public class RLAdapter extends RecyclerView.Adapter<RLAdapter.ViewHolder> {
         protected void onPostExecute(Void aVoid) {
             listContent.setImg(drawable);
             notifyDataSetChanged();
+        }
+
+        @Override
+        protected void onCancelled() {
+            Log.d("FFF", "fffff");
         }
     }
 

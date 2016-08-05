@@ -64,16 +64,12 @@ public class MyFragment extends Fragment implements GettingResults{
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
             Log.d("PROCESS", "connection established");
-
-
-            task = new LoadFromFlickrTask();
-            task.fragment = this;
-            task.setParams(5, 2, 1);
-            task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            task1 = new LoadFromFlickrTask();
-            task1.fragment = this;
-            task1.setParams(5, 4, 3);
-            task1.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            int count = 1;
+            while (count <= 50) {
+                task = new LoadFromFlickrTask(this, 10, count, count+1);
+                task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                count+=2;
+            }
         } else {
             Log.d("ERROR 0", "connection error");
         }
@@ -128,8 +124,8 @@ public class MyFragment extends Fragment implements GettingResults{
     @Override
     public void onDestroy() {
         super.onDestroy();
-        task1.fragment = null;
-        task.fragment = null;
+        task1.setFragment(null);
+        task.setFragment(null);
 
     }
 
