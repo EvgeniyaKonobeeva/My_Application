@@ -23,14 +23,16 @@ import java.util.ArrayList;
 public class LoadFromFlickrTask extends AsyncTask<Void, Integer, Void> {
     private String protocol = " https://api.flickr.com/services/rest/?method=flickr.interestingness.getList&api_key=b14e644ffd373999f625f4d2ba244522" +
             "&format=json&nojsoncallback=1";
-    private ArrayList<String> photoUrls;
+    private static ArrayList<String> photoUrls = new ArrayList<>();;
     public MyFragment fragment;
     private int page = 2;
+    private int end;
+    private int begin;
 
 
 
     public LoadFromFlickrTask(){
-        this.photoUrls = new ArrayList<>();
+
     }
 
 
@@ -48,12 +50,13 @@ public class LoadFromFlickrTask extends AsyncTask<Void, Integer, Void> {
 
             String query2 = "https://farm[farm_id].staticflickr.com/[server_id]/[ID]_[id_secret].jpg";
 
-            for(int k = 1; k <= page/2; k++) {
+            for(int k = begin; k <= end; k++) {
                 Log.d("HERE ", "here " + k);
                 connection = setConnection(protocol+k);
                 connection.connect();
                 photos = getJSONInfo(connection).getJSONObject("photos");
                 JSONArray jsa = photos.getJSONArray("photo");
+                int size = photoUrls.size();
                 for (int i = 0; i < jsa.length(); i++) {
                     JSONObject obj = jsa.getJSONObject(i);
                     String farmId = obj.getString("farm");
@@ -63,7 +66,7 @@ public class LoadFromFlickrTask extends AsyncTask<Void, Integer, Void> {
 
                     String qq = query2.replace("[farm_id]", farmId).replace("[server_id]", serverId).replace("[ID]", id).replace("[id_secret]", secret);
 
-                    photoUrls.add(qq);
+                    photoUrls.add(size+i,qq);
                 }
             }
 
@@ -83,7 +86,9 @@ public class LoadFromFlickrTask extends AsyncTask<Void, Integer, Void> {
         }
     }
 
-    public LoadFromFlickrTask setParams(int per_page){
+    public LoadFromFlickrTask setParams(int per_page, int end, int begin){
+        this.begin = begin;
+        this.end = end;
         StringBuilder sb = new StringBuilder(protocol);
         sb.append("&per_page=" + per_page + "&page=");
         protocol = sb.toString();

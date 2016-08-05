@@ -35,13 +35,14 @@ import java.util.List;
  */
 public class MyFragment extends Fragment implements GettingResults{
     private View view;
-    private int n = 10;
+    private int n = 5;
     private Button conBut;
     private myOnClickListener listener;
     private Activity activity;
     private RecyclerView recyclerView;
     private List<ListContent> list;
-    private LoadFromFlickrTask task;
+    LoadFromFlickrTask task1;
+    LoadFromFlickrTask task;
 
 
     interface myOnClickListener{
@@ -67,8 +68,12 @@ public class MyFragment extends Fragment implements GettingResults{
 
             task = new LoadFromFlickrTask();
             task.fragment = this;
-            task.setParams(10);
+            task.setParams(5, 2, 1);
             task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            task1 = new LoadFromFlickrTask();
+            task1.fragment = this;
+            task1.setParams(5, 4, 3);
+            task1.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         } else {
             Log.d("ERROR 0", "connection error");
         }
@@ -112,7 +117,7 @@ public class MyFragment extends Fragment implements GettingResults{
         if(list.size() < photoUrls.size()){
             int size = list.size();
             for(int i = size; i < photoUrls.size(); i++){
-                listContent = new ListContent("text" + i);
+                listContent = new ListContent("text" + (i+1));
                 listContent.setImRes(photoUrls.get(i));
                 list.add(i, listContent);
             }
@@ -123,6 +128,7 @@ public class MyFragment extends Fragment implements GettingResults{
     @Override
     public void onDestroy() {
         super.onDestroy();
+        task1.fragment = null;
         task.fragment = null;
 
     }
