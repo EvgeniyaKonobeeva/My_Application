@@ -15,18 +15,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,25 +45,17 @@ public class MyFragment extends Fragment implements GettingResults{
         activity = this.getActivity();
         view = inflater.inflate(R.layout.fragment, null);
 
-
-
-
         ConnectivityManager connMgr = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
+
             Log.d("PROCESS", "connection established");
-            int count = 1;
-            while (count <= 50) {
-                task = new LoadFromFlickrTask(this, 10, count, count+1);
-                task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                count+=2;
-            }
+            task = new LoadFromFlickrTask(this, 10, 1, 5);
+            task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
         } else {
             Log.d("ERROR 0", "connection error");
         }
-
-        //conBut = (Button)view.findViewById(R.id.getConnectionBut);
-        //conBut.setOnClickListener(new MyListener());
 
         String[] text = new String[n];
         for(int i = 0; i< n; i++){
@@ -89,8 +69,32 @@ public class MyFragment extends Fragment implements GettingResults{
         }
 
         recyclerView = (RecyclerView) view.findViewById(R.id.rl);
-        recyclerView.setLayoutManager(new GridLayoutManager(view.getContext(), 2));
+
+        final GridLayoutManager recyclerGridLayout = new GridLayoutManager(view.getContext(), 2);
+
+        recyclerView.setLayoutManager(recyclerGridLayout);
         recyclerView.setAdapter(new RLAdapter(list));
+
+        final GettingResults fragment = this;
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            int lastPositionMarker = 45;
+
+            int pageE = 5;
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+
+               if(dy > 0 && recyclerGridLayout.findLastVisibleItemPosition() == lastPositionMarker){
+                    Log.d("POSITION", Integer.toString(recyclerGridLayout.findLastVisibleItemPosition()));
+                    int pageB = pageE+1;
+                    pageE = pageB+4;
+                    task = new LoadFromFlickrTask(fragment, 10, pageB, pageE);
+                    task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                    lastPositionMarker+=50;
+                }
+            }
+        });
+
         ItemClickSupport.addTo(recyclerView).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
             @Override
             public void onItemClicked(RecyclerView recyclerView, int position, View v) {
@@ -103,21 +107,32 @@ public class MyFragment extends Fragment implements GettingResults{
     }
 
 
+    private static int countLoaders = 0;
+
     @Override
     public void onGettingResult(ArrayList<String> photoUrls) {
-        int count = 0;
-        ListContent listContent;
-        for(ListContent lc : list){
-            lc.setImRes(photoUrls.get(count++));
-        }
-        if(list.size() < photoUrls.size()){
+        if(countLoaders == 0) {
+            countLoaders++;
+            for (int i = 0; i < list.size(); i++) {
+                list.get(i).setImRes(photoUrls.get(i));
+            }
+            if(list.size() < photoUrls.size()){
+                int size = list.size();
+                for(int i = size; i < photoUrls.size(); i++){
+                    ListContent listContent = new ListContent("text" + (i+1));
+                    listContent.setImRes(photoUrls.get(i));
+                    list.add(i, listContent);
+                }
+            }
+        }else {
             int size = list.size();
             for(int i = size; i < photoUrls.size(); i++){
-                listContent = new ListContent("text" + (i+1));
+                ListContent listContent = new ListContent("text" + (i+1));
                 listContent.setImRes(photoUrls.get(i));
                 list.add(i, listContent);
             }
         }
+
         recyclerView.getAdapter().notifyDataSetChanged();
     }
 
@@ -126,6 +141,7 @@ public class MyFragment extends Fragment implements GettingResults{
         super.onDestroy();
         task1.setFragment(null);
         task.setFragment(null);
+        recyclerView.addOnScrollListener(null);
 
     }
 

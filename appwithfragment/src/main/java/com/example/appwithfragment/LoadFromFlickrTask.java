@@ -25,7 +25,7 @@ public class LoadFromFlickrTask extends AsyncTask<Void, Integer, Void> {
             "&format=json&nojsoncallback=1";
     private static ArrayList<String> photoUrls = new ArrayList<>();;
     private GettingResults fragment;
-    private int page = 2;
+
     private int end;
     private int begin;
 
@@ -57,13 +57,14 @@ public class LoadFromFlickrTask extends AsyncTask<Void, Integer, Void> {
             String query2 = "https://farm[farm_id].staticflickr.com/[server_id]/[ID]_[id_secret]_m.jpg";
 
             for(int k = begin; k <= end; k++) {
-                Log.d("HERE ", "here " + k);
+                //Log.d("HERE ", "here " + k);
                 connection = setConnection(protocol+k);
                 connection.connect();
                 photos = getJSONInfo(connection).getJSONObject("photos");
                 JSONArray jsa = photos.getJSONArray("photo");
                 int size = photoUrls.size();
                 for (int i = 0; i < jsa.length(); i++) {
+
                     JSONObject obj = jsa.getJSONObject(i);
                     String farmId = obj.getString("farm");
                     String serverId = obj.getString("server");
@@ -131,5 +132,6 @@ public class LoadFromFlickrTask extends AsyncTask<Void, Integer, Void> {
     public void setFragment(GettingResults fragment){
         this.fragment = fragment;
     }
+
 
 }

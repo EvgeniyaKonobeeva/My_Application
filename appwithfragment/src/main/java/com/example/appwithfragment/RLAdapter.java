@@ -38,26 +38,6 @@ public class RLAdapter extends RecyclerView.Adapter<RLAdapter.ViewHolder> {
         this.list = list;
     }
     private Map<Integer, Object> map = new HashMap<>();
-    private Map<Integer, Object> seeMap = new HashMap<>();
-
-    private Handler handler = new Handler();
-
-
-    private ExecutorService executor = Executors.newFixedThreadPool(5);
-
-    @Override
-    public void onViewAttachedToWindow(ViewHolder holder) {
-        seeMap.put(holder.getAdapterPosition(), list.get(holder.getAdapterPosition()));
-    }
-
-
-
-    @Override
-    public void onViewRecycled(ViewHolder holder) {
-        if(seeMap.containsKey(holder.getAdapterPosition()))
-            seeMap.remove(list.get(holder.getAdapterPosition()));
-
-    }
 
     @Override
     public int getItemCount() {
@@ -76,18 +56,15 @@ public class RLAdapter extends RecyclerView.Adapter<RLAdapter.ViewHolder> {
         final ListContent listContent = list.get(position);
         LoaDImageFromUrlTask task = new LoaDImageFromUrlTask();
 
-            if(listContent.getImg()!= null)
-                holder.imageView.setImageDrawable(listContent.getImg());
-            else if(listContent.getImRes() != null && !map.containsKey(position))
-            {
-                holder.imageView.setImageDrawable(null);
-                map.put(position, listContent);
-                task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, listContent);
+        if(listContent.getImg()!= null)
+            holder.imageView.setImageDrawable(listContent.getImg());
+        else if(listContent.getImRes() != null && !map.containsKey(position))
+        {
+            holder.imageView.setImageDrawable(null);
+            map.put(position, listContent);
+            task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, listContent);
 
-            }
-
-
-
+        }
 
         holder.textView.setText(listContent.getString());
     }
@@ -111,7 +88,7 @@ public class RLAdapter extends RecyclerView.Adapter<RLAdapter.ViewHolder> {
         protected Void doInBackground(ListContent... listContents) {
             listContent = listContents[0];
             try {
-                Log.d("HERE ", "here 0000");
+                //Log.d("HERE ", "here 0000");
                 InputStream is = (InputStream) new URL(listContent.getImRes()).getContent();
                 drawable = Drawable.createFromStream(is, "img" + listContent.hashCode() + ".png");
                 is.close();
