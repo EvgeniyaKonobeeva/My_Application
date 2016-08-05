@@ -15,7 +15,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -29,23 +28,21 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.Locale;
-import java.util.PriorityQueue;
 
 /**
  * Created by e.konobeeva on 02.08.2016.
  */
-public class MyFragment extends android.app.Fragment{
+public class MyFragment extends Fragment implements GettingResults{
     private View view;
     private int n = 10;
     private Button conBut;
     private myOnClickListener listener;
     private Activity activity;
-    private ArrayList<String> photoUrls;
     private RecyclerView recyclerView;
-    List<ListContent> list;
+    private List<ListContent> list;
+    private LoadFromFlickrTask task;
+
 
     interface myOnClickListener{
         void doAction(String object);
@@ -59,15 +56,22 @@ public class MyFragment extends android.app.Fragment{
         activity = this.getActivity();
         view = inflater.inflate(R.layout.fragment, null);
 
+
+
+
         ConnectivityManager connMgr = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
             Log.d("PROCESS", "connection established");
-            new LoadFromFlickrTasc().setParams(n, 1).execute();
+
+
+            task = new LoadFromFlickrTask();
+            task.fragment = this;
+            task.setParams(10);
+            task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         } else {
             Log.d("ERROR 0", "connection error");
         }
-
 
         //conBut = (Button)view.findViewById(R.id.getConnectionBut);
         //conBut.setOnClickListener(new MyListener());
@@ -83,7 +87,6 @@ public class MyFragment extends android.app.Fragment{
             list.add(lc);
         }
 
-
         recyclerView = (RecyclerView) view.findViewById(R.id.rl);
         recyclerView.setLayoutManager(new GridLayoutManager(view.getContext(), 2));
         recyclerView.setAdapter(new RLAdapter(list));
@@ -94,204 +97,34 @@ public class MyFragment extends android.app.Fragment{
             }
         });
 
-
-
-        //recyclerView.setLayoutManager(new GridLayoutManager(view.getContext(), 2));
-
         return view;
 
     }
 
 
-
-    class ConnectionToFlickr implements Runnable {
-
-
-        private String protocol = " https://api.flickr.com/services/rest/?method=flickr.interestingness.getList&api_key=b14e644ffd373999f625f4d2ba244522" +
-                "&format=json&nojsoncallback=1";
-
-        private String key = "b14e644ffd373999f625f4d2ba244522";
-        private String secret = "4610da2f4d81bcb9";
-
-        private String per_page = "&per_page=";
-        private String page = "&page=";
-        private String date = "&date=2016-08-02";
-
-        private String resultStr;
-
-        public ConnectionToFlickr(int per_page, int page) {
-
-            StringBuilder sb = new StringBuilder(protocol);
-            sb.append(this.page + page);
-            sb.append(this.per_page + per_page);
-            sb.append(date);
-
-            protocol = sb.toString();
+    @Override
+    public void onGettingResult(ArrayList<String> photoUrls) {
+        int count = 0;
+        ListContent listContent;
+        for(ListContent lc : list){
+            lc.setImRes(photoUrls.get(count++));
         }
-
-        public ConnectionToFlickr() {
-        }
-
-
-        @Override
-        public void run() {
-            try {
-                final URL url = new URL(protocol);
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestMethod("GET");
-                connection.setDoInput(true);
-                connection.connect();
-
-                JSONArray jsa = getJSONInfo(connection).getJSONObject("photos").getJSONArray("photo");
-
-
-                String query2 = "https://farm[farm_id].staticflickr.com/[server_id]/[ID]_[id_secret].jpg";
-                photoUrls = new ArrayList<>();
-                for (int i = 0; i < jsa.length(); i++) {
-                    JSONObject obj = jsa.getJSONObject(i);
-
-                    String farmId = obj.getString("farm");
-                    String serverId = obj.getString("server");
-                    String id = obj.getString("id");
-                    String secret = obj.getString("secret");
-
-                    String qq = query2.replace("[farm_id]", farmId).replace("[server_id]", serverId).replace("[ID]",id).replace("[id_secret]", secret);
-
-
-                    photoUrls.add(qq);
-                    Log.d("RESULT", qq);
-
-                }
-
-                recyclerView.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        int count = 0;
-                        for(ListContent lc : list){
-                            lc.setImRes(photoUrls.get(count++));
-                        }
-                        recyclerView.getAdapter().notifyDataSetChanged();
-                    }
-                });
-
-
-            } catch (MalformedURLException mue) {
-                Log.d("ERROR 1", mue.getMessage());
-            } catch (IOException ioe) {
-                Log.d("ERROR 2", ioe.getMessage());
-            } catch (JSONException jse) {
-                Log.d("ERROR 3", jse.toString());
+        if(list.size() < photoUrls.size()){
+            int size = list.size();
+            for(int i = size; i < photoUrls.size(); i++){
+                listContent = new ListContent("text" + i);
+                listContent.setImRes(photoUrls.get(i));
+                list.add(i, listContent);
             }
         }
-
-        public JSONObject getJSONInfo(HttpURLConnection connection) throws IOException, JSONException {
-
-            InputStream is = connection.getInputStream();
-            StringBuffer buf = new StringBuffer();
-            String photosData;
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-
-            while ((photosData = reader.readLine()) != null) {
-                buf.append(photosData);
-            }
-
-            //Log.d("STRING 1", buf.toString());
-            is.close();
-            connection.disconnect();
-            return new JSONObject(buf.toString());
-
-        }
-    }
-    class MyListener implements View.OnClickListener{
-        @Override
-        public void onClick(View view) {
-            ConnectivityManager connMgr = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-            if (networkInfo != null && networkInfo.isConnected()) {
-                Log.d("PROCESS", "connection established");
-                new LoadFromFlickrTasc().setParams(n, 1).execute();
-            } else {
-                Log.d("ERROR 0", "connection error");
-            }
-        }
+        recyclerView.getAdapter().notifyDataSetChanged();
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        task.fragment = null;
 
-    class LoadFromFlickrTasc extends AsyncTask<Void, Integer, Void>{
-        private String protocol = " https://api.flickr.com/services/rest/?method=flickr.interestingness.getList&api_key=b14e644ffd373999f625f4d2ba244522" +
-                "&format=json&nojsoncallback=1";
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-
-            try {
-                URL url = new URL(protocol);
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestMethod("GET");
-                connection.setDoInput(true);
-                connection.connect();
-
-                JSONArray jsa = getJSONInfo(connection).getJSONObject("photos").getJSONArray("photo");
-
-                String query2 = "https://farm[farm_id].staticflickr.com/[server_id]/[ID]_[id_secret].jpg";
-                photoUrls = new ArrayList<>();
-                for (int i = 0; i < jsa.length(); i++) {
-                    JSONObject obj = jsa.getJSONObject(i);
-
-                    String farmId = obj.getString("farm");
-                    String serverId = obj.getString("server");
-                    String id = obj.getString("id");
-                    String secret = obj.getString("secret");
-
-                    String qq = query2.replace("[farm_id]", farmId).replace("[server_id]", serverId).replace("[ID]", id).replace("[id_secret]", secret);
-
-
-                    photoUrls.add(qq);
-                }
-
-            }catch (IOException ioe){
-
-            }catch (JSONException je){
-
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            int count = 0;
-            for(ListContent lc : list){
-                lc.setImRes(photoUrls.get(count++));
-            }
-            recyclerView.getAdapter().notifyDataSetChanged();
-        }
-
-        public LoadFromFlickrTasc setParams(int per_page, int pages){
-            StringBuilder sb = new StringBuilder(protocol);
-            sb.append("&per_page=" + per_page);
-            sb.append("&page=" + pages);
-            protocol = sb.toString();
-            return this;
-        }
-
-        public JSONObject getJSONInfo(HttpURLConnection connection) throws IOException, JSONException {
-
-            InputStream is = connection.getInputStream();
-            StringBuffer buf = new StringBuffer();
-            String photosData;
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-
-            while ((photosData = reader.readLine()) != null) {
-                buf.append(photosData);
-            }
-
-            //Log.d("STRING 1", buf.toString());
-            is.close();
-            connection.disconnect();
-            return new JSONObject(buf.toString());
-
-        }
     }
 
 }

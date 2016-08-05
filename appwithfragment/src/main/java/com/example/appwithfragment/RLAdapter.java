@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.support.v7.graphics.drawable.DrawableWrapper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.*;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -60,7 +61,7 @@ public class RLAdapter extends RecyclerView.Adapter<RLAdapter.ViewHolder> {
                 holder.imageView.setImageDrawable(listContent.getImg());
             else if(listContent.getImRes() != null)
             {
-                new LoaDImageFromUrlTask().execute(listContent);
+                new LoaDImageFromUrlTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, listContent);
             }
 
 
@@ -86,6 +87,7 @@ public class RLAdapter extends RecyclerView.Adapter<RLAdapter.ViewHolder> {
         protected Void doInBackground(ListContent... listContents) {
             listContent = listContents[0];
             try {
+                Log.d("HERE ", "here 0000");
                 InputStream is = (InputStream) new URL(listContent.getImRes()).getContent();
                 drawable = Drawable.createFromStream(is, "img" + listContent.hashCode() + ".png");
                 is.close();
