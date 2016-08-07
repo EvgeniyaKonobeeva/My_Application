@@ -23,18 +23,17 @@ import java.util.ArrayList;
 public class LoadFromFlickrTask extends AsyncTask<Void, Integer, Void> {
     private String protocol = " https://api.flickr.com/services/rest/?method=flickr.interestingness.getList&api_key=b14e644ffd373999f625f4d2ba244522" +
             "&format=json&nojsoncallback=1";
-    private static ArrayList<String> photoUrls = new ArrayList<>();;
+    private static ArrayList<String> photoUrls = new ArrayList<>();
+    private static ArrayList<String> photosInfo = new ArrayList<>();
     private GettingResults fragment;
 
-    private int end;
-    private int begin;
+    private int page = 1;
 
 
 
 
-    public LoadFromFlickrTask(GettingResults fragment, int per_page, int begin, int end){
-        this.begin = begin;
-        this.end = end;
+    public LoadFromFlickrTask(GettingResults fragment, int per_page, int page){
+        this.page = page;
         this.fragment = fragment;
         StringBuilder sb = new StringBuilder(protocol);
         sb.append("&per_page=" + per_page + "&page=");
@@ -48,33 +47,27 @@ public class LoadFromFlickrTask extends AsyncTask<Void, Integer, Void> {
 
         try {
             Log.d("HERE ", "here 1");
-            HttpURLConnection connection = setConnection(protocol+1);
+            HttpURLConnection connection = setConnection(protocol+page);
+            connection.connect();
+            String query2 = "https://farm[farm_id].staticflickr.com/[server_id]/[ID]_[id_secret]_m.jpg";
+            connection = setConnection(protocol+page);
             connection.connect();
             JSONObject photos = getJSONInfo(connection).getJSONObject("photos");
+            JSONArray jsa = photos.getJSONArray("photo");
+            int size = photoUrls.size();
+            for (int i = 0; i < jsa.length(); i++) {
 
-            //int pages = photos.getInt("pages");
+                JSONObject obj = jsa.getJSONObject(i);
+                String farmId = obj.getString("farm");
+                String serverId = obj.getString("server");
+                String id = obj.getString("id");
+                String secret = obj.getString("secret");
+                String title = obj.getString("title");
 
-            String query2 = "https://farm[farm_id].staticflickr.com/[server_id]/[ID]_[id_secret]_m.jpg";
+                String qq = query2.replace("[farm_id]", farmId).replace("[server_id]", serverId).replace("[ID]", id).replace("[id_secret]", secret);
 
-            for(int k = begin; k <= end; k++) {
-                //Log.d("HERE ", "here " + k);
-                connection = setConnection(protocol+k);
-                connection.connect();
-                photos = getJSONInfo(connection).getJSONObject("photos");
-                JSONArray jsa = photos.getJSONArray("photo");
-                int size = photoUrls.size();
-                for (int i = 0; i < jsa.length(); i++) {
-
-                    JSONObject obj = jsa.getJSONObject(i);
-                    String farmId = obj.getString("farm");
-                    String serverId = obj.getString("server");
-                    String id = obj.getString("id");
-                    String secret = obj.getString("secret");
-
-                    String qq = query2.replace("[farm_id]", farmId).replace("[server_id]", serverId).replace("[ID]", id).replace("[id_secret]", secret);
-
-                    photoUrls.add(size+i,qq);
-                }
+                photoUrls.add(size+i,qq);
+                photosInfo.add(size+i, title.substring(0,title.length() > 25 ? 25 : title.length()));
             }
 
         } catch (IOException ioe) {
@@ -89,18 +82,10 @@ public class LoadFromFlickrTask extends AsyncTask<Void, Integer, Void> {
     @Override
     protected void onPostExecute(Void aVoid) {
         if(fragment != null) {
-            fragment.onGettingResult(photoUrls);
+            fragment.onGettingResult(photoUrls, photosInfo);
         }
     }
 
-    public LoadFromFlickrTask setParams(int per_page, int end, int begin){
-        this.begin = begin;
-        this.end = end;
-        StringBuilder sb = new StringBuilder(protocol);
-        sb.append("&per_page=" + per_page + "&page=");
-        protocol = sb.toString();
-        return this;
-    }
 
     public JSONObject getJSONInfo(HttpURLConnection connection) throws IOException, JSONException {
 

@@ -30,4 +30,7 @@ public class ListContent {
     public void setImRes(String url){
         imRes = url;
     }
+    public void setTitle(String title){
+        this.string = title;
+    }
 }
