@@ -79,7 +79,8 @@ public class RLAdapter extends RecyclerView.Adapter<RLAdapter.ViewHolder> {
         if(position >= 11) {
             for (int pos : mapTask.keySet()) {
 
-                if (pos < gridLayoutManager.findFirstVisibleItemPosition()) {
+                int firstVisibleItemPos = gridLayoutManager.findFirstVisibleItemPosition();
+                if (pos < firstVisibleItemPos || pos > firstVisibleItemPos+gridLayoutManager.getItemCount()) {
                     //Log.d("POSITION PP", Integer.toString(pos) + " " + (gridLayoutManager.findLastVisibleItemPosition()));
                     mapTask.get(pos).cancel(false);
                     mapLoadingImg.remove(pos);
