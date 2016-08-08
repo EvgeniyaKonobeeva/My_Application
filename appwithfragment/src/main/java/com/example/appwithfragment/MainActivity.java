@@ -3,6 +3,7 @@ package com.example.appwithfragment;
 import android.app.*;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -10,11 +11,12 @@ import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity implements MyFragment.myOnClickListener {
 
+    private static final String key = "KEY";
     private ContentOfSelectedItemFrag fragment2;
     private Bundle bundle;
 
     @Override
-    public void doAction(String object) {
+    public void doAction(ListContent object) {
        if(fragment2 == null){
            fragment2 = new ContentOfSelectedItemFrag();
        }
@@ -23,9 +25,8 @@ public class MainActivity extends AppCompatActivity implements MyFragment.myOnCl
         fragTrans.addToBackStack(null);
         fragTrans.commit();
         bundle = new Bundle();
-        bundle.putCharSequence("key",object);
+        bundle.putSerializable(key,object);
         fragment2.setArguments(bundle);
-
 
     }
 
@@ -41,4 +42,15 @@ public class MainActivity extends AppCompatActivity implements MyFragment.myOnCl
     }
 
 
+    @Override
+    public void onBackPressed() {
+        FragmentManager fm = getFragmentManager();
+        if (fm.getBackStackEntryCount() > 0) {
+            Log.i("MainActivity", "popping backstack");
+            fm.popBackStack();
+        } else {
+            Log.i("MainActivity", "nothing on backstack, calling super");
+            super.onBackPressed();
+        }
+    }
 }

@@ -1,7 +1,6 @@
 package com.example.appwithfragment;
 
 import android.app.Activity;
-import android.app.DialogFragment;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -36,7 +35,7 @@ public class MyFragment extends Fragment implements GettingResults{
 
 
     interface myOnClickListener{
-        void doAction(String object);
+        void doAction(ListContent object);
     }
 
     @Nullable
@@ -63,13 +62,14 @@ public class MyFragment extends Fragment implements GettingResults{
         for(int i = 0; i< n; i++){
             text[i] = "photo " + (i+1);
         }
-        list = new ArrayList();
-        ListContent lc;
-        for(int i = 0; i < n; i++){
-            lc = new ListContent(text[i]);
-            list.add(lc);
+        if(list == null) {
+            list = new ArrayList();
+            ListContent lc;
+            for (int i = 0; i < n; i++) {
+                lc = new ListContent(null, "photo" + i);
+                list.add(lc);
+            }
         }
-
         recyclerView = (RecyclerView) view.findViewById(R.id.rl);
 
         final GridLayoutManager recyclerGridLayout = new GridLayoutManager(view.getContext(), 2);
@@ -108,7 +108,7 @@ public class MyFragment extends Fragment implements GettingResults{
         ItemClickSupport.addTo(recyclerView).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
             @Override
             public void onItemClicked(RecyclerView recyclerView, int position, View v) {
-                listener.doAction("element " + (position+1));
+                listener.doAction(list.get(position));
             }
         });
 
@@ -124,23 +124,21 @@ public class MyFragment extends Fragment implements GettingResults{
         if(countLoaders == 0) {
             countLoaders++;
             for (int i = 0; i < list.size(); i++) {
-                list.get(i).setImRes(photoUrls.get(i));
-                list.get(i).setTitle(photosInfo.get(i));
+                list.get(i).setImgUrl(photoUrls.get(i));
+                list.get(i).setFullTitle(photosInfo.get(i));
 
             }
             if(list.size() < photoUrls.size()){
                 int size = list.size();
                 for(int i = size; i < photoUrls.size(); i++){
-                    ListContent listContent = new ListContent(photosInfo.get(i));
-                    listContent.setImRes(photoUrls.get(i));
+                    ListContent listContent = new ListContent(photoUrls.get(i),photosInfo.get(i));
                     list.add(i, listContent);
                 }
             }
         }else {
             int size = list.size();
             for(int i = size; i < photoUrls.size(); i++){
-                ListContent listContent = new ListContent(photosInfo.get(i));
-                listContent.setImRes(photoUrls.get(i));
+                ListContent listContent = new ListContent(photoUrls.get(i),photosInfo.get(i));
                 list.add(i, listContent);
             }
         }
@@ -156,5 +154,6 @@ public class MyFragment extends Fragment implements GettingResults{
         recyclerView.addOnScrollListener(null);
 
     }
+
 
 }

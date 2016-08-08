@@ -2,35 +2,55 @@ package com.example.appwithfragment;
 
 import android.graphics.drawable.Drawable;
 
+import java.io.Serializable;
+
 /**
  * Created by e.konobeeva on 28.07.2016.
  */
-public class ListContent {
-    private String string;
-    private String imRes;
-    private Drawable img;
-    public ListContent(String str){
-        string = str;
+public class ListContent implements Serializable{
+    private String fullTitle;
+    private String imgUrl;
+    private Drawable imgSmallSize;
+    private Drawable imgBigSize;
+
+    public ListContent(String imgUrl, String title){
+        this.fullTitle = title;
+        this.imgUrl = imgUrl;
+
     }
-    public String getString(){
-        return string;
+    public String getShortTitle(){
+        return fullTitle.substring(0, fullTitle.length() > 20 ? 20 : fullTitle.length())+"...";
     }
-    public String getImRes(){
-        return imRes;
+    public String getImgUrl(){
+        return imgUrl;
     }
 
-    public Drawable getImg() {
-        return img;
+    public Drawable getImgSmall() {
+        return imgSmallSize;
     }
 
 
-    public void setImg(Drawable img) {
-        this.img = img;
+    public void setImgSmall(Drawable img) {
+        this.imgSmallSize = img;
     }
-    public void setImRes(String url){
-        imRes = url;
+    public void setImgUrl(String url){
+        imgUrl = url;
     }
-    public void setTitle(String title){
-        this.string = title;
+
+
+    public Drawable getImgBigSize() {
+        return imgBigSize;
+    }
+
+    public void setImgBigSize(Drawable imgBigSize) {
+        this.imgBigSize = imgBigSize;
+    }
+
+    public void setFullTitle(String fullTitle) {
+        this.fullTitle = fullTitle;
+    }
+
+    public String getFullTitle() {
+        return fullTitle;
     }
 }

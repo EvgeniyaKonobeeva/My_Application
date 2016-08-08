@@ -45,35 +45,40 @@ public class LoadFromFlickrTask extends AsyncTask<Void, Integer, Void> {
     protected Void doInBackground(Void... voids) {
 
 
-        try {
-            Log.d("HERE ", "here 1");
-            HttpURLConnection connection = setConnection(protocol+page);
-            connection.connect();
-            String query2 = "https://farm[farm_id].staticflickr.com/[server_id]/[ID]_[id_secret]_m.jpg";
-            connection = setConnection(protocol+page);
-            connection.connect();
-            JSONObject photos = getJSONInfo(connection).getJSONObject("photos");
-            JSONArray jsa = photos.getJSONArray("photo");
-            int size = photoUrls.size();
-            for (int i = 0; i < jsa.length(); i++) {
+        if(!isCancelled()) {
+            try {
+                Log.d("HERE ", "here 1");
+                HttpURLConnection connection = setConnection(protocol + page);
+                connection.connect();
+                String query2 = "https://farm[farm_id].staticflickr.com/[server_id]/[ID]_[id_secret]_m.jpg";
+                connection = setConnection(protocol + page);
+                connection.connect();
+                JSONObject photos = getJSONInfo(connection).getJSONObject("photos");
+                JSONArray jsa = photos.getJSONArray("photo");
+                int size = photoUrls.size();
+                for (int i = 0; i < jsa.length(); i++) {
 
-                JSONObject obj = jsa.getJSONObject(i);
-                String farmId = obj.getString("farm");
-                String serverId = obj.getString("server");
-                String id = obj.getString("id");
-                String secret = obj.getString("secret");
-                String title = obj.getString("title");
+                    JSONObject obj = jsa.getJSONObject(i);
+                    String farmId = obj.getString("farm");
+                    String serverId = obj.getString("server");
+                    String id = obj.getString("id");
+                    String secret = obj.getString("secret");
+                    String title = obj.getString("title");
 
-                String qq = query2.replace("[farm_id]", farmId).replace("[server_id]", serverId).replace("[ID]", id).replace("[id_secret]", secret);
+                    String qq = query2.replace("[farm_id]", farmId).replace("[server_id]", serverId).replace("[ID]", id).replace("[id_secret]", secret);
 
-                photoUrls.add(size+i,qq);
-                photosInfo.add(size+i, title.substring(0,title.length() > 25 ? 25 : title.length()));
+                    photoUrls.add(size + i, qq);
+                    photosInfo.add(size + i, title);
+                }
+
+            } catch (IOException ioe) {
+                Log.d("ERROR 1", ioe.getMessage());
+            } catch (JSONException je) {
+                Log.d("ERROR 2", je.getMessage());
             }
+        }else {
+            Thread.currentThread().interrupt();
 
-        } catch (IOException ioe) {
-            Log.d("ERROR 1", ioe.getMessage());
-        } catch (JSONException je) {
-            Log.d("ERROR 2", je.getMessage());
         }
 
         return null;

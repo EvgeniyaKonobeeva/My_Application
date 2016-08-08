@@ -3,10 +3,9 @@ package com.example.appwithfragment;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Handler;
-import android.support.v7.graphics.drawable.DrawableWrapper;
+import android.os.Message;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.RecyclerView.*;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,14 +18,13 @@ import java.io.InputStream;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
+import java.util.concurrent.Future;
 
 
 /**
@@ -34,14 +32,21 @@ import java.util.concurrent.Executors;
  */
 public class RLAdapter extends RecyclerView.Adapter<RLAdapter.ViewHolder> {
 
+    private static final int threadPoolSize = 500;
     private List<ListContent> list;
     private Map<Integer, Object> mapLoadingImg = new HashMap<>();
-    private Map<Integer, AsyncTask> mapTask = new HashMap<>();
+    private Map<Integer, Future> mapTask = new HashMap<>();
     private GridLayoutManager gridLayoutManager;
 
+    private ExecutorService executorSPool;
+    private LoadImgThread loadImgThread;
+    private MyHandler handler;
+
     public RLAdapter(List<ListContent> list, GridLayoutManager layoutManager){
+        executorSPool= Executors.newFixedThreadPool(threadPoolSize);
         this.list = list;
         this.gridLayoutManager = layoutManager;
+        this.handler = new MyHandler();
     }
 
     @Override
@@ -52,6 +57,8 @@ public class RLAdapter extends RecyclerView.Adapter<RLAdapter.ViewHolder> {
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.image_view_layout, parent, false);
+        //mapLoadingImg.clear();
+        //mapTask.clear();
         return new ViewHolder(view);
     }
 
@@ -59,22 +66,25 @@ public class RLAdapter extends RecyclerView.Adapter<RLAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         final ListContent listContent = list.get(position);
-        LoaDImageFromUrlTask task = new LoaDImageFromUrlTask();
 
         holder.imageView.setImageDrawable(null);
 
-        if(listContent.getImg()!= null)
-            holder.imageView.setImageDrawable(listContent.getImg());
-        else if(listContent.getImRes() != null && !mapLoadingImg.containsKey(position))
+        if(listContent.getImgSmall()!= null)
+            holder.imageView.setImageDrawable(listContent.getImgSmall());
+        else if(listContent.getImgUrl() != null && !mapLoadingImg.containsKey(position))
         {
             mapLoadingImg.put(position, listContent);
-            mapTask.put(position, task);
-            task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, listContent);
+
+            loadImgThread = new LoadImgThread(handler,listContent);
+            //executorSPool.execute(loadImgThread);
+            mapTask.put(position, executorSPool.submit(loadImgThread) );
+
+            //task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, listContent);
 
         }
 
 
-        holder.textView.setText(listContent.getString());
+        holder.textView.setText(listContent.getShortTitle());
 
         if(position >= 11) {
             for (int pos : mapTask.keySet()) {
@@ -82,7 +92,7 @@ public class RLAdapter extends RecyclerView.Adapter<RLAdapter.ViewHolder> {
                 int firstVisibleItemPos = gridLayoutManager.findFirstVisibleItemPosition();
                 if (pos < firstVisibleItemPos || pos > firstVisibleItemPos+gridLayoutManager.getItemCount()) {
                     //Log.d("POSITION PP", Integer.toString(pos) + " " + (gridLayoutManager.findLastVisibleItemPosition()));
-                    mapTask.get(pos).cancel(false);
+                    mapTask.get(pos).cancel(true);
                     mapLoadingImg.remove(pos);
                 }
             }
@@ -112,7 +122,7 @@ public class RLAdapter extends RecyclerView.Adapter<RLAdapter.ViewHolder> {
             if(!isCancelled()) {
                 try {
                     //Log.d("HERE ", "here 0000");
-                    InputStream is = (InputStream) new URL(listContent.getImRes()).getContent();
+                    InputStream is = (InputStream) new URL(listContent.getImgUrl()).getContent();
                     drawable = Drawable.createFromStream(is, "img" + listContent.hashCode() + ".png");
                     is.close();
                 } catch (MalformedURLException me) {
@@ -122,19 +132,33 @@ public class RLAdapter extends RecyclerView.Adapter<RLAdapter.ViewHolder> {
                 }
                 return null;
             }else {
+
                 return null;
             }
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            listContent.setImg(drawable);
+            listContent.setImgSmall(drawable);
             notifyDataSetChanged();
         }
 
         @Override
         protected void onCancelled() {
             Log.d("FFF", "fffff ");
+            Thread.currentThread().interrupt();
+        }
+
+
+    }
+
+    public class MyHandler extends Handler{
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if(msg.what == 1){
+                notifyDataSetChanged();
+            }
         }
     }
 
