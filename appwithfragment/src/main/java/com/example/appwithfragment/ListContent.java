@@ -18,9 +18,23 @@ public class ListContent implements Serializable{
         this.imgUrl = imgUrl;
 
     }
+
+    public void setFullTitle(String fullTitle) {
+        this.fullTitle = fullTitle;
+    }
+
+    public String getFullTitle() {
+        return fullTitle;
+    }
+
     public String getShortTitle(){
         return fullTitle.substring(0, fullTitle.length() > 20 ? 20 : fullTitle.length())+"...";
     }
+
+    public void setImgUrl(String url){
+        imgUrl = url;
+    }
+
     public String getImgUrl(){
         return imgUrl;
     }
@@ -29,14 +43,9 @@ public class ListContent implements Serializable{
         return imgSmallSize;
     }
 
-
     public void setImgSmall(Drawable img) {
         this.imgSmallSize = img;
     }
-    public void setImgUrl(String url){
-        imgUrl = url;
-    }
-
 
     public Drawable getImgBigSize() {
         return imgBigSize;
@@ -46,11 +55,5 @@ public class ListContent implements Serializable{
         this.imgBigSize = imgBigSize;
     }
 
-    public void setFullTitle(String fullTitle) {
-        this.fullTitle = fullTitle;
-    }
 
-    public String getFullTitle() {
-        return fullTitle;
-    }
 }

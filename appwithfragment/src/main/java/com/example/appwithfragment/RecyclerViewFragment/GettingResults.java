@@ -1,4 +1,4 @@
-package com.example.appwithfragment;
+package com.example.appwithfragment.recyclerViewFragment;
 
 import java.util.ArrayList;
 

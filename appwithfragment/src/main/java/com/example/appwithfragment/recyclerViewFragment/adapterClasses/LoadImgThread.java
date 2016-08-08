@@ -1,4 +1,4 @@
-package com.example.appwithfragment;
+package com.example.appwithfragment.recyclerViewFragment.adapterClasses;
 
 import android.graphics.drawable.Drawable;
 import android.util.Log;
@@ -7,7 +7,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import com.example.appwithfragment.RLAdapter.*;
+
+import com.example.appwithfragment.ListContent;
+import com.example.appwithfragment.recyclerViewFragment.adapterClasses.RecyclerViewAdapter.*;
 
 
 /**

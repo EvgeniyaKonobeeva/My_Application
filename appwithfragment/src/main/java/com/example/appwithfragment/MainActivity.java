@@ -4,21 +4,20 @@ import android.app.*;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity implements MyFragment.myOnClickListener {
+import com.example.appwithfragment.fullScreenPicture.FragmentFullScreenPicture;
+import com.example.appwithfragment.recyclerViewFragment.*;
+
+public class MainActivity extends AppCompatActivity implements RecyclerViewFragment.OnRecyclerViewClickListener {
 
     private static final String key = "KEY";
-    private ContentOfSelectedItemFrag fragment2;
+    private FragmentFullScreenPicture fragment2;
     private Bundle bundle;
 
     @Override
     public void doAction(ListContent object) {
        if(fragment2 == null){
-           fragment2 = new ContentOfSelectedItemFrag();
+           fragment2 = new FragmentFullScreenPicture();
        }
         FragmentTransaction fragTrans = getFragmentManager().beginTransaction();
         fragTrans.replace(R.id.LL, fragment2);
@@ -34,7 +33,7 @@ public class MainActivity extends AppCompatActivity implements MyFragment.myOnCl
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        MyFragment fragment = new MyFragment();
+        RecyclerViewFragment fragment = new RecyclerViewFragment();
         FragmentTransaction fragTrans= getFragmentManager().beginTransaction();
         fragTrans.add(R.id.LL, fragment);
         fragTrans.addToBackStack(null);

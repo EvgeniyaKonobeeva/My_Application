@@ -1,4 +1,4 @@
-package com.example.appwithfragment;
+package com.example.appwithfragment.recyclerViewFragment.adapterClasses;
 
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
@@ -12,6 +12,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.example.appwithfragment.ListContent;
+import com.example.appwithfragment.R;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,7 +33,7 @@ import java.util.concurrent.Future;
 /**
  * Created by e.konobeeva on 29.07.2016.
  */
-public class RLAdapter extends RecyclerView.Adapter<RLAdapter.ViewHolder> {
+public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
 
     private static final int threadPoolSize = 500;
     private List<ListContent> list;
@@ -42,7 +45,7 @@ public class RLAdapter extends RecyclerView.Adapter<RLAdapter.ViewHolder> {
     private LoadImgThread loadImgThread;
     private MyHandler handler;
 
-    public RLAdapter(List<ListContent> list, GridLayoutManager layoutManager){
+    public RecyclerViewAdapter(List<ListContent> list, GridLayoutManager layoutManager){
         executorSPool= Executors.newFixedThreadPool(threadPoolSize);
         this.list = list;
         this.gridLayoutManager = layoutManager;
@@ -57,8 +60,6 @@ public class RLAdapter extends RecyclerView.Adapter<RLAdapter.ViewHolder> {
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.image_view_layout, parent, false);
-        //mapLoadingImg.clear();
-        //mapTask.clear();
         return new ViewHolder(view);
     }
 
@@ -74,12 +75,9 @@ public class RLAdapter extends RecyclerView.Adapter<RLAdapter.ViewHolder> {
         else if(listContent.getImgUrl() != null && !mapLoadingImg.containsKey(position))
         {
             mapLoadingImg.put(position, listContent);
-
             loadImgThread = new LoadImgThread(handler,listContent);
-            //executorSPool.execute(loadImgThread);
             mapTask.put(position, executorSPool.submit(loadImgThread) );
 
-            //task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, listContent);
 
         }
 
@@ -90,8 +88,9 @@ public class RLAdapter extends RecyclerView.Adapter<RLAdapter.ViewHolder> {
             for (int pos : mapTask.keySet()) {
 
                 int firstVisibleItemPos = gridLayoutManager.findFirstVisibleItemPosition();
+
                 if (pos < firstVisibleItemPos || pos > firstVisibleItemPos+gridLayoutManager.getItemCount()) {
-                    //Log.d("POSITION PP", Integer.toString(pos) + " " + (gridLayoutManager.findLastVisibleItemPosition()));
+
                     mapTask.get(pos).cancel(true);
                     mapLoadingImg.remove(pos);
                 }
@@ -112,45 +111,46 @@ public class RLAdapter extends RecyclerView.Adapter<RLAdapter.ViewHolder> {
 
     }
 
-    class LoaDImageFromUrlTask extends AsyncTask<ListContent, Integer, Void>{
-        private Drawable drawable;
-        private ListContent listContent;
+    //unused class
+    /**
+     * class LoaDImageFromUrlTask extends AsyncTask<ListContent, Integer, Void>{
+     private Drawable drawable;
+     private ListContent listContent;
 
-        @Override
-        protected Void doInBackground(ListContent... listContents) {
-            listContent = listContents[0];
-            if(!isCancelled()) {
-                try {
-                    //Log.d("HERE ", "here 0000");
-                    InputStream is = (InputStream) new URL(listContent.getImgUrl()).getContent();
-                    drawable = Drawable.createFromStream(is, "img" + listContent.hashCode() + ".png");
-                    is.close();
-                } catch (MalformedURLException me) {
-                    Log.d("ERROR 3", me.getMessage());
-                } catch (IOException ioe) {
-                    Log.d("ERROR 4", ioe.getMessage());
-                }
-                return null;
-            }else {
+     @Override
+     protected Void doInBackground(ListContent... listContents) {
+     listContent = listContents[0];
+     if(!isCancelled()) {
+     try {
+     //Log.d("HERE ", "here 0000");
+     InputStream is = (InputStream) new URL(listContent.getImgUrl()).getContent();
+     drawable = Drawable.createFromStream(is, "img" + listContent.hashCode() + ".png");
+     is.close();
+     } catch (MalformedURLException me) {
+     Log.d("ERROR 3", me.getMessage());
+     } catch (IOException ioe) {
+     Log.d("ERROR 4", ioe.getMessage());
+     }
+     return null;
+     }else {
 
-                return null;
-            }
-        }
+     return null;
+     }
+     }
 
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            listContent.setImgSmall(drawable);
-            notifyDataSetChanged();
-        }
+     @Override
+     protected void onPostExecute(Void aVoid) {
+     listContent.setImgSmall(drawable);
+     notifyDataSetChanged();
+     }
 
-        @Override
-        protected void onCancelled() {
-            Log.d("FFF", "fffff ");
-            Thread.currentThread().interrupt();
-        }
-
-
-    }
+     @Override
+     protected void onCancelled() {
+     Log.d("FFF", "fffff ");
+     Thread.currentThread().interrupt();
+     }
+     }
+     */
 
     public class MyHandler extends Handler{
         @Override

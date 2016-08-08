@@ -34,10 +34,6 @@
             android:gravity="center"
             android:adjustViewBounds="true"
             tools:src="@mipmap/ic_launcher"/>
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/button"/>
 
     </LinearLayout>
 </ScrollView>

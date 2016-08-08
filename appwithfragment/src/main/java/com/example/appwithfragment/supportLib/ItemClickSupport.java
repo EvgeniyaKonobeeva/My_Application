@@ -1,7 +1,9 @@
-package com.example.appwithfragment;
+package com.example.appwithfragment.supportLib;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+
+import com.example.appwithfragment.R;
 
 /**
  * Created by e.konobeeva on 02.08.2016.
