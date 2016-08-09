@@ -1,4 +1,4 @@
-package com.example.appwithfragment.supportLib;
+package com.example.appwithfragment;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -22,18 +22,18 @@ public class OMCash{
         storage = new LinkedHashMap<>(size, 0.75f, true);
 
     }
-    public void putImage(int key, Drawable bitmap){
+    public void putImage(String keyUrl, Drawable bitmap){
         synchronized (lock1) {
-            storage.put(key, bitmap);
+            storage.put(keyUrl.hashCode(), bitmap);
             lock1.notifyAll();
         }
 
 
     }
-    public boolean getImageTo(int key, ImageView im){
+    public boolean getImageTo(String keyUrl, ImageView im){
         synchronized (lock2) {
-            if (storage.containsKey(key)) {
-                im.setImageDrawable(storage.get(key));
+            if (storage.containsKey(keyUrl.hashCode())) {
+                im.setImageDrawable(storage.get(keyUrl.hashCode()));
                 lock2.notifyAll();
                 return true;
             } else {
@@ -42,8 +42,8 @@ public class OMCash{
             }
         }
     }
-    public Drawable getImg(int key){
-        return storage.get(key);
+    public Drawable getImg(String keyUrl){
+        return storage.get(keyUrl.hashCode());
     }
 
 

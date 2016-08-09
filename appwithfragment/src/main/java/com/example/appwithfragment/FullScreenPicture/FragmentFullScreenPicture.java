@@ -1,4 +1,4 @@
-package com.example.appwithfragment.fullScreenPicture;
+package com.example.appwithfragment.FullScreenPicture;
 
 import android.app.Fragment;
 import android.os.Bundle;

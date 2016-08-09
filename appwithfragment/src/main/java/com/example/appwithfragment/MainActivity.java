@@ -5,8 +5,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.example.appwithfragment.fullScreenPicture.FragmentFullScreenPicture;
-import com.example.appwithfragment.recyclerViewFragment.*;
+import com.example.appwithfragment.FullScreenPicture.*;
+import com.example.appwithfragment.RecyclerViewFragment.RecyclerViewFragment;
 
 public class MainActivity extends AppCompatActivity implements RecyclerViewFragment.OnRecyclerViewClickListener {
 
@@ -16,7 +16,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewFragm
 
 
     @Override
-    public void doAction(ListContent object) {
+    public void doAction(ListContent listContent) {
        if(fragment2 == null){
            fragment2 = new FragmentFullScreenPicture();
        }
@@ -25,17 +25,16 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewFragm
         fragTrans.addToBackStack(null);
         fragTrans.commit();
         bundle = new Bundle();
-        bundle.putSerializable(key,object);
+        bundle.putSerializable(key,listContent);
         fragment2.setArguments(bundle);
 
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        DiskCashing dc = new DiskCashing(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        RecyclerViewFragment fragment = new RecyclerViewFragment();
+        com.example.appwithfragment.RecyclerViewFragment.RecyclerViewFragment fragment = new RecyclerViewFragment();
         FragmentTransaction fragTrans= getFragmentManager().beginTransaction();
         fragTrans.add(R.id.LL, fragment);
         fragTrans.addToBackStack(null);

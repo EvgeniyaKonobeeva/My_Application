@@ -1,4 +1,4 @@
-package com.example.appwithfragment.recyclerViewFragment;
+package com.example.appwithfragment.RecyclerViewFragment;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -20,7 +20,7 @@ import android.view.ViewGroup;
 import com.example.appwithfragment.supportLib.ItemClickSupport;
 import com.example.appwithfragment.ListContent;
 import com.example.appwithfragment.R;
-import com.example.appwithfragment.recyclerViewFragment.adapterClasses.RecyclerViewAdapter;
+import com.example.appwithfragment.RecyclerViewFragment.adapterClasses.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -116,6 +116,7 @@ public class RecyclerViewFragment extends Fragment implements GettingResults {
         ItemClickSupport.addTo(recyclerView).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
             @Override
             public void onItemClicked(RecyclerView recyclerView, int position, View v) {
+                Log.d("LOOK AT THE VIEW", v.toString());
                 listener.doAction(list.get(position));
             }
         });
@@ -134,7 +135,6 @@ public class RecyclerViewFragment extends Fragment implements GettingResults {
             for (int i = 0; i < list.size(); i++) {
                 list.get(i).setImgUrl(photoUrls.get(i));
                 list.get(i).setFullTitle(photosInfo.get(i));
-
             }
             if(list.size() < photoUrls.size()){
                 int size = list.size();
