@@ -31,7 +31,7 @@ public class FragmentFullScreenPicture extends Fragment {
 
         imgView = (ImageView) view.findViewById(R.id.fullImage);
         final ListContent listContent = (ListContent) getArguments().get(key);
-        imgView.setImageDrawable(listContent.getImgBigSize());
+        imgView.setImageDrawable(listContent.getImg());
 
         final TextView txt =(TextView)view.findViewById(R.id.title);
 

@@ -1,5 +1,6 @@
 package com.example.appwithfragment.recyclerViewFragment.adapterClasses;
 
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Handler;
@@ -13,8 +14,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.appwithfragment.DiskCashing;
 import com.example.appwithfragment.ListContent;
 import com.example.appwithfragment.R;
+import com.example.appwithfragment.supportLib.OMCash;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,16 +43,27 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     private Map<Integer, Object> mapLoadingImg = new HashMap<>();
     private Map<Integer, Future> mapTask = new HashMap<>();
     private GridLayoutManager gridLayoutManager;
+    private DiskCashing dc;
+    private OMCash omCash;
 
     private ExecutorService executorSPool;
     private LoadImgThread loadImgThread;
     private MyHandler handler;
 
-    public RecyclerViewAdapter(List<ListContent> list, GridLayoutManager layoutManager){
+
+    public RecyclerViewAdapter(List<ListContent> list, GridLayoutManager layoutManager, Context ctx){
         executorSPool= Executors.newFixedThreadPool(threadPoolSize);
         this.list = list;
         this.gridLayoutManager = layoutManager;
         this.handler = new MyHandler();
+
+        if(dc == null){
+            dc = new DiskCashing(ctx);
+        }
+
+        if (omCash == null){
+            omCash = new OMCash(50);
+        }
     }
 
     @Override
@@ -67,20 +81,33 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         final ListContent listContent = list.get(position);
+        Drawable drawable;
 
         holder.imageView.setImageDrawable(null);
 
-        if(listContent.getImgSmall()!= null)
-            holder.imageView.setImageDrawable(listContent.getImgSmall());
-        else if(listContent.getImgUrl() != null && !mapLoadingImg.containsKey(position))
-        {
-            mapLoadingImg.put(position, listContent);
-            loadImgThread = new LoadImgThread(handler,listContent);
-            mapTask.put(position, executorSPool.submit(loadImgThread) );
+            if (!omCash.getImageTo(position, holder.imageView)) {
+                if ((drawable = dc.getImg(position)) != null) {
+                    holder.imageView.setImageDrawable(drawable);
+                    listContent.setImg(drawable);
+                    omCash.putImage(position, drawable);
+                }else if (listContent.getImgUrl() != null && !mapLoadingImg.containsKey(position)) {
+                    mapLoadingImg.put(position, listContent);
+                    loadImgThread = new LoadImgThread(handler, listContent, dc, omCash, position);
+                    mapTask.put(position, executorSPool.submit(loadImgThread));
+                }
 
+                //MyLib.loadImagetTo(imageView, imgUrl);
+                /*if (listContent.getImg() != null)
+                    holder.imageView.setImageDrawable(listContent.getImg());
+                else if (listContent.getImgUrl() != null && !mapLoadingImg.containsKey(position)) {
+                    mapLoadingImg.put(position, listContent);
+                    loadImgThread = new LoadImgThread(handler, listContent, dc, position);
+                    mapTask.put(position, executorSPool.submit(loadImgThread));
+                }*/
 
-        }
-
+            }else {
+                listContent.setImg(holder.imageView.getDrawable());
+            }
 
         holder.textView.setText(listContent.getShortTitle());
 
@@ -156,9 +183,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            if(msg.what == 1){
-                notifyDataSetChanged();
-            }
+            notifyDataSetChanged();
+            mapLoadingImg.remove(msg.what);
         }
     }
 

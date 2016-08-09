@@ -3,6 +3,7 @@ package com.example.appwithfragment;
 import android.graphics.drawable.Drawable;
 
 import java.io.Serializable;
+import java.lang.ref.WeakReference;
 
 /**
  * Created by e.konobeeva on 28.07.2016.
@@ -10,6 +11,7 @@ import java.io.Serializable;
 public class ListContent implements Serializable{
     private String fullTitle;
     private String imgUrl;
+    private WeakReference<Drawable> img;
     private Drawable imgSmallSize;
     private Drawable imgBigSize;
 
@@ -53,6 +55,15 @@ public class ListContent implements Serializable{
 
     public void setImgBigSize(Drawable imgBigSize) {
         this.imgBigSize = imgBigSize;
+    }
+
+    public Drawable getImg(){
+        if(img != null) {
+            return img.get();
+        }else return null;
+    }
+    public void setImg(Drawable img){
+        this.img = new WeakReference<Drawable>(img);
     }
 
 

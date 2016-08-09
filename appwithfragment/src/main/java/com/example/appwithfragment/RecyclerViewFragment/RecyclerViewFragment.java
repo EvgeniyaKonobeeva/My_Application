@@ -83,7 +83,7 @@ public class RecyclerViewFragment extends Fragment implements GettingResults {
         final GridLayoutManager recyclerGridLayout = new GridLayoutManager(view.getContext(), 2);
 
         recyclerView.setLayoutManager(recyclerGridLayout);
-        recyclerView.setAdapter(new RecyclerViewAdapter(list, recyclerGridLayout));
+        recyclerView.setAdapter(new RecyclerViewAdapter(list, recyclerGridLayout, activity));
 
         final GettingResults fragment = this;
 

@@ -14,6 +14,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewFragm
     private FragmentFullScreenPicture fragment2;
     private Bundle bundle;
 
+
     @Override
     public void doAction(ListContent object) {
        if(fragment2 == null){
@@ -31,6 +32,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewFragm
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        DiskCashing dc = new DiskCashing(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         RecyclerViewFragment fragment = new RecyclerViewFragment();

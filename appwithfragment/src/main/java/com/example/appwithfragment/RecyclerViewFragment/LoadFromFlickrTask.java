@@ -76,7 +76,6 @@ public class LoadFromFlickrTask extends AsyncTask<Void, Integer, Void> {
             }
         }else {
             Thread.currentThread().interrupt();
-
         }
 
         return null;
