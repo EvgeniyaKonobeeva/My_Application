@@ -7,4 +7,5 @@ import java.util.ArrayList;
  */
 public interface GettingResults {
     void onGettingResult(ArrayList<String> photoUrls, ArrayList<String> photosInfo);
+    void getProgress(int loadingPhotos);
 }
