@@ -85,12 +85,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         holder.imageView.setImageDrawable(null);
 
-            if (!omCash.getImageTo(position, holder.imageView)) {
-                if ((drawable = dc.getImg(position)) != null) {
+        if(listContent.getImgUrl() != null) {
+
+            if (!omCash.getImageTo(listContent.getImgUrl(), holder.imageView)) {
+                if ((drawable = dc.getImg(listContent.getImgUrl())) != null) {
                     holder.imageView.setImageDrawable(drawable);
                     listContent.setImg(drawable);
-                    omCash.putImage(position, drawable);
-                }else if (listContent.getImgUrl() != null && !mapLoadingImg.containsKey(position)) {
+                    omCash.putImage(listContent.getImgUrl(), drawable);
+                } else if (!mapLoadingImg.containsKey(position)) {
                     mapLoadingImg.put(position, listContent);
                     loadImgThread = new LoadImgThread(handler, listContent, dc, omCash, position);
                     mapTask.put(position, executorSPool.submit(loadImgThread));
@@ -105,9 +107,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                     mapTask.put(position, executorSPool.submit(loadImgThread));
                 }*/
 
-            }else {
+            } else {
                 listContent.setImg(holder.imageView.getDrawable());
             }
+        }
 
         holder.textView.setText(listContent.getShortTitle());
 

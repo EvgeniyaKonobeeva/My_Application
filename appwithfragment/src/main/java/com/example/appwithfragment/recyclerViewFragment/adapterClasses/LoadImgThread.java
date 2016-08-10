@@ -46,8 +46,8 @@ public class LoadImgThread implements Runnable {
                 InputStream is = (InputStream) new URL(data.getImgUrl().replace("_m", "")).getContent();
                 Drawable drawable = Drawable.createFromStream(is, "" + data.hashCode());
 
-                omCash.putImage(position, drawable);
-                dc.cashingImg(position, BitmapFactory.decodeStream(is));
+                omCash.putImage(data.getImgUrl(), drawable);
+                dc.cashingImg(data.getImgUrl(), BitmapFactory.decodeStream(is));
                 is.close();
                 if (!Thread.currentThread().isInterrupted())
                     handler.sendEmptyMessage(position);

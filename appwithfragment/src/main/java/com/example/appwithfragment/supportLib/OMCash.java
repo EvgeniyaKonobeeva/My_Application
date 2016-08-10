@@ -22,18 +22,18 @@ public class OMCash{
         storage = new LinkedHashMap<>(size, 0.75f, true);
 
     }
-    public void putImage(int key, Drawable bitmap){
+    public void putImage(String key, Drawable bitmap){
         synchronized (lock1) {
-            storage.put(key, bitmap);
+            storage.put(key.hashCode(), bitmap);
             lock1.notifyAll();
         }
 
 
     }
-    public boolean getImageTo(int key, ImageView im){
+    public boolean getImageTo(String key, ImageView im){
         synchronized (lock2) {
-            if (storage.containsKey(key)) {
-                im.setImageDrawable(storage.get(key));
+            if (storage.containsKey(key.hashCode())) {
+                im.setImageDrawable(storage.get(key.hashCode()));
                 lock2.notifyAll();
                 return true;
             } else {

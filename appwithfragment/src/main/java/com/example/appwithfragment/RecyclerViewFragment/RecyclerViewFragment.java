@@ -8,6 +8,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.IntegerRes;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
@@ -30,7 +31,7 @@ import java.util.List;
  */
 public class RecyclerViewFragment extends Fragment implements GettingResults {
 
-    private int listSize = 5;
+    private int listSize = 1;
     private static final int maxPages = 10;
     private static final int maxPerPage = 50;
 
@@ -40,6 +41,8 @@ public class RecyclerViewFragment extends Fragment implements GettingResults {
     private RecyclerView recyclerView;
     private List<ListContent> list;
     private LoadFromFlickrTask task;
+
+    private int progress;
 
 
     public interface OnRecyclerViewClickListener {
@@ -59,7 +62,7 @@ public class RecyclerViewFragment extends Fragment implements GettingResults {
         if (networkInfo != null && networkInfo.isConnected()) {
 
             Log.d("PROCESS", "connection established");
-            task = new LoadFromFlickrTask(this, maxPerPage, 1);
+            task = new LoadFromFlickrTask(this);
             task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
         } else {
@@ -88,18 +91,18 @@ public class RecyclerViewFragment extends Fragment implements GettingResults {
         final GettingResults fragment = this;
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            int lastPositionMarker = 45;
+            //int lastPositionMarker = 0;
 
-            int page = 2;
+            //int page = 2;
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
 
-               if(dy > 0 && recyclerGridLayout.findLastVisibleItemPosition() >= lastPositionMarker && page <= maxPages){
+               if(dy > 0 && recyclerGridLayout.findLastVisibleItemPosition() >= progress-1){
                     Log.d("POSITION", Integer.toString(recyclerGridLayout.findLastVisibleItemPosition()));
-                    task = new LoadFromFlickrTask(fragment, maxPerPage, page++);
+                    task = new LoadFromFlickrTask(fragment);
                     task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                    lastPositionMarker+=maxPerPage;
-               }else if(page > maxPages && recyclerGridLayout.findLastCompletelyVisibleItemPosition() == 499){
+                    //lastPositionMarker+=maxPerPage;
+               }/*else if(page > maxPages && recyclerGridLayout.findLastCompletelyVisibleItemPosition() == 499){
                    final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity);
                    dialogBuilder.setMessage("There is no photo anymore");
                    dialogBuilder.setNegativeButton("OK", new DialogInterface.OnClickListener() {
@@ -109,7 +112,7 @@ public class RecyclerViewFragment extends Fragment implements GettingResults {
                    });
                    AlertDialog alertDialog = dialogBuilder.create();
                    alertDialog.show();
-               }
+               }*/
             }
         });
 
@@ -163,5 +166,9 @@ public class RecyclerViewFragment extends Fragment implements GettingResults {
 
     }
 
-
+    @Override
+    public void getProgress(int loadingPhotos) {
+        Log.d("PROGRESS", Integer.toString(loadingPhotos));
+        progress += loadingPhotos;
+    }
 }

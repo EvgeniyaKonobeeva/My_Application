@@ -19,62 +19,77 @@ import java.util.ArrayList;
  * Created by e.konobeeva on 05.08.2016.
  */
 public class LoadFromFlickrTask extends AsyncTask<Void, Integer, Void> {
-    private static final String errorTag = "ERRO LoadFromFlickrTask";
+    private static final String errorTag = "ERROR";
     private String protocol = " https://api.flickr.com/services/rest/?method=flickr.interestingness.getList&api_key=b14e644ffd373999f625f4d2ba244522" +
             "&format=json&nojsoncallback=1";
     private static ArrayList<String> photoUrls = new ArrayList<>();
     private static ArrayList<String> photosInfo = new ArrayList<>();
     private GettingResults fragment;
 
-    private int page;
+    private static int loadingPhotosPerOnce = 20;
+
+    private static int page = 1;
 
 
 
 
-    public LoadFromFlickrTask(GettingResults fragment, int per_page, int page){
-        this.page = page;
+    public LoadFromFlickrTask(GettingResults fragment){
         this.fragment = fragment;
         StringBuilder sb = new StringBuilder(protocol);
-        sb.append("&per_page=" + per_page + "&page=");
+        sb.append("&per_page=20&page=");
         protocol = sb.toString();
     }
+
+    private int countLoadingPhotos = 0;
 
 
     @Override
     protected Void doInBackground(Void... voids) {
 
 
+        Log.d("HERE", "here 1");
+
         if(!isCancelled()) {
             try {
                 HttpURLConnection connection = setConnection(protocol + page);
                 connection.connect();
                 String imgUrl = "https://farm[farm_id].staticflickr.com/[server_id]/[ID]_[id_secret]_m.jpg";
-                connection = setConnection(protocol + page);
-                connection.connect();
+
                 JSONObject photos = getJSONInfo(connection).getJSONObject("photos");
-                JSONArray jsa = photos.getJSONArray("photo");
-                int size = photoUrls.size();
-                for (int i = 0; i < jsa.length(); i++) {
+                int pages = photos.getInt("pages");
 
-                    JSONObject photo = jsa.getJSONObject(i);
-                    String farmId = photo.getString("farm");
-                    String serverId = photo.getString("server");
-                    String id = photo.getString("id");
-                    String secret = photo.getString("secret");
-                    String title = photo.getString("title");
+                while(countLoadingPhotos < loadingPhotosPerOnce){
+                    if(page <= pages) {
+                        connection = setConnection(protocol + page++);
+                        connection.connect();
+                        photos = getJSONInfo(connection).getJSONObject("photos");
+                        JSONArray jsa = photos.getJSONArray("photo");
+                        countLoadingPhotos += jsa.length();
+                        int size = photoUrls.size();
+                        for (int i = 0; i < jsa.length(); i++) {
+                            Log.d("HERE", "here 2");
+                            JSONObject photo = jsa.getJSONObject(i);
+                            String farmId = photo.getString("farm");
+                            String serverId = photo.getString("server");
+                            String id = photo.getString("id");
+                            String secret = photo.getString("secret");
+                            String title = photo.getString("title");
 
-                    String qq = imgUrl.replace("[farm_id]", farmId).replace("[server_id]", serverId).replace("[ID]", id).replace("[id_secret]", secret);
+                            String qq = imgUrl.replace("[farm_id]", farmId).replace("[server_id]", serverId).replace("[ID]", id).replace("[id_secret]", secret);
 
-                    photoUrls.add(size + i, qq);
-                    photosInfo.add(size + i, title);
+                            photoUrls.add(size + i, qq);
+                            photosInfo.add(size + i, title);
+                        }
+                    }
                 }
-
+                publishProgress(countLoadingPhotos);
             } catch (IOException ioe) {
                 Log.d(errorTag, ioe.getMessage());
             } catch (JSONException je) {
                 Log.d(errorTag, je.getMessage());
             }
         }else {
+            Log.d("HERE", "here 3");
             Thread.currentThread().interrupt();
         }
 
@@ -83,7 +98,7 @@ public class LoadFromFlickrTask extends AsyncTask<Void, Integer, Void> {
 
     @Override
     protected void onPostExecute(Void aVoid) {
-        if(fragment != null) {
+        if(fragment != null && photoUrls.size() != 0) {
             fragment.onGettingResult(photoUrls, photosInfo);
         }
     }
@@ -118,5 +133,10 @@ public class LoadFromFlickrTask extends AsyncTask<Void, Integer, Void> {
         this.fragment = fragment;
     }
 
-
+    @Override
+    protected void onProgressUpdate(Integer... values) {
+        if(fragment != null) {
+            fragment.getProgress(values[0]);
+        }
+    }
 }

@@ -30,10 +30,10 @@ public class DiskCashing {
 
     }
 
-    public void cashingImg(int key, Bitmap bitmap){
+    public void cashingImg(String key, Bitmap bitmap){
 
         synchronized (lock1){
-            File file = new File(fileDir.getAbsolutePath(), key + ".png");
+            File file = new File(fileDir.getAbsolutePath(), key.hashCode() + ".png");
             if(!file.exists()) {
                 try {
                     Log.d("PROCESS", "file creating");
@@ -52,9 +52,9 @@ public class DiskCashing {
         }
 
     }
-    public Drawable getImg(int key){
+    public Drawable getImg(String key){
         synchronized (lock2) {
-            File file = new File(fileDir.getAbsolutePath(), key + ".png");
+            File file = new File(fileDir.getAbsolutePath(), key.hashCode() + ".png");
             if (file.exists()) {
                 Log.d("PROCESS ", "file exists");
                 lock2.notifyAll();
