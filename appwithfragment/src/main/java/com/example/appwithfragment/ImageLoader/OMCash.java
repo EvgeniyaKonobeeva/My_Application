@@ -1,4 +1,4 @@
-package com.example.appwithfragment;
+package com.example.appwithfragment.ImageLoader;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;

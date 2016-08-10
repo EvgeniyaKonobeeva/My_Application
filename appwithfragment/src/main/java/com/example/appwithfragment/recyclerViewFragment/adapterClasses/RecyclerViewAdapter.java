@@ -3,17 +3,18 @@ package com.example.appwithfragment.RecyclerViewFragment.adapterClasses;
 import android.content.Context;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.appwithfragment.DiskCashing;
+import com.example.appwithfragment.ImageLoader.DiskCashing;
 import com.example.appwithfragment.ListContent;
-import com.example.appwithfragment.MyImageLoader;
+import com.example.appwithfragment.ImageLoader.MyImageLoader;
 import com.example.appwithfragment.R;
-import com.example.appwithfragment.OMCash;
+import com.example.appwithfragment.ImageLoader.OMCash;
 
 import java.util.List;
 
@@ -25,9 +26,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     private List<ListContent> list;
 
     private GridLayoutManager gridLayoutManager;
-
-    private DiskCashing dc;
-    private OMCash omCash;
     private MyImageLoader iml;
     Context ctx;
 
@@ -38,13 +36,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         this.gridLayoutManager = layoutManager;
 
         this.ctx = ctx;
-        if(dc == null){
-            dc = new DiskCashing(ctx);
-        }
-
-        if (omCash == null){
-            omCash = new OMCash(50);
-        }
     }
 
     @Override
@@ -100,5 +91,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     }
 
-
+    @Override
+    public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
+        Log.d("RecyclerViewAdapter", "onDetachedFromRecyclerView");
+        iml.terminateAllProcess();
+    }
 }

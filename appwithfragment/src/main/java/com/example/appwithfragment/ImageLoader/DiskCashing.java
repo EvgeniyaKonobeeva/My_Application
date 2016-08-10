@@ -1,4 +1,4 @@
-package com.example.appwithfragment;
+package com.example.appwithfragment.ImageLoader;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -16,10 +16,11 @@ import java.util.Date;
  * Created by e.konobeeva on 09.08.2016.
  */
 public class DiskCashing {
-    private static final String errorTag = "ERROR DiskCashing";
+    private static final String errorTag = "DiskCashing";
     private File fileDir;
     private Object lock1 = new Object();
     private Object lock2 = new Object();
+    private int size;
 
     public DiskCashing(Context ctx){
         fileDir = new File(ctx.getCacheDir() + "bitmapCash");
@@ -32,14 +33,14 @@ public class DiskCashing {
     public void saveOnDisk(int keyUrl, Bitmap bitmap){
 
         synchronized (lock1){
-            File file = new File(fileDir.getAbsolutePath(), keyUrl + ".jpeg");
+            File file = new File(fileDir.getAbsolutePath(), keyUrl + ".png");
             if(!file.exists()) {
                 try {
                     Log.d("PROCESS", "file creating");
                     FileOutputStream fileOutputStream = new FileOutputStream(file);
 
                     if(hasFreeDiskSpace(fileDir, bitmap)){
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 85, fileOutputStream);
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
                         bitmap.recycle();
                         fileOutputStream.flush();
                         fileOutputStream.close();
@@ -47,7 +48,7 @@ public class DiskCashing {
                         while (!hasFreeDiskSpace(fileDir, bitmap)){
                             deleteLatestFile(fileDir);
                         }
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 85, fileOutputStream);
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
                         bitmap.recycle();
                         fileOutputStream.flush();
                         fileOutputStream.close();
@@ -66,7 +67,7 @@ public class DiskCashing {
     }
     public Drawable getImg(int keyUrl){
         synchronized (lock2) {
-            File file = new File(fileDir.getAbsolutePath(), keyUrl + ".JPG");
+            File file = new File(fileDir.getAbsolutePath(), keyUrl + ".png");
             if (file.exists()) {
                 Log.d("PROCESS ", "file exists");
                 lock2.notifyAll();

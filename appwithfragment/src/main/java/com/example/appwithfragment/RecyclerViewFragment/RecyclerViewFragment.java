@@ -3,12 +3,14 @@ package com.example.appwithfragment.RecyclerViewFragment;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -27,17 +29,23 @@ import java.util.List;
 
 /**
  * Created by e.konobeeva on 02.08.2016.
+ * фрагмент, содержащий RecyclerView.
+ * выполняет задания по загрузке url изображений - LoadFromFlickrTask
  */
 public class RecyclerViewFragment extends Fragment implements GettingResults {
 
     private int listSize = 1;
 
     private View view;
+
     private OnRecyclerViewClickListener listener;
     private Activity activity;
     private RecyclerView recyclerView;
     private List<ListContent> list;
     private LoadFromFlickrTask task;
+
+    private boolean loadingFinished = false;
+    private boolean lastTaskTerminated = false;
 
     private int progress;
 
@@ -94,13 +102,14 @@ public class RecyclerViewFragment extends Fragment implements GettingResults {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
 
-               if(dy > 0 && recyclerGridLayout.findLastVisibleItemPosition() >= progress-1){
-                    Log.d("POSITION", Integer.toString(recyclerGridLayout.findLastVisibleItemPosition()));
+               if(dy > 0 && recyclerGridLayout.findLastVisibleItemPosition() >= progress-2  && loadingFinished){
+                    loadingFinished = false;
+                    //Log.d("POSITION", Integer.toString(recyclerGridLayout.findLastVisibleItemPosition()));
                     task = new LoadFromFlickrTask(fragment);
                     task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
                     //lastPositionMarker+=maxPerPage;
-               }/*else if(page > maxPages && recyclerGridLayout.findLastCompletelyVisibleItemPosition() == 499){
+               }else if(lastTaskTerminated && recyclerGridLayout.findLastVisibleItemPosition() >= progress-1){
                    final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity);
                    dialogBuilder.setMessage("There is no photo anymore");
                    dialogBuilder.setNegativeButton("OK", new DialogInterface.OnClickListener() {
@@ -110,14 +119,13 @@ public class RecyclerViewFragment extends Fragment implements GettingResults {
                    });
                    AlertDialog alertDialog = dialogBuilder.create();
                    alertDialog.show();
-               }*/
+               }
             }
         });
 
         ItemClickSupport.addTo(recyclerView).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
             @Override
             public void onItemClicked(RecyclerView recyclerView, int position, View v) {
-                Log.d("LOOK AT THE VIEW", v.toString());
                 listener.doAction(list.get(position));
             }
         });
@@ -130,7 +138,7 @@ public class RecyclerViewFragment extends Fragment implements GettingResults {
     private static int countLoaders = 0;
 
     @Override
-    public void onGettingResult(ArrayList<String> photoUrls, ArrayList<String> photosInfo) {
+    public void onGettingResult(ArrayList<String> photoUrls, ArrayList<String> photosInfo, boolean isTheLast) {
         if(countLoaders == 0) {
             countLoaders++;
             for (int i = 0; i < list.size(); i++) {
@@ -153,6 +161,10 @@ public class RecyclerViewFragment extends Fragment implements GettingResults {
         }
 
         recyclerView.getAdapter().notifyDataSetChanged();
+
+        if(isTheLast){
+            this.lastTaskTerminated = isTheLast;
+        }
     }
 
     @Override
@@ -161,13 +173,17 @@ public class RecyclerViewFragment extends Fragment implements GettingResults {
         task.setFragment(null);
         task.cancel(false);
         recyclerView.addOnScrollListener(null);
+        recyclerView.setAdapter(null);
+
 
     }
 
     @Override
     public void getProgress(int loadingPhotos) {
 
+        loadingFinished = true;
         progress += loadingPhotos;
-        Log.d("PROGRESS", Integer.toString(progress));
+        //Log.d("PROGRESS", Integer.toString(progress));
     }
+
 }

@@ -1,7 +1,6 @@
-package com.example.appwithfragment.RecyclerViewFragment.adapterClasses;
+package com.example.appwithfragment.ImageLoader;
 
 import android.graphics.drawable.Drawable;
-import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
 
@@ -10,7 +9,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import com.example.appwithfragment.MyImageLoader.*;
+import com.example.appwithfragment.ImageLoader.MyImageLoader.*;
 
 
 /**
@@ -37,7 +36,7 @@ public class LoadImgThread implements Runnable {
             Log.d("IN THE THREAD", "LoadImgThread here 1");
             try {
                 InputStream is = (InputStream) new URL(url).getContent();
-                final Drawable drawable = Drawable.createFromStream(is, "" + url.hashCode() + ".jpeg");
+                final Drawable drawable = Drawable.createFromStream(is, "" + url.hashCode() + ".png");
                 is.close();
                 if (!Thread.currentThread().isInterrupted())
                     handler.post(new Runnable() {

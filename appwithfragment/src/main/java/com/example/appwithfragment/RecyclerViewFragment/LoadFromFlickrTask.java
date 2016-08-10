@@ -27,8 +27,10 @@ public class LoadFromFlickrTask extends AsyncTask<Void, Integer, Void> {
     private GettingResults fragment;
 
     private static int loadingPhotosPerOnce = 20;
-
     private static int page = 1;
+    private static boolean photoEnds = false;
+    private static int pages;
+    private static String imgUrl;
 
 
 
@@ -51,18 +53,19 @@ public class LoadFromFlickrTask extends AsyncTask<Void, Integer, Void> {
 
         if(!isCancelled()) {
             try {
-                HttpURLConnection connection = setConnection(protocol + page);
-                connection.connect();
-                String imgUrl = "https://farm[farm_id].staticflickr.com/[server_id]/[ID]_[id_secret]_m.jpg";
+                if(page == 1) {
+                    HttpURLConnection connection = setConnection(protocol + page);
+                    connection.connect();
+                    imgUrl = "https://farm[farm_id].staticflickr.com/[server_id]/[ID]_[id_secret]_m.jpg";
+                    JSONObject photos = getJSONInfo(connection).getJSONObject("photos");
+                    pages = photos.getInt("pages");
+                }
 
-                JSONObject photos = getJSONInfo(connection).getJSONObject("photos");
-                int pages = photos.getInt("pages");
-
-                while(countLoadingPhotos < 20){
+                while(countLoadingPhotos < loadingPhotosPerOnce){
                     if(page <= pages) {
-                        connection = setConnection(protocol + (page++));
+                        HttpURLConnection connection = setConnection(protocol + (page++));
                         connection.connect();
-                        photos = getJSONInfo(connection).getJSONObject("photos");
+                        JSONObject photos = getJSONInfo(connection).getJSONObject("photos");
                         JSONArray jsa = photos.getJSONArray("photo");
                         countLoadingPhotos += jsa.length();
                         int size = photoUrls.size();
@@ -80,9 +83,11 @@ public class LoadFromFlickrTask extends AsyncTask<Void, Integer, Void> {
                             photoUrls.add(size + i, qq);
                             photosInfo.add(size + i, title);
                         }
+                    }else {
+                        photoEnds = true;
                     }
                 }
-                Log.d("PRGES", Integer.toString(page));
+                //Log.d("PRGES", Integer.toString(page));
                 publishProgress(countLoadingPhotos);
                 countLoadingPhotos = 0;
             } catch (IOException ioe) {
@@ -101,7 +106,7 @@ public class LoadFromFlickrTask extends AsyncTask<Void, Integer, Void> {
     @Override
     protected void onPostExecute(Void aVoid) {
         if(fragment != null && photoUrls.size() != 0) {
-            fragment.onGettingResult(photoUrls, photosInfo);
+            fragment.onGettingResult(photoUrls, photosInfo, photoEnds);
         }
     }
 
