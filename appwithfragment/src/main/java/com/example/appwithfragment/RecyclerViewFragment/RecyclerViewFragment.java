@@ -1,16 +1,14 @@
-package com.example.appwithfragment.recyclerViewFragment;
+package com.example.appwithfragment.RecyclerViewFragment;
 
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.IntegerRes;
+
 import android.support.annotation.Nullable;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -18,10 +16,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.appwithfragment.RecyclerViewFragment.*;
+import com.example.appwithfragment.RecyclerViewFragment.adapterClasses.RecyclerViewAdapter;
 import com.example.appwithfragment.supportLib.ItemClickSupport;
 import com.example.appwithfragment.ListContent;
 import com.example.appwithfragment.R;
-import com.example.appwithfragment.recyclerViewFragment.adapterClasses.RecyclerViewAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,8 +31,6 @@ import java.util.List;
 public class RecyclerViewFragment extends Fragment implements GettingResults {
 
     private int listSize = 1;
-    private static final int maxPages = 10;
-    private static final int maxPerPage = 50;
 
     private View view;
     private OnRecyclerViewClickListener listener;
