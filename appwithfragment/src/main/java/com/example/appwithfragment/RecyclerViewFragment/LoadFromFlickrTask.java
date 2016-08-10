@@ -47,7 +47,7 @@ public class LoadFromFlickrTask extends AsyncTask<Void, Integer, Void> {
     protected Void doInBackground(Void... voids) {
 
 
-        Log.d("HERE", "here 1");
+        //Log.d("HERE", "here 1");
 
         if(!isCancelled()) {
             try {
@@ -58,16 +58,16 @@ public class LoadFromFlickrTask extends AsyncTask<Void, Integer, Void> {
                 JSONObject photos = getJSONInfo(connection).getJSONObject("photos");
                 int pages = photos.getInt("pages");
 
-                while(countLoadingPhotos < loadingPhotosPerOnce){
+                while(countLoadingPhotos < 20){
                     if(page <= pages) {
-                        connection = setConnection(protocol + page++);
+                        connection = setConnection(protocol + (page++));
                         connection.connect();
                         photos = getJSONInfo(connection).getJSONObject("photos");
                         JSONArray jsa = photos.getJSONArray("photo");
                         countLoadingPhotos += jsa.length();
                         int size = photoUrls.size();
                         for (int i = 0; i < jsa.length(); i++) {
-                            Log.d("HERE", "here 2");
+                            //Log.d("HERE", "here 2");
                             JSONObject photo = jsa.getJSONObject(i);
                             String farmId = photo.getString("farm");
                             String serverId = photo.getString("server");
@@ -82,14 +82,16 @@ public class LoadFromFlickrTask extends AsyncTask<Void, Integer, Void> {
                         }
                     }
                 }
+                Log.d("PRGES", Integer.toString(page));
                 publishProgress(countLoadingPhotos);
+                countLoadingPhotos = 0;
             } catch (IOException ioe) {
                 Log.d(errorTag, ioe.getMessage());
             } catch (JSONException je) {
                 Log.d(errorTag, je.getMessage());
             }
         }else {
-            Log.d("HERE", "here 3");
+            //Log.d("HERE", "here 3");
             Thread.currentThread().interrupt();
         }
 

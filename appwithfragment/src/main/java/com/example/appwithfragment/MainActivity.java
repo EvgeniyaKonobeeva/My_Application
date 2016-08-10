@@ -8,9 +8,13 @@ import android.util.Log;
 import com.example.appwithfragment.FullScreenPicture.*;
 import com.example.appwithfragment.RecyclerViewFragment.RecyclerViewFragment;
 
-public class MainActivity extends AppCompatActivity implements RecyclerViewFragment.OnRecyclerViewClickListener {
+import java.io.Serializable;
 
-    private static final String key = "KEY";
+public class MainActivity extends AppCompatActivity implements RecyclerViewFragment.OnRecyclerViewClickListener, Serializable{
+
+    private static final String keyUrl = "URL";
+    private static final String keyContext = "Context";
+    private static final String keyTitle = "Title";
     private FragmentFullScreenPicture fragment2;
     private Bundle bundle;
 
@@ -25,7 +29,9 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewFragm
         fragTrans.addToBackStack(null);
         fragTrans.commit();
         bundle = new Bundle();
-        bundle.putSerializable(key,listContent);
+        bundle.putCharSequence(keyUrl,listContent.getImgUrl());
+        bundle.putSerializable(keyContext,this);
+        bundle.putCharSequence(keyTitle, listContent.getFullTitle());
         fragment2.setArguments(bundle);
 
     }

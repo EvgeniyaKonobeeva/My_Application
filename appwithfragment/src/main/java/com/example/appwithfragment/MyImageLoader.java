@@ -1,18 +1,14 @@
 package com.example.appwithfragment;
 
 import android.content.Context;
-import android.graphics.drawable.BitmapDrawable;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.widget.ImageView;
 
 import com.example.appwithfragment.RecyclerViewFragment.adapterClasses.LoadImgThread;
-import com.example.appwithfragment.RecyclerViewFragment.adapterClasses.RecyclerViewAdapter;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -37,8 +33,9 @@ public class MyImageLoader {
     private Map<Integer, Future> mapTask;
     private ExecutorService executorSPool;
 
-    private ImageView iv;
-    private boolean result = false;
+    private static int countThreads = 0;
+
+    //private boolean result = false;
 
 
 
@@ -53,9 +50,12 @@ public class MyImageLoader {
         handler = new MyHandler();
         mapLoadingImg = new HashMap<>();
         mapTask = new HashMap<>();
-        //executorSPool= Executors.newFixedThreadPool(threadPoolSize);
+        executorSPool= Executors.newFixedThreadPool(threadPoolSize);
     }
 
+    public MyImageLoader load(Context ctx, String url, ImageView iv){
+        return new MyImageLoader(ctx).setResourceUrl(url).setImgInto(iv);
+    }
 
     public static MyImageLoader setContext(Context ctx){
 
@@ -67,37 +67,35 @@ public class MyImageLoader {
         return this;
     }
 
-    public void setImgInto(ImageView iv) {
+    public MyImageLoader setImgInto(ImageView iv) {
 
-        this.iv = iv;
         Drawable drawable;
-        if (!oc.getImageTo(resUrl, iv)) {
-            if ((drawable = dc.getImg(resUrl)) != null) {
+        iv.setTag(resUrl);
+        if (!oc.getImageTo(resUrl.hashCode(), iv)) {
+            if ((drawable = dc.getImg(resUrl.hashCode())) != null) {
                 iv.setImageDrawable(drawable);
-                oc.putImage(resUrl, drawable);
-                result = true;
+                //oc.putImage(resUrl.hashCode(), drawable);
             } else if (!mapLoadingImg.containsKey(resUrl.hashCode())) {
                 mapLoadingImg.put(resUrl.hashCode(), resUrl);
-                LoadImgThread loadImgThread = new LoadImgThread(handler, resUrl);
-                //mapTask.put(resUrl.hashCode(), executorSPool.submit(loadImgThread));
+                LoadImgThread loadImgThread = new LoadImgThread(handler, resUrl,iv);
+                executorSPool.submit(loadImgThread);
+                mapTask.put(resUrl.hashCode(), executorSPool.submit(loadImgThread));
             }
-        }else result = true;
+        }
+        return this;
     }
 
     public class MyHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            iv.setImageDrawable((Drawable) msg.obj);
-            //dc.saveOnDisk("",(BitmapDrawable) msg.obj);
-            //oc.putImage("",(Drawable) msg.obj);
-            //put in cash
-            //TODO put all received data to cash, set the url-property to listContent obj
-            result = true;
+
+            Drawable drawable = (Drawable) msg.obj;
+            oc.putImage(msg.what, drawable);
+            //Bitmap bitmap = Bitmap.createBitmap(drawable.getMinimumWidth(), drawable.getMinimumHeight(), Bitmap.Config.ARGB_8888);
+            //dc.saveOnDisk(msg.what, bitmap);
+            //bitmap.recycle();
         }
-    }
-    public boolean getResult(){
-        return result;
     }
 
 

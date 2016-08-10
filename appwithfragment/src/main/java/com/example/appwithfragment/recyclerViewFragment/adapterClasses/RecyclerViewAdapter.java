@@ -1,9 +1,6 @@
 package com.example.appwithfragment.RecyclerViewFragment.adapterClasses;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -18,13 +15,7 @@ import com.example.appwithfragment.MyImageLoader;
 import com.example.appwithfragment.R;
 import com.example.appwithfragment.OMCash;
 
-import java.util.HashMap;
 import java.util.List;
-
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 
 /**
@@ -38,6 +29,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     private DiskCashing dc;
     private OMCash omCash;
     private MyImageLoader iml;
+    Context ctx;
 
 
     public RecyclerViewAdapter(List<ListContent> list, GridLayoutManager layoutManager, Context ctx){
@@ -45,6 +37,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         iml = new MyImageLoader(ctx);
         this.gridLayoutManager = layoutManager;
 
+        this.ctx = ctx;
         if(dc == null){
             dc = new DiskCashing(ctx);
         }
@@ -72,11 +65,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         holder.imageView.setImageDrawable(null);
         if(listContent.getImgUrl() != null ) {
             String keyUrl = listContent.getImgUrl();
-
             iml.setResourceUrl(keyUrl).setImgInto(holder.imageView);
-            if (iml.getResult()) {
-                listContent.setImg(holder.imageView.getDrawable());
-            }
+            listContent.setImg(holder.imageView.getDrawable());
         }
 
         holder.textView.setText(listContent.getShortTitle());
@@ -94,6 +84,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             }
         }*/
     }
+
+
 
     class ViewHolder extends RecyclerView.ViewHolder{
         TextView textView;

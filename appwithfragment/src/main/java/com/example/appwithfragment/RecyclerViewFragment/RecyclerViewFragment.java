@@ -16,13 +16,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.appwithfragment.RecyclerViewFragment.*;
 import com.example.appwithfragment.RecyclerViewFragment.adapterClasses.RecyclerViewAdapter;
 import com.example.appwithfragment.supportLib.ItemClickSupport;
 import com.example.appwithfragment.ListContent;
 import com.example.appwithfragment.R;
-
-import com.example.appwithfragment.RecyclerViewFragment.adapterClasses.*;
 
 
 import java.util.ArrayList;
@@ -101,6 +98,7 @@ public class RecyclerViewFragment extends Fragment implements GettingResults {
                     Log.d("POSITION", Integer.toString(recyclerGridLayout.findLastVisibleItemPosition()));
                     task = new LoadFromFlickrTask(fragment);
                     task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
                     //lastPositionMarker+=maxPerPage;
                }/*else if(page > maxPages && recyclerGridLayout.findLastCompletelyVisibleItemPosition() == 499){
                    final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity);
@@ -168,7 +166,8 @@ public class RecyclerViewFragment extends Fragment implements GettingResults {
 
     @Override
     public void getProgress(int loadingPhotos) {
-        Log.d("PROGRESS", Integer.toString(loadingPhotos));
+
         progress += loadingPhotos;
+        Log.d("PROGRESS", Integer.toString(progress));
     }
 }

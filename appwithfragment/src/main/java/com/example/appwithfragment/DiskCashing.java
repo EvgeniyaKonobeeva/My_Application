@@ -29,10 +29,10 @@ public class DiskCashing {
         Log.d("FILE", fileDir.getPath());
     }
 
-    public void saveOnDisk(String keyUrl, Bitmap bitmap){
+    public void saveOnDisk(int keyUrl, Bitmap bitmap){
 
         synchronized (lock1){
-            File file = new File(fileDir.getAbsolutePath(), keyUrl.hashCode() + ".jpeg");
+            File file = new File(fileDir.getAbsolutePath(), keyUrl + ".jpeg");
             if(!file.exists()) {
                 try {
                     Log.d("PROCESS", "file creating");
@@ -64,9 +64,9 @@ public class DiskCashing {
         }
 
     }
-    public Drawable getImg(String keyUrl){
+    public Drawable getImg(int keyUrl){
         synchronized (lock2) {
-            File file = new File(fileDir.getAbsolutePath(), keyUrl.hashCode() + ".JPEG");
+            File file = new File(fileDir.getAbsolutePath(), keyUrl + ".JPG");
             if (file.exists()) {
                 Log.d("PROCESS ", "file exists");
                 lock2.notifyAll();
@@ -80,7 +80,8 @@ public class DiskCashing {
         }
     }
     public boolean hasFreeDiskSpace(File file, Bitmap bitmap){
-        int maxSizeMb = 150;
+        Log.d("DiskCashing", "hasFreeDiskSpace");
+        int maxSizeMb = 50;
         int usableSpace = (int) file.getUsableSpace()/1024;
         int bitmapSize = bitmap.getByteCount()/1024;
         if(maxSizeMb-usableSpace >= bitmapSize){
@@ -88,6 +89,7 @@ public class DiskCashing {
         }else return false;
     }
     public void deleteLatestFile(File dir){
+        Log.d("DiskCashing", "deleting");
         File[] files = dir.listFiles();
         if(files.length != 0) {
             long now = new Date().getTime();

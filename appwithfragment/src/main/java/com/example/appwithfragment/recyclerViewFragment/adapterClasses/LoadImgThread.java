@@ -1,24 +1,16 @@
 package com.example.appwithfragment.RecyclerViewFragment.adapterClasses;
 
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.util.Log;
+import android.widget.ImageView;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-<<<<<<< Updated upstream
 import com.example.appwithfragment.MyImageLoader.*;
-import com.example.appwithfragment.RecyclerViewFragment.adapterClasses.RecyclerViewAdapter.*;
-=======
-import com.example.appwithfragment.DiskCashing;
-import com.example.appwithfragment.ListContent;
-import com.example.appwithfragment.RecyclerViewFragment.GettingResults;
-import com.example.appwithfragment.RecyclerViewFragment.adapterClasses.RecyclerViewAdapter.*;
-import com.example.appwithfragment.supportLib.OMCash;
->>>>>>> Stashed changes
 
 
 /**
@@ -26,23 +18,37 @@ import com.example.appwithfragment.supportLib.OMCash;
  */
 public class LoadImgThread implements Runnable {
     private static final String errorTag = "ERROR LoadImgThread";
+    private static final String KEYDrawable = "Drawable";
+    private static final String KEYUrl = "URL";
     private MyHandler handler;
-    String url;
+    private String url;
+    private ImageView iv;
 
-    public LoadImgThread(MyHandler handler, String url){
+    public LoadImgThread(MyHandler handler, String url, ImageView iv){
         this.handler = handler;
         this.url = url;
+        this.iv = iv;
+
     }
 
     @Override
     public void run() {
         if(!Thread.currentThread().isInterrupted()) {
+            Log.d("IN THE THREAD", "LoadImgThread here 1");
             try {
-                InputStream is = (InputStream) new URL(url.replace("_m", "")).getContent();
-                Drawable drawable = Drawable.createFromStream(is, "" + url.hashCode() + ".jpeg");
+                InputStream is = (InputStream) new URL(url).getContent();
+                final Drawable drawable = Drawable.createFromStream(is, "" + url.hashCode() + ".jpeg");
                 is.close();
                 if (!Thread.currentThread().isInterrupted())
-                    handler.sendMessage(handler.obtainMessage(1, drawable));
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            handler.sendMessage(handler.obtainMessage(url.hashCode(), drawable));
+                            if(iv.getTag().equals(url))
+                                iv.setImageDrawable(drawable);
+                        }
+                    });
+
             } catch (MalformedURLException me) {
                 Log.d(errorTag, me.getMessage());
             } catch (IOException ioe) {
