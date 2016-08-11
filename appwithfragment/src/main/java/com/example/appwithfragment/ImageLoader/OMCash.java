@@ -13,7 +13,7 @@ import java.util.Map;
  * Created by e.konobeeva on 09.08.2016.
  */
 public class OMCash{
-    private Map<Integer, Drawable> storage;
+    private Map<Integer, Bitmap> storage;
     private Object lock1 = new Object();
     private Object lock2 = new Object();
     private int size;
@@ -23,7 +23,7 @@ public class OMCash{
         storage = new LinkedHashMap<>(size, 0.75f, true);
 
     }
-    public void putImage(int keyUrl, Drawable bitmap){
+    public void putImage(int keyUrl, Bitmap bitmap){
         synchronized (lock1) {
             Log.d("OMCash", "putting img into");
             storage.put(keyUrl, bitmap);
@@ -36,7 +36,7 @@ public class OMCash{
         synchronized (lock2) {
             if (storage.containsKey(keyUrl)) {
                 Log.d("OMCash", "getting img out");
-                im.setImageDrawable(storage.get(keyUrl));
+                im.setImageBitmap(storage.get(keyUrl));
                 lock2.notifyAll();
                 return true;
             } else {
@@ -46,7 +46,7 @@ public class OMCash{
             }
         }
     }
-    public Drawable getImg(String keyUrl){
+    public Bitmap getImg(String keyUrl){
         return storage.get(keyUrl.hashCode());
     }
 

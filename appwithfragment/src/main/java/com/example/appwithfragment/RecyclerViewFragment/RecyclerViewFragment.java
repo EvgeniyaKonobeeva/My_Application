@@ -15,6 +15,9 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -61,7 +64,7 @@ public class RecyclerViewFragment extends Fragment implements GettingResults {
         listener = (OnRecyclerViewClickListener) this.getActivity();
         activity = this.getActivity();
         view = inflater.inflate(R.layout.fragment, null);
-
+        setHasOptionsMenu(true);
         ConnectivityManager connMgr = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
@@ -109,7 +112,7 @@ public class RecyclerViewFragment extends Fragment implements GettingResults {
                     task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
                     //lastPositionMarker+=maxPerPage;
-               }else if(lastTaskTerminated && recyclerGridLayout.findLastVisibleItemPosition() >= progress-1){
+               }else if(lastTaskTerminated && recyclerGridLayout.findLastVisibleItemPosition() >= progress-2){
                    final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity);
                    dialogBuilder.setMessage("There is no photo anymore");
                    dialogBuilder.setNegativeButton("OK", new DialogInterface.OnClickListener() {
@@ -186,4 +189,17 @@ public class RecyclerViewFragment extends Fragment implements GettingResults {
         //Log.d("PROGRESS", Integer.toString(progress));
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.add("clean disk cash");
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        RecyclerViewAdapter ra = (RecyclerViewAdapter)recyclerView.getAdapter();
+        ra.getMyImageLoader().getDiskCashing().cleanDisk();
+        return super.onOptionsItemSelected(item);
+
+    }
 }

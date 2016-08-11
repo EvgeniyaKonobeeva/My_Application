@@ -18,6 +18,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -44,8 +45,9 @@ public class MyImageLoader {
 
     //private boolean result = false;
 
-    private BlockingQueue<Runnable> queue = new ArrayBlockingQueue<Runnable>(4, true);
-    private ExecutorService executorService = new ThreadPoolExecutor(4, 4, 5L, TimeUnit.MILLISECONDS, queue);
+    private BlockingQueue<Runnable> queue = new LIFOQueue(4);
+    //private BlockingQueue<Runnable> queue1 = new ArrayBlockingQueue<Runnable>(4, true);
+    private ExecutorService executorService = new ThreadPoolExecutor(400, 400, 50000L, TimeUnit.MILLISECONDS, queue);
 
 
     public MyImageLoader(Context ctx){
@@ -75,53 +77,41 @@ public class MyImageLoader {
         return this;
     }
 
-    public MyImageLoader setImgInto(ImageView iv) {
+    public MyImageLoader setImgInto(final ImageView iv) {
 
-        Drawable drawable;
         iv.setTag(resUrl);
         if (!oc.getImageTo(resUrl.hashCode(), iv)) {
-            if ((drawable = dc.getImg(resUrl.hashCode())) != null) {
-                iv.setImageDrawable(drawable);
-                oc.putImage(resUrl.hashCode(), drawable);
-            } else if (!mapLoadingImg.containsKey(resUrl.hashCode())) {
+           // if (!mapLoadingImg.containsKey(resUrl.hashCode())) {
                 mapLoadingImg.put(resUrl.hashCode(), resUrl);
-                LoadImgThread loadImgThread = new LoadImgThread(handler, resUrl,iv);
+                LoadImgThread loadImgThread = new LoadImgThread(handler, resUrl, iv, dc);
                 executorService.submit(loadImgThread);
-                //mapTask.put(resUrl.hashCode(), executorSPool.submit(loadImgThread));
-            }
+           // }
         }
+
         return this;
     }
 
     public class MyHandler extends Handler {
         @Override
-        public void handleMessage(Message msg) {
+        public void handleMessage(final Message msg) {
             super.handleMessage(msg);
-
-            Drawable drawable = (Drawable) msg.obj;
-            oc.putImage(msg.what, drawable);
-            dc.saveOnDisk(msg.what, convertToBitmap(drawable));
+            oc.putImage(msg.what, (Bitmap) msg.obj);
+            mapLoadingImg.remove(msg.what);
         }
 
-        public Bitmap convertToBitmap(Drawable drawable) {
-            Rect rect = drawable.getDirtyBounds();
-            int height = rect.height();
-            int width = rect.width();
-            Bitmap mutableBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-            Canvas canvas = new Canvas(mutableBitmap);
-            drawable.draw(canvas);
-
-            return mutableBitmap;
-        }
     }
 
 
-    public void terminateAllProcess(){
+    /*public void terminateAllProcess(){
         Log.d("MyImageLoader", "terminateAllProcess");
-        queue.removeAll(queue);
+        queue1.removeAll(queue1);
         executorService.shutdownNow();
-    }
+    }*/
 
+
+    public DiskCashing getDiskCashing(){
+        return dc;
+    }
 
 
 }

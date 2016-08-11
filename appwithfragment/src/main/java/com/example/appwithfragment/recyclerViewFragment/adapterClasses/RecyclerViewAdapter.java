@@ -94,6 +94,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     @Override
     public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
         Log.d("RecyclerViewAdapter", "onDetachedFromRecyclerView");
-        iml.terminateAllProcess();
+        //iml.terminateAllProcess();
+    }
+
+    public MyImageLoader getMyImageLoader(){
+        return iml;
     }
 }

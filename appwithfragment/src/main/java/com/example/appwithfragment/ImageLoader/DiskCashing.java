@@ -2,6 +2,7 @@ package com.example.appwithfragment.ImageLoader;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
@@ -41,7 +42,7 @@ public class DiskCashing {
 
                     if(hasFreeDiskSpace(fileDir, bitmap)){
                         bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
-                        bitmap.recycle();
+                        //bitmap.recycle();
                         fileOutputStream.flush();
                         fileOutputStream.close();
                     }else{
@@ -65,13 +66,14 @@ public class DiskCashing {
         }
 
     }
-    public Drawable getImg(int keyUrl){
+    public Bitmap getImg(int keyUrl){
+
         synchronized (lock2) {
             File file = new File(fileDir.getAbsolutePath(), keyUrl + ".png");
             if (file.exists()) {
                 Log.d("PROCESS ", "file exists");
                 lock2.notifyAll();
-                return Drawable.createFromPath(file.getPath());
+                return BitmapFactory.decodeFile(file.getPath());
             } else {
                 Log.d(errorTag, "file does not exists");
                 lock2.notifyAll();
@@ -103,6 +105,20 @@ public class DiskCashing {
             }
             latest.delete();
         }
+    }
+    public void cleanDisk(){
+        File[] files = fileDir.listFiles();
+        if(files.length != 0) {
+            for (File f : files) {
+                if(f.exists())
+                    f.delete();
+            }
+
+        }
+        Log.d("CLEAN ", "" + fileDir.getUsableSpace());
+        Log.d("CLEAN ", "" + fileDir.getFreeSpace());
+        Log.d("CLEAN", "" + fileDir.getTotalSpace());
+
     }
 
 }

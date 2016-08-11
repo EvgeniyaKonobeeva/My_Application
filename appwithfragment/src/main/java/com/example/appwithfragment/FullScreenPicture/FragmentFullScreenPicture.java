@@ -2,6 +2,7 @@ package com.example.appwithfragment.FullScreenPicture;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -10,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.appwithfragment.ImageLoader.MyImageLoader;
 import com.example.appwithfragment.R;
 
 /**
@@ -32,8 +34,11 @@ public class FragmentFullScreenPicture extends Fragment {
 
         imgView = (ImageView) view.findViewById(R.id.fullImage);
 
-
-       // MyImageLoader.load((Context) getArguments().get(keyContext), (String) getArguments().get(keyUrl), imgView);
+        MyImageLoader iml = new MyImageLoader((Context) getArguments().get(keyContext));
+        String url = (String) getArguments().get(keyUrl);
+        iml.setResourceUrl(url.replace("_m", ""));
+        iml.setImgInto(imgView);
+       // MyImageLoader.l oad((Context) getArguments().get(keyContext), (String) getArguments().get(keyUrl), imgView);
 
         final TextView txt =(TextView)view.findViewById(R.id.title);
 
