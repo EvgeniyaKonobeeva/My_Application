@@ -26,7 +26,7 @@ public class LoadFromFlickrTask extends AsyncTask<Void, Integer, Void> {
     private static ArrayList<String> photosInfo = new ArrayList<>();
     private GettingResults fragment;
 
-    private static int loadingPhotosPerOnce = 20;
+    private static int loadingPhotosPerOnce = 50;
     private static int page = 1;
     private static boolean photoEnds = false;
     private static int pages;
@@ -85,6 +85,7 @@ public class LoadFromFlickrTask extends AsyncTask<Void, Integer, Void> {
                         }
                     }else {
                         photoEnds = true;
+                        break;
                     }
                 }
                 //Log.d("PRGES", Integer.toString(page));

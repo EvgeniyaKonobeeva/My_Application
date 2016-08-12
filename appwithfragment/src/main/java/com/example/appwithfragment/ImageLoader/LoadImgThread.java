@@ -61,8 +61,9 @@ public class LoadImgThread implements Runnable {
                             public void run() {
                                 handler.sendMessage(handler.obtainMessage(url.hashCode(),2,0, bitmap1));
                                 if (iv.getTag().equals(url)) {
-                                    Log.d("THREAD OPERATION", "operation done " + (Looper.myLooper()));
+                                    Log.d("THREAD OPERATION", iv.getTag().toString());
                                     iv.setImageBitmap(bitmap1);
+
                                 }
                             }
                         });

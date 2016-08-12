@@ -32,8 +32,8 @@ public class MyImageLoader {
 
     private Map<Integer, Object> mapLoadingImg;
 
-    private BlockingQueue<Runnable> queue = new LIFOQueue(4);
-    private ExecutorService executorService = new ThreadPoolExecutor(threadPoolSize, threadPoolSize, 50L, TimeUnit.SECONDS, queue);
+    private BlockingQueue<Runnable> queue = new LIFOQueue(10);
+    private ExecutorService executorService = new ThreadPoolExecutor(threadPoolSize, threadPoolSize, 500L, TimeUnit.SECONDS, queue);
 
 
     public MyImageLoader(Context ctx){
@@ -53,7 +53,7 @@ public class MyImageLoader {
     }
 
     public MyImageLoader setImgInto(final ImageView iv) {
-
+        Log.d("HERE", "call MyImageLoader");
         iv.setTag(resUrl);
         if (!oc.getImageTo(resUrl.hashCode(), iv)) {
            if (!mapLoadingImg.containsKey(resUrl.hashCode())) {

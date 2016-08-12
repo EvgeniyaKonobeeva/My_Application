@@ -55,9 +55,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         final ListContent listContent = list.get(position);
         holder.imageView.setImageDrawable(null);
         if(listContent.getImgUrl() != null ) {
+            //Log.d("NEW OBJECT", "load image");
             String keyUrl = listContent.getImgUrl();
             iml.setResourceUrl(keyUrl).setImgInto(holder.imageView);
             listContent.setImg(holder.imageView.getDrawable());
+        }else{
+            //Log.d("NULL REFERENCE", "null reference");
         }
 
         holder.textView.setText(listContent.getShortTitle());
@@ -87,5 +90,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     public MyImageLoader getMyImageLoader(){
         return iml;
+    }
+
+    public void addItems(){
+        //list.add();
     }
 }
