@@ -172,11 +172,11 @@ public class RecyclerViewFragment extends Fragment implements GettingResults {
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
         task.setFragment(null);
         task.cancel(false);
-        recyclerView.addOnScrollListener(null);
-        recyclerView.setAdapter(null);
+        RecyclerViewAdapter ra = (RecyclerViewAdapter)recyclerView.getAdapter();
+        ra.getMyImageLoader().terminateAllProcess();
+        super.onDestroy();
 
 
     }
@@ -202,4 +202,5 @@ public class RecyclerViewFragment extends Fragment implements GettingResults {
         return super.onOptionsItemSelected(item);
 
     }
+
 }

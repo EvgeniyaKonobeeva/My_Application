@@ -39,14 +39,14 @@ public class LoadImgThread implements Runnable {
     @Override
     public void run() {
         if(!Thread.currentThread().isInterrupted()) {
-            Bitmap bitmap;
-            if ((bitmap = dc.getImg(url.hashCode())) != null) {
-                //if (iv.getTag().equals(url))
-                final Bitmap bm = bitmap;
+            final Bitmap bitmap = dc.getImg(url.hashCode());
+            if (bitmap != null) {
+                handler.sendMessage(handler.obtainMessage(url.hashCode(),1, 0, bitmap));
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        iv.setImageBitmap(bm);
+                        if(iv.getTag().equals(url))
+                            iv.setImageBitmap(bitmap);
                     }
                 });
             } else {
@@ -59,26 +59,30 @@ public class LoadImgThread implements Runnable {
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
-                                handler.sendMessage(handler.obtainMessage(url.hashCode(), bitmap1));
+                                handler.sendMessage(handler.obtainMessage(url.hashCode(),2,0, bitmap1));
                                 if (iv.getTag().equals(url)) {
                                     Log.d("THREAD OPERATION", "operation done " + (Looper.myLooper()));
                                     iv.setImageBitmap(bitmap1);
                                 }
                             }
                         });
+                    }else
+                    {
+                        handler.sendMessage(handler.obtainMessage(url.hashCode(), -1));
                     }
                 } catch (MalformedURLException me) {
                     Log.d(errorTag, me.getMessage());
                 } catch (InterruptedIOException ioe) {
-
+                    handler.sendMessage(handler.obtainMessage(url.hashCode(), -1));
                     Log.d(errorTag, ioe.getMessage());
                     Thread.currentThread().interrupt();
                 } catch (IOException ioe2) {
-
                     Log.d(errorTag, ioe2.getMessage());
                     Thread.currentThread().interrupt();
                 }
             }
+        }else{
+            handler.sendMessage(handler.obtainMessage(-1));
         }
 
     }

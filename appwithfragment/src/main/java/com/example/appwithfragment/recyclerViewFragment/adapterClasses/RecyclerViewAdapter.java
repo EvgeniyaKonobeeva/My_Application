@@ -62,18 +62,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         holder.textView.setText(listContent.getShortTitle());
 
-        /*if(position >= 11) {
-            for (int pos : mapTask.keySet()) {
-
-                int firstVisibleItemPos = gridLayoutManager.findFirstVisibleItemPosition();
-
-                if (pos < firstVisibleItemPos || pos > firstVisibleItemPos+gridLayoutManager.getItemCount()) {
-
-                    mapTask.get(pos).cancel(true);
-                    mapLoadingImg.remove(pos);
-                }
-            }
-        }*/
     }
 
 

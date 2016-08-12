@@ -24,11 +24,14 @@ public class DiskCashing {
     private int size;
 
     public DiskCashing(Context ctx){
-        fileDir = new File(ctx.getCacheDir() + "bitmapCash");
+        fileDir = new File(ctx.getCacheDir(), "bitmapCash");
         if(!fileDir.exists()){
-            fileDir.mkdir();
+            fileDir.mkdirs();
+            Log.d("CREATING DIR", fileDir.mkdirs() + "");
         }
-        Log.d("FILE", fileDir.getPath());
+        Log.d("FILE", fileDir.getAbsolutePath());
+        Log.d("FILE", fileDir.lastModified() + "");
+
     }
 
     public void saveOnDisk(int keyUrl, Bitmap bitmap){
@@ -38,11 +41,11 @@ public class DiskCashing {
             if(!file.exists()) {
                 try {
                     Log.d("PROCESS", "file creating");
+                    Log.d("COUNT ", "" + fileDir.length());
                     FileOutputStream fileOutputStream = new FileOutputStream(file);
 
                     if(hasFreeDiskSpace(fileDir, bitmap)){
                         bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
-                        //bitmap.recycle();
                         fileOutputStream.flush();
                         fileOutputStream.close();
                     }else{
@@ -84,12 +87,13 @@ public class DiskCashing {
     }
     public boolean hasFreeDiskSpace(File file, Bitmap bitmap){
         Log.d("DiskCashing", "hasFreeDiskSpace");
-        int maxSizeMb = 50;
-        int usableSpace = (int) file.getUsableSpace()/1024;
-        int bitmapSize = bitmap.getByteCount()/1024;
-        if(maxSizeMb-usableSpace >= bitmapSize){
+        double maxSizeByte = 50000000; //50Mb
+        double bitmapSize = bitmap.getByteCount();
+        double dirSize = file.length();
+        if(maxSizeByte - dirSize >= bitmapSize){
             return true;
-        }else return false;
+        }else
+            return false;
     }
     public void deleteLatestFile(File dir){
         Log.d("DiskCashing", "deleting");
@@ -107,6 +111,7 @@ public class DiskCashing {
         }
     }
     public void cleanDisk(){
+        Log.d("before delete ", "" + fileDir.length());
         File[] files = fileDir.listFiles();
         if(files.length != 0) {
             for (File f : files) {
@@ -115,9 +120,9 @@ public class DiskCashing {
             }
 
         }
-        Log.d("CLEAN ", "" + fileDir.getUsableSpace());
-        Log.d("CLEAN ", "" + fileDir.getFreeSpace());
-        Log.d("CLEAN", "" + fileDir.getTotalSpace());
+        Log.d("after delete ", "" + fileDir.length());
+
+
 
     }
 
