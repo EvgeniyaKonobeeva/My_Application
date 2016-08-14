@@ -1,44 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#33ff0000">
-
-<ScrollView
-
+    android:id="@+id/LLfrag2">
+<FrameLayout
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_gravity="center"
-    android:background="#3300ff00">
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:layout_gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/fullImage"
+        android:gravity="center"
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="true"
+        tools:src="@mipmap/ic_launcher"/>
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/LLfrag2"
-        android:background="#330000ff">
-
+        android:orientation="vertical">
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/title"
-            android:gravity="center"
-            tools:text="text"
             android:textAlignment="center"
-            android:textIsSelectable="true"
-            android:typeface="serif" />
-        <ImageView
-            android:layout_gravity="center"
+            android:id="@+id/title"
+            android:layout_gravity="center_horizontal|top"
+            android:textStyle="italic"
+            android:textColor="#7c7c7c"
+            android:text="photo" />
+        <View
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/fullImage"
-            android:scaleType="centerCrop"
-            android:gravity="center"
-            android:adjustViewBounds="true"
-            tools:src="@mipmap/ic_launcher"/>
-
+            android:layout_height="1.5dp"
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="4dp"
+            android:layout_margin="@dimen/activity_vertical_margin"
+            android:id="@+id/line"
+            android:background="#c6c6c6" />
     </LinearLayout>
-</ScrollView>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:orientation="vertical"
+        android:layout_gravity="center_horizontal|bottom">
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="4dp"
+            android:layout_margin="@dimen/activity_vertical_margin"
+            android:id="@+id/line2"
+
+            android:background="#c6c6c6"
+            android:layout_gravity="center_horizontal|top" />
+    </LinearLayout>
+
+
 </FrameLayout>
+</LinearLayout>

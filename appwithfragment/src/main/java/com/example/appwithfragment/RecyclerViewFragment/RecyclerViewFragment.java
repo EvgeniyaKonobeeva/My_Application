@@ -22,6 +22,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.appwithfragment.RecyclerViewFragment.adapterClasses.RecyclerViewAdapter;
 import com.example.appwithfragment.supportLib.ItemClickSupport;
@@ -121,8 +122,8 @@ public class RecyclerViewFragment extends Fragment implements GettingResults {
             }
         });
 
-        return view;
 
+        return view;
     }
 
 
@@ -187,8 +188,7 @@ public class RecyclerViewFragment extends Fragment implements GettingResults {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        if (menu.size() == 0)
-            menu.add("clean disk cash");
+        activity.getMenuInflater().inflate(R.menu.my_menu, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -227,6 +227,8 @@ public class RecyclerViewFragment extends Fragment implements GettingResults {
                 loadingFinished = false;
                 task = new LoadFromFlickrTask(fragment);
                 task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            }else if(lastTaskTerminated && recyclerGridLayout.findLastCompletelyVisibleItemPosition() == recyclerView.getAdapter().getItemCount()-1){
+                Toast.makeText(activity, "all photos uploaded", Toast.LENGTH_SHORT).show();
             }
         }
 

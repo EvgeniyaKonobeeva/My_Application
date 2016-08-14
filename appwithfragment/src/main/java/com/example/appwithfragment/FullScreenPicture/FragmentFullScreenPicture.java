@@ -51,7 +51,6 @@ public class FragmentFullScreenPicture extends Fragment {
         String url = (String) getArguments().get(keyUrl);
         iml.setResourceUrl(url.replace("_m", ""));
         iml.setImgInto(imgView);
-       // MyImageLoader.l oad((Context) getArguments().get(keyContext), (String) getArguments().get(keyUrl), imgView);
 
         final TextView txt =(TextView)view.findViewById(R.id.title);
 
