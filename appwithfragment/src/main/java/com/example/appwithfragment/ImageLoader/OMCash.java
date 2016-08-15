@@ -5,9 +5,11 @@ import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.widget.ImageView;
 
+import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.WeakHashMap;
 
 /**
  * Created by e.konobeeva on 09.08.2016.
@@ -20,12 +22,13 @@ public class OMCash{
 
     public OMCash(int size){
         this.size = size;
-        storage = new LinkedHashMap<>(size, 0.75f, true);
+        storage = new WeakHashMap<Integer, Bitmap>(100);
 
     }
     public void putImage(int keyUrl, Bitmap bitmap){
         synchronized (lock1) {
             Log.d("OMCash", "putting img into");
+            //WeakReference<Bitmap> weakRef= new WeakReference<>(bitmap);
             storage.put(keyUrl, bitmap);
             lock1.notifyAll();
         }

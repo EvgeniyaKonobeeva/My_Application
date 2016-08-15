@@ -33,11 +33,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewFragm
         bundle.putCharSequence(keyTitle, listContent.getFullTitle());
         fragment2.setArguments(bundle);
 
-
-        FragmentTransaction fragTrans = getFragmentManager().beginTransaction();
-        fragTrans.replace(R.id.LL, fragment2, "single_img");
-        fragTrans.addToBackStack(null);
-        fragTrans.commit();
+        replaceFragment(fragment2, R.id.LL, "single_img");
     }
 
     @Override
@@ -77,20 +73,13 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewFragm
         if(isOpen== null) {
             fragment1 = new RecyclerViewFragment();
             fragment1.setRetainInstance(true);
-            FragmentTransaction fragTrans = getFragmentManager().beginTransaction();
-            fragTrans.add(R.id.LL, fragment1, "list_img");
-            fragTrans.addToBackStack(null);
-            fragTrans.commit();
+            addFragment(fragment1, R.id.LL, "list_img");
         }
-
-
 
     }
 
-
     @Override
     public void onBackPressed() {
-        Log.i("FrgFullScreenPicture", "call to onBackPressed");
         FragmentManager fm = getFragmentManager();
         if (fm.getBackStackEntryCount() > 0) {
             Log.i("MainActivity", "popping backstack");
@@ -100,5 +89,24 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewFragm
             super.onBackPressed();
         }
     }
+
+
+
+
+    public void addFragment(Fragment fragment, int containerView, String tag){
+        FragmentTransaction fragTrans = getFragmentManager().beginTransaction();
+        fragTrans.add(containerView, fragment, tag);
+        fragTrans.addToBackStack(null);
+        fragTrans.commit();
+    }
+
+    public void replaceFragment(Fragment fragment, int containerView, String tag){
+        FragmentTransaction fragTrans = getFragmentManager().beginTransaction();
+        fragTrans.replace(containerView, fragment, tag);
+        fragTrans.addToBackStack(null);
+        fragTrans.commit();
+    }
+
+
 
 }

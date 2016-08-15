@@ -1,7 +1,7 @@
 package com.example.appwithfragment.RecyclerViewFragment.adapterClasses;
 
 import android.content.Context;
-import android.support.v7.widget.GridLayoutManager;
+import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,31 +10,35 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.appwithfragment.ImageLoader.DiskCashing;
 import com.example.appwithfragment.ListContent;
 import com.example.appwithfragment.ImageLoader.MyImageLoader;
 import com.example.appwithfragment.R;
-import com.example.appwithfragment.ImageLoader.OMCash;
+import com.example.appwithfragment.RecyclerViewFragment.GettingResults;
+import com.example.appwithfragment.RecyclerViewFragment.LoadFromFlickrTask;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
 /**
  * Created by e.konobeeva on 29.07.2016.
  */
-public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
-    private List<ListContent> list;
+public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> implements GettingResults {
+    private static List<ListContent> list;
 
-    private GridLayoutManager gridLayoutManager;
     private MyImageLoader iml;
     Context ctx;
+    public boolean loadingFinish = true;
+    public boolean lastTaskTerminated = false;
+    LoadFromFlickrTask task;
 
 
-    public RecyclerViewAdapter(List<ListContent> list, GridLayoutManager layoutManager, Context ctx){
-        this.list = list;
+
+
+
+    public RecyclerViewAdapter(Context ctx){
+        this.list = new ArrayList<>();
         iml = new MyImageLoader(ctx);
-        this.gridLayoutManager = layoutManager;
-
         this.ctx = ctx;
     }
 
@@ -54,15 +58,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public void onBindViewHolder(ViewHolder holder, int position) {
         final ListContent listContent = list.get(position);
         holder.imageView.setImageDrawable(null);
-        if(listContent.getImgUrl() != null ) {
-            //Log.d("NEW OBJECT", "load image");
-            String keyUrl = listContent.getImgUrl();
-            iml.setResourceUrl(keyUrl).setImgInto(holder.imageView);
-            listContent.setImg(holder.imageView.getDrawable());
-        }else{
-            //Log.d("NULL REFERENCE", "null reference");
-        }
-
+        String keyUrl = listContent.getImgUrl();
+        iml.setResourceUrl(keyUrl).setImgInto(holder.imageView);
         holder.textView.setText(listContent.getShortTitle());
 
     }
@@ -85,14 +82,48 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     @Override
     public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
         Log.d("RecyclerViewAdapter", "onDetachedFromRecyclerView");
-        //iml.terminateAllProcess();
     }
 
     public MyImageLoader getMyImageLoader(){
         return iml;
     }
 
-    public void addItems(){
-        //list.add();
+
+    public void loadMore(){
+        loadingFinish = false;
+        task = new LoadFromFlickrTask(this);
+        task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    @Override
+    public void onGettingResult(ArrayList<String> photoUrls, ArrayList<String> photosInfo, boolean isEnded) {
+
+        int size = list.size();
+        Log.i("LIST SIZE", "" + size);
+        Log.i("ARR SIZE", "" + photoUrls.size());
+        for (int i = size; i < photoUrls.size(); i++) {
+            ListContent listContent = new ListContent(photoUrls.get(i), photosInfo.get(i));
+            list.add(i, listContent);
+            notifyItemChanged(i);
+        }
+        loadingFinish = true;
+        lastTaskTerminated = isEnded;
+    }
+
+    @Override
+    public void getProgress(int loadingPhotos) {
+
+    }
+
+    public ListContent getItem(int position){
+        return list.get(position);
+    }
+
+    public void beforeDelete(){
+        if (task != null) {
+            task.setFragment(null);
+            task.cancel(false);
+        }
+        iml.terminateAllProcess();
     }
 }

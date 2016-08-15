@@ -17,11 +17,11 @@ import java.util.Date;
  * Created by e.konobeeva on 09.08.2016.
  */
 public class DiskCashing {
-    private static final String errorTag = "DiskCashing";
+    private static final String errorTag = "ErDiskCashing";
     private File fileDir;
     private Object lock1 = new Object();
     private Object lock2 = new Object();
-    private int size;
+    private static DiskCashing diskCashing;
 
     public DiskCashing(Context ctx){
         fileDir = new File(ctx.getCacheDir(), "bitmapCash");
@@ -32,6 +32,12 @@ public class DiskCashing {
         Log.d("FILE", fileDir.getAbsolutePath());
         Log.d("FILE", fileDir.lastModified() + "");
 
+    }
+
+    public static DiskCashing getInstance(Context ctx){
+        if(diskCashing == null){
+            return new DiskCashing(ctx);
+        }else return diskCashing;
     }
 
     public void saveOnDisk(int keyUrl, Bitmap bitmap){

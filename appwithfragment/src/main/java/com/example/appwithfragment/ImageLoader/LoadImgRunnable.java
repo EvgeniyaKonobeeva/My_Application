@@ -19,8 +19,8 @@ import com.example.appwithfragment.ImageLoader.MyImageLoader.*;
 /**
  * Created by e.konobeeva on 08.08.2016.
  */
-public class LoadImgThread implements Runnable {
-    private static final String errorTag = "ERROR LoadImgThread";
+public class LoadImgRunnable implements Runnable {
+    private static final String errorTag = "ERROR LoadImgRunnable";
     private static final String KEYDrawable = "Drawable";
     private static final String KEYUrl = "URL";
     private MyHandler handler;
@@ -28,7 +28,7 @@ public class LoadImgThread implements Runnable {
     private ImageView iv;
     private DiskCashing dc;
 
-    public LoadImgThread(MyHandler handler, String url, ImageView iv, DiskCashing dc){
+    public LoadImgRunnable(MyHandler handler, String url, ImageView iv, DiskCashing dc){
         this.handler = handler;
         this.url = url;
         this.iv = iv;

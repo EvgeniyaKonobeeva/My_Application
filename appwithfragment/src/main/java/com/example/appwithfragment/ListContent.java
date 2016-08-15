@@ -11,9 +11,6 @@ import java.lang.ref.WeakReference;
 public class ListContent implements Serializable{
     private String fullTitle;
     private String imgUrl;
-    private WeakReference<Drawable> img;
-    private Drawable imgSmallSize;
-    private Drawable imgBigSize;
 
     public ListContent(String imgUrl, String title){
         this.fullTitle = title;
@@ -39,31 +36,6 @@ public class ListContent implements Serializable{
 
     public String getImgUrl(){
         return imgUrl;
-    }
-
-    public Drawable getImgSmall() {
-        return imgSmallSize;
-    }
-
-    public void setImgSmall(Drawable img) {
-        this.imgSmallSize = img;
-    }
-
-    public Drawable getImgBigSize() {
-        return imgBigSize;
-    }
-
-    public void setImgBigSize(Drawable imgBigSize) {
-        this.imgBigSize = imgBigSize;
-    }
-
-    public Drawable getImg(){
-        if(img != null) {
-            return img.get();
-        }else return null;
-    }
-    public void setImg(Drawable img){
-        this.img = new WeakReference<Drawable>(img);
     }
 
 

@@ -32,19 +32,19 @@ public class MyImageLoader {
 
     private Map<Integer, Object> mapLoadingImg;
 
-    private BlockingQueue<Runnable> queue = new LIFOQueue(10);
-    private ExecutorService executorService = new ThreadPoolExecutor(threadPoolSize, threadPoolSize, 500L, TimeUnit.SECONDS, queue);
+    private BlockingQueue<Runnable> queue;
+    private ExecutorService executorService;
 
 
     public MyImageLoader(Context ctx){
         if(oc == null){
             oc = new OMCash(50);
         }
-        if(dc == null){
-            dc = new DiskCashing(ctx);
-        }
+        dc = DiskCashing.getInstance(ctx);
         handler = new MyHandler();
         mapLoadingImg = new HashMap<>();
+        queue = new LIFOQueue(10);
+        executorService = new ThreadPoolExecutor(threadPoolSize, threadPoolSize, 50L, TimeUnit.SECONDS, queue);
     }
 
     public MyImageLoader setResourceUrl(String url){
@@ -59,8 +59,8 @@ public class MyImageLoader {
            if (!mapLoadingImg.containsKey(resUrl.hashCode())) {
                Log.d("HERE", "running thread");
                 mapLoadingImg.put(resUrl.hashCode(), resUrl);
-                LoadImgThread loadImgThread = new LoadImgThread(handler, resUrl, iv, dc);
-                executorService.submit(loadImgThread);
+                LoadImgRunnable loadImgRunnable = new LoadImgRunnable(handler, resUrl, iv, dc);
+                executorService.submit(loadImgRunnable);
            }
         }
 
