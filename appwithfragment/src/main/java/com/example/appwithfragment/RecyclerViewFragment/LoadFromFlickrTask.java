@@ -14,7 +14,7 @@ import java.util.ArrayList;
  * Created by e.konobeeva on 05.08.2016.
  */
 public class LoadFromFlickrTask extends AsyncTask<Void, Integer, Void> {
-    private static final String errorTag = "ERROR";
+    private static final String errorTag = "ERROR Task";
     private String protocol = " https://api.flickr.com/services/rest/?method=flickr.interestingness.getList&api_key=b14e644ffd373999f625f4d2ba244522" +
             "&format=json&nojsoncallback=1";
     private GettingResults fragment;
@@ -23,9 +23,8 @@ public class LoadFromFlickrTask extends AsyncTask<Void, Integer, Void> {
     private static int page = 1;
     private static boolean photoEnds = false;
     private static int pages;
-
-    static ArrayList<String> photoUrls = new ArrayList<>();
-    static ArrayList<String> photosInfo= new ArrayList<>();
+    private static ArrayList<String> photoUrls = new ArrayList<>();
+    private static ArrayList<String> photosInfo = new ArrayList<>();
 
 
 
@@ -36,8 +35,6 @@ public class LoadFromFlickrTask extends AsyncTask<Void, Integer, Void> {
         StringBuilder sb = new StringBuilder(protocol);
         sb.append("&per_page=20&page=");
         protocol = sb.toString();
-        //photoUrls ;
-        //photosInfo = new ArrayList<>();
     }
 
     private int countLoadingPhotos = 0;
@@ -61,22 +58,25 @@ public class LoadFromFlickrTask extends AsyncTask<Void, Integer, Void> {
                     Log.d("PAGE", "" + page);
                     if(page <= pages) {
                         jsonObjects = new JSONObjects(protocol, page++);
-                        countLoadingPhotos += jsonObjects.getCountPhotosPerPage();
                         int size = photoUrls.size();
-                        for (int i = size; i < countLoadingPhotos; i++) {
-                            photoUrls.add(i, jsonObjects.getUrl(i));
-                            photosInfo.add(i, jsonObjects.getPhotoInfo(i)[4]);
+                        Log.d("SIZE URL", "" + size);
+                        Log.d("SIZE OBJECTS", "" + jsonObjects.getCountPhotosPerPage());
+                        for (int i = 0; i <jsonObjects.getCountPhotosPerPage(); i++) {
+                            photoUrls.add(i+size, jsonObjects.getUrl(i));
+                            photosInfo.add(i+size, jsonObjects.getPhotoInfo(i)[4]);
                         }
+                        countLoadingPhotos += jsonObjects.getCountPhotosPerPage();
                     }else {
                         photoEnds = true;
                         break;
                     }
                 }
+                //publishProgress(countLoadingPhotos);
                 countLoadingPhotos = 0;
             } catch (IOException ioe) {
-                Log.d(errorTag, ioe.getMessage());
+                Log.d(errorTag, ioe.toString());
             } catch (JSONException je) {
-                Log.d(errorTag, je.getMessage());
+                Log.d(errorTag, je.toString());
             }
         }else {
             Thread.currentThread().interrupt();

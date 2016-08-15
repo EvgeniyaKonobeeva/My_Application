@@ -1,13 +1,9 @@
 package com.example.appwithfragment.FullScreenPicture;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
-import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,9 +19,6 @@ import com.example.appwithfragment.R;
  */
 public class FragmentFullScreenPicture extends Fragment {
     public static final String TAG = "FrgFullScreenPicture";
-    private View view;
-    private ImageView imgView;
-    private Activity activity;
     private static final String keyTitle = "Title";
     private static final String keyUrl = "URL";
     private static final String keyContext = "Context";
@@ -34,7 +27,6 @@ public class FragmentFullScreenPicture extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.activity = getActivity();
         Log.i(TAG,"onCreate");
     }
 
@@ -43,23 +35,9 @@ public class FragmentFullScreenPicture extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
 
-        view = inflater.inflate(R.layout.frag2, null);
+        View view = inflater.inflate(R.layout.frag2, null);
 
-        imgView = (ImageView) view.findViewById(R.id.fullImage);
-
-        MyImageLoader iml = new MyImageLoader((Context) getArguments().get(keyContext));
-        String url = (String) getArguments().get(keyUrl);
-        iml.setResourceUrl(url.replace("_m", ""));
-        iml.setImgInto(imgView);
-
-        final TextView txt =(TextView)view.findViewById(R.id.title);
-
-        txt.post(new Runnable() {
-            @Override
-            public void run() {
-                txt.setText((String)getArguments().get(keyTitle));
-            }
-        });
+        setViews(view, R.id.fullImage, R.id.title);
 
         Log.i(TAG,"onCreateView");
 
@@ -77,4 +55,23 @@ public class FragmentFullScreenPicture extends Fragment {
         Log.i(TAG,"onDestroyView");
         super.onDestroyView();
     }
+
+    public void setViews(View view, int imageViewId, int textViewId){
+
+        ImageView imgView = (ImageView)view.findViewById(imageViewId);
+        final TextView txt =(TextView)view.findViewById(textViewId);
+        MyImageLoader iml = new MyImageLoader((Context) getArguments().get(keyContext));
+        String url = (String) getArguments().get(keyUrl);
+        iml.setResourceUrl(url.replace("_m", ""));
+        iml.setImgInto(imgView);
+
+
+        txt.post(new Runnable() {
+            @Override
+            public void run() {
+                txt.setText((String)getArguments().get(keyTitle));
+            }
+        });
+    }
+
 }

@@ -23,7 +23,7 @@ public class JSONObjects {
     public JSONObjects(String protocol, int page)throws IOException, JSONException{
         HttpURLConnection connection = setConnection(protocol + page);
         connection.connect();
-        headObject = getJSONInfo(connection).getJSONObject("photos");
+        headObject = getJSONRootPoint(connection).getJSONObject("photos");
         pages = headObject.getInt("pages");
         array = headObject.getJSONArray("photo");
 
@@ -64,7 +64,7 @@ public class JSONObjects {
         connection.setDoInput(true);
         return connection;
     }
-    public JSONObject getJSONInfo(HttpURLConnection connection) throws IOException, JSONException {
+    public JSONObject getJSONRootPoint(HttpURLConnection connection) throws IOException, JSONException {
 
         InputStream is = connection.getInputStream();
         StringBuffer buf = new StringBuffer();

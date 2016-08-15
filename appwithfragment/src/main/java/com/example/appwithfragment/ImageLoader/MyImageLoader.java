@@ -55,7 +55,7 @@ public class MyImageLoader {
     public MyImageLoader setImgInto(final ImageView iv) {
         Log.d("HERE", "call MyImageLoader");
         iv.setTag(resUrl);
-        if (!oc.getImageTo(resUrl.hashCode(), iv)) {
+        if (!oc.setImageTo(resUrl.hashCode(), iv)) {
            if (!mapLoadingImg.containsKey(resUrl.hashCode())) {
                Log.d("HERE", "running thread");
                 mapLoadingImg.put(resUrl.hashCode(), resUrl);

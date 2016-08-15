@@ -15,31 +15,31 @@ import java.util.WeakHashMap;
  * Created by e.konobeeva on 09.08.2016.
  */
 public class OMCash{
-    private Map<Integer, Bitmap> storage;
+    private Map<Integer, WeakReference<Bitmap>> storage;
     private Object lock1 = new Object();
     private Object lock2 = new Object();
     private int size;
 
     public OMCash(int size){
         this.size = size;
-        storage = new WeakHashMap<Integer, Bitmap>(100);
+        storage = new LinkedHashMap<>(100);
 
     }
     public void putImage(int keyUrl, Bitmap bitmap){
         synchronized (lock1) {
             Log.d("OMCash", "putting img into");
-            //WeakReference<Bitmap> weakRef= new WeakReference<>(bitmap);
-            storage.put(keyUrl, bitmap);
+            WeakReference<Bitmap> weakRef= new WeakReference<>(bitmap);
+            storage.put(keyUrl, weakRef);
             lock1.notifyAll();
         }
 
 
     }
-    public boolean getImageTo(int keyUrl, ImageView im){
+    public boolean setImageTo(int keyUrl, ImageView im){
         synchronized (lock2) {
-            if (storage.containsKey(keyUrl)) {
+            if (storage.containsKey(keyUrl) && storage.get(keyUrl).get() != null) {
                 Log.d("OMCash", "getting img out");
-                im.setImageBitmap(storage.get(keyUrl));
+                im.setImageBitmap(storage.get(keyUrl).get());
                 lock2.notifyAll();
                 return true;
             } else {
@@ -48,9 +48,6 @@ public class OMCash{
                 return false;
             }
         }
-    }
-    public Bitmap getImg(String keyUrl){
-        return storage.get(keyUrl.hashCode());
     }
 
 
