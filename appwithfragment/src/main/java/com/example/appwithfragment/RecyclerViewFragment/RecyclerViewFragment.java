@@ -64,12 +64,6 @@ public class RecyclerViewFragment extends Fragment implements GettingResults {
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-    }
-
-    @Override
     public void onCreate(Bundle savedInstanceState) {
         activity = this.getActivity();
         super.onCreate(savedInstanceState);
@@ -128,9 +122,32 @@ public class RecyclerViewFragment extends Fragment implements GettingResults {
             }
         });
 
+        //recyclerGridLayout = new GridLayoutManager(view.getContext(), 3);
+        recyclerView.setLayoutManager(recyclerGridLayout);
+        recyclerView.setAdapter(new RecyclerViewAdapter(list, recyclerGridLayout, activity));
+
+        ItemClickSupport.addTo(recyclerView).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
+            @Override
+            public void onItemClicked(RecyclerView recyclerView, int position, View v) {
+                listener.doAction(list.get(position));
+            }
+        });
+
+        //recyclerGridLayout = new GridLayoutManager(view.getContext(), 3);
+        recyclerView.setLayoutManager(recyclerGridLayout);
+        recyclerView.setAdapter(new RecyclerViewAdapter(list, recyclerGridLayout, activity));
+
+        ItemClickSupport.addTo(recyclerView).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
+            @Override
+            public void onItemClicked(RecyclerView recyclerView, int position, View v) {
+                listener.doAction(list.get(position));
+            }
+        });
+
 
         return view;
     }
+
 
 
     private int countLoaders = 0;
@@ -191,7 +208,6 @@ public class RecyclerViewFragment extends Fragment implements GettingResults {
 
         //Log.d("PROGRESS", Integer.toString(progress));
     }
-
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         activity.getMenuInflater().inflate(R.menu.my_menu, menu);
