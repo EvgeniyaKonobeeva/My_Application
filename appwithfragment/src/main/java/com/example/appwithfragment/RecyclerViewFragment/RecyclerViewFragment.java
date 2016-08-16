@@ -147,7 +147,7 @@ public class RecyclerViewFragment extends Fragment implements GettingResults {
         @Override
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
 
-            if (dy > 0 && recyclerGridLayout.findLastVisibleItemPosition() >= recyclerView.getAdapter().getItemCount() && loadingFinished && !lastTaskTerminated) {
+            if (dy > 0 && recyclerGridLayout.findLastVisibleItemPosition() >= recyclerView.getAdapter().getItemCount()-1 && loadingFinished && !lastTaskTerminated) {
                 loadImageUrls(fragment);
             }else if(lastTaskTerminated && recyclerGridLayout.findLastCompletelyVisibleItemPosition() == recyclerView.getAdapter().getItemCount()-1){
                 Toast.makeText(getActivity(), "all photos uploaded", Toast.LENGTH_SHORT).show();
