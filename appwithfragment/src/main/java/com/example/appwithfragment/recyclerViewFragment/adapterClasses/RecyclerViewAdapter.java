@@ -1,32 +1,33 @@
 package com.example.appwithfragment.RecyclerViewFragment.adapterClasses;
 
 import android.content.Context;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.example.appwithfragment.ImageLoader.DiskCashing;
 import com.example.appwithfragment.ListContent;
 import com.example.appwithfragment.ImageLoader.MyImageLoader;
 import com.example.appwithfragment.R;
-import com.example.appwithfragment.ImageLoader.OMCash;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
 /**
  * Created by e.konobeeva on 29.07.2016.
  */
-public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
+public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<ListContent> list;
     private MyImageLoader iml;
-    Context ctx;
+    private Context ctx;
+
+    private boolean showProgressBar = false;
+    private static int PROGRESS_TYPE = 1;
+    private static int IMAGE_TYPE = 0;
 
 
     public RecyclerViewAdapter(List<ListContent> list, Context ctx){
@@ -38,39 +39,64 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @Override
     public int getItemCount() {
-        return list.size();
+        if(list.size() == 0){
+            return -1;
+        }
+        return list.size()+1;
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.image_view_layout, parent, false);
-        return new ViewHolder(view);
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        if(viewType == IMAGE_TYPE){
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.image_view_layout, parent, false);
+            return new ImageViewHolder(view);
+        }else{
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.progress_item, parent, false);
+            return new ProgressViewHolder(view);
+        }
     }
 
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        final ListContent listContent = list.get(position);
-        holder.imageView.setImageDrawable(null);
-        String keyUrl = listContent.getImgUrl();
-        iml.setResourceUrl(keyUrl).setImgInto(holder.imageView);
-        holder.textView.setText(listContent.getShortTitle());
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+
+        if(holder instanceof ImageViewHolder) {
+            ImageViewHolder ivh = ((ImageViewHolder) holder);
+            final ListContent listContent = list.get(position);
+            ivh.imageView.setImageDrawable(null);
+            String keyUrl = listContent.getImgUrl();
+            iml.setResourceUrl(keyUrl).setImgInto(ivh.imageView);
+            ivh.textView.setText(listContent.getShortTitle());
+        }else if(holder instanceof ProgressViewHolder){
+            ProgressViewHolder pvh = (ProgressViewHolder)holder;
+            pvh.progressBar.setIndeterminate(true);
+            //pvh.tv.setText("footer");
+        }
 
     }
 
 
 
-    class ViewHolder extends RecyclerView.ViewHolder{
+    class ImageViewHolder extends RecyclerView.ViewHolder{
         TextView textView;
         ImageView imageView;
 
-        public ViewHolder(View view){
+        public ImageViewHolder(View view){
             super(view);
             textView = (TextView) view.findViewById(R.id.IDTextView);
             imageView = (ImageView) view.findViewById(R.id.IDImageView);
         }
 
 
+    }
+    class ProgressViewHolder extends RecyclerView.ViewHolder{
+        ProgressBar progressBar;
+        TextView tv;
+        public ProgressViewHolder(View view){
+            super(view);
+            //v = (TextView)view.findViewById(R.id.Text);
+             progressBar = (ProgressBar)view.findViewById(R.id.progressBar);
+        }
     }
 
     @Override
@@ -86,5 +112,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         return list;
     }
 
+    @Override
+    public int getItemViewType(int position) {
+        if(position== getItemCount()-1){
+            return PROGRESS_TYPE;
+        }else return IMAGE_TYPE;
+    }
 
+    public void setShowProgressBar( boolean b){
+        showProgressBar = b;
+    }
 }

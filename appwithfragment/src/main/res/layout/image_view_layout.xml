@@ -4,45 +4,6 @@
     android:orientation="vertical"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
-   <!-- <LinearLayout
-        android:id ="@+id/l_f"
-        android:orientation="horizontal"
-        android:layout_weight="1"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content">
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/IDImageViewFirst"
-            android:layout_gravity="center_horizontal"
-            tools:src="@mipmap/ic_launcher"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/IDTextViewFirst"
-            tools:text="text"
-            />
-    </LinearLayout>
-    <LinearLayout
-        android:id ="@+id/l_s"
-        android:orientation="horizontal"
-        android:layout_weight="1"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content">
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/IDImageViewSecond"
-            android:layout_gravity="center_horizontal"
-            tools:src="@mipmap/ic_launcher"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/IDTextViewSecond"
-            tools:text="text"
-            android:background="@color/accent_material_dark" />
-    </LinearLayout> -->
     <ImageView
         android:layout_width="200dp"
         android:layout_height="200dp"
@@ -51,7 +12,6 @@
         android:scaleType="centerCrop"
         tools:src="@mipmap/ic_launcher"
         />
-
 
 
     <TextView

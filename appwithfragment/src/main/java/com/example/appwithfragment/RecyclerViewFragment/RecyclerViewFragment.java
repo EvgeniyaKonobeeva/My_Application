@@ -91,6 +91,8 @@ public class RecyclerViewFragment extends Fragment implements GettingResults {
         }
         lastTaskTerminated = isTheLast;
         loadingFinished = true;
+        ((RecyclerViewAdapter)recyclerView.getAdapter()).setShowProgressBar(false);
+
     }
 
     @Override
@@ -145,10 +147,8 @@ public class RecyclerViewFragment extends Fragment implements GettingResults {
         @Override
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
 
-            if (dy > 0 && recyclerGridLayout.findLastVisibleItemPosition() >= recyclerView.getAdapter().getItemCount()-4 && loadingFinished && !lastTaskTerminated) {
-                loadingFinished = false;
-                task = new LoadFromFlickrTask(fragment);
-                task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            if (dy > 0 && recyclerGridLayout.findLastVisibleItemPosition() >= recyclerView.getAdapter().getItemCount() && loadingFinished && !lastTaskTerminated) {
+                loadImageUrls(fragment);
             }else if(lastTaskTerminated && recyclerGridLayout.findLastCompletelyVisibleItemPosition() == recyclerView.getAdapter().getItemCount()-1){
                 Toast.makeText(getActivity(), "all photos uploaded", Toast.LENGTH_SHORT).show();
             }
@@ -164,10 +164,13 @@ public class RecyclerViewFragment extends Fragment implements GettingResults {
         } else {
             recyclerGridLayout = new GridLayoutManager(view.getContext(), 2);
         }
-
         recyclerView.setLayoutManager(recyclerGridLayout);
 
-        recyclerView.setAdapter(new RecyclerViewAdapter(list, getActivity()));
+        RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter(list, getActivity());
+        recyclerView.setAdapter(recyclerViewAdapter);
+
+
+        setSpanSize(recyclerGridLayout, recyclerViewAdapter);
 
         recyclerView.addOnScrollListener(new MyOnScrollListener(recyclerGridLayout, this));
 
@@ -180,5 +183,27 @@ public class RecyclerViewFragment extends Fragment implements GettingResults {
 
         return recyclerView;
 
+    }
+
+
+    //метод менеджера - установка в зависимости от позиции viewholder - его определенный тип - колонки или нет
+    public void setSpanSize(final GridLayoutManager gridMan, final RecyclerView.Adapter adapter){
+        gridMan.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int position) {
+                if(adapter.getItemViewType(position) == 1)
+                    return 2;
+                else if(adapter.getItemViewType(position) == 0){
+                    return 1; // todo change to more universal count
+                }else return -1;
+            }
+        });
+    }
+
+    public void loadImageUrls(GettingResults fragment){
+        loadingFinished = false;
+        ((RecyclerViewAdapter)recyclerView.getAdapter()).setShowProgressBar(true);
+        task = new LoadFromFlickrTask(fragment);
+        task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 }

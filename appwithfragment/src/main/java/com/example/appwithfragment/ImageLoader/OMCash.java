@@ -37,11 +37,14 @@ public class OMCash{
     }
     public boolean setImageTo(int keyUrl, ImageView im){
         synchronized (lock2) {
-            if (storage.containsKey(keyUrl) && storage.get(keyUrl).get() != null) {
+            if (storage.containsKey(keyUrl) && storage.get(keyUrl) != null) {
                 Log.d("OMCash", "getting img out");
                 im.setImageBitmap(storage.get(keyUrl).get());
                 lock2.notifyAll();
                 return true;
+            } else if(storage.get(keyUrl) == null){
+                storage.remove(keyUrl);
+                return false;
             } else {
                 Log.d("OMCash", "doesn't exist");
                 lock2.notifyAll();
