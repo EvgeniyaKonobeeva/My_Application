@@ -1,10 +1,8 @@
 package com.example.appwithfragment.RecyclerViewFragment;
 
-import android.app.Activity;
-import android.app.Fragment;
+//import android.app.Fragment;
+import android.support.v4.app.*;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -12,7 +10,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 
 import android.support.annotation.Nullable;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -22,17 +19,14 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.Toast;
 
-import com.example.appwithfragment.RecyclerViewFragment.adapterClasses.RecyclerViewAdapter;
 import com.example.appwithfragment.supportLib.ItemClickSupport;
 import com.example.appwithfragment.ListContent;
 import com.example.appwithfragment.R;
 
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by e.konobeeva on 02.08.2016.
@@ -46,12 +40,10 @@ public class RecyclerViewFragment extends Fragment implements GettingResults {
 
     private boolean loadingFinished = false;
     private boolean lastTaskTerminated = false;
-    private ArrayList<ListContent> list;
+    public static ArrayList<ListContent> list;
 
 
-    public interface OnRecyclerViewClickListener {
-        void doAction(ListContent object);
-    }
+
 
 
     @Nullable
@@ -64,8 +56,8 @@ public class RecyclerViewFragment extends Fragment implements GettingResults {
 
         ConnectivityManager connMgr = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-        if (networkInfo != null && networkInfo.isConnected()) {
 
+        if (networkInfo != null && networkInfo.isConnected()) {
             Log.d("PROCESS", "connection established");
             task = new LoadFromFlickrTask(this);
             task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -91,7 +83,6 @@ public class RecyclerViewFragment extends Fragment implements GettingResults {
         }
         lastTaskTerminated = isTheLast;
         loadingFinished = true;
-        ((RecyclerViewAdapter)recyclerView.getAdapter()).setShowProgressBar(false);
 
     }
 
@@ -109,10 +100,6 @@ public class RecyclerViewFragment extends Fragment implements GettingResults {
 
     }
 
-    @Override
-    public void getProgress(int loadingPhotos) {
-        //Log.d("PROGRESS", Integer.toString(progress));
-    }
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         getActivity().getMenuInflater().inflate(R.menu.my_menu, menu);
@@ -149,6 +136,7 @@ public class RecyclerViewFragment extends Fragment implements GettingResults {
 
             if (dy > 0 && recyclerGridLayout.findLastVisibleItemPosition() >= recyclerView.getAdapter().getItemCount()-1 && loadingFinished && !lastTaskTerminated) {
                 loadImageUrls(fragment);
+                //Log.d("COUNT COLS", "" + recyclerGridLayout.getSpanCount());
             }else if(lastTaskTerminated && recyclerGridLayout.findLastCompletelyVisibleItemPosition() == recyclerView.getAdapter().getItemCount()-1){
                 Toast.makeText(getActivity(), "all photos uploaded", Toast.LENGTH_SHORT).show();
             }
@@ -177,7 +165,7 @@ public class RecyclerViewFragment extends Fragment implements GettingResults {
         ItemClickSupport.addTo(recyclerView).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
             @Override
             public void onItemClicked(RecyclerView recyclerView, int position, View v) {
-                ((OnRecyclerViewClickListener)getActivity()).doAction(((RecyclerViewAdapter)recyclerView.getAdapter()).getList().get(position));
+                ((OnRecyclerViewClickListener)getActivity()).doAction(position);
             }
         });
 
@@ -192,9 +180,9 @@ public class RecyclerViewFragment extends Fragment implements GettingResults {
             @Override
             public int getSpanSize(int position) {
                 if(adapter.getItemViewType(position) == 1)
-                    return 2;
+                    return gridMan.getSpanCount();
                 else if(adapter.getItemViewType(position) == 0){
-                    return 1; // todo change to more universal count
+                    return 1;
                 }else return -1;
             }
         });
@@ -202,7 +190,6 @@ public class RecyclerViewFragment extends Fragment implements GettingResults {
 
     public void loadImageUrls(GettingResults fragment){
         loadingFinished = false;
-        ((RecyclerViewAdapter)recyclerView.getAdapter()).setShowProgressBar(true);
         task = new LoadFromFlickrTask(fragment);
         task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }

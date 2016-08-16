@@ -8,5 +8,4 @@ import java.util.ArrayList;
  */
 public interface GettingResults {
     void onGettingResult(ArrayList<String> photoUrls, ArrayList<String> photosInfo, boolean isEnded);
-    void getProgress(int loadingPhotos);
 }

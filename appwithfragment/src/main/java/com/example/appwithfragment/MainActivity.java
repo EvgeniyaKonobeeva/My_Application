@@ -1,6 +1,6 @@
 package com.example.appwithfragment;
 
-import android.app.*;
+import android.support.v4.app.*;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,7 +19,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        FragmentManager fm = getFragmentManager();
+        FragmentManager fm = getSupportFragmentManager();
         if (fm.getBackStackEntryCount() > 0) {
             Log.i("MainActivity", "popping backstack");
             fm.popBackStack();
@@ -30,14 +30,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void addFragment(Fragment fragment, int containerView, String tag){
-        FragmentTransaction fragTrans = getFragmentManager().beginTransaction();
-        fragTrans.add(containerView, fragment, tag);
+        FragmentTransaction fragTrans = getSupportFragmentManager().beginTransaction();
+        //FragmentTransaction fragTrans = getFragmentManager().beginTransaction();
+        fragTrans.add(containerView,fragment, tag);
         fragTrans.addToBackStack(null);
         fragTrans.commit();
     }
 
     public void replaceFragment(Fragment fragment, int containerView, String tag){
-        FragmentTransaction fragTrans = getFragmentManager().beginTransaction();
+        Log.d("MyActivity", "REPLACE");
+        FragmentTransaction fragTrans = getSupportFragmentManager().beginTransaction();
         fragTrans.replace(containerView, fragment, tag);
         fragTrans.addToBackStack(null);
         fragTrans.commit();

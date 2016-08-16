@@ -1,9 +1,10 @@
 package com.example.appwithfragment.FullScreenPicture;
 
-import android.app.Fragment;
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.appwithfragment.ImageLoader.MyImageLoader;
+import com.example.appwithfragment.ListContent;
+import com.example.appwithfragment.MyActivity;
 import com.example.appwithfragment.R;
 
 /**
@@ -19,15 +22,23 @@ import com.example.appwithfragment.R;
  */
 public class FragmentFullScreenPicture extends Fragment {
     public static final String TAG = "FrgFullScreenPicture";
-    private static final String keyTitle = "Title";
-    private static final String keyUrl = "URL";
     private static final String keyContext = "Context";
+    private static final String keyListContent = "ListContent";
 
 
+    public static FragmentFullScreenPicture newInstance(ListContent lc, MyActivity ctx ){
+        Log.d("FragmentFullPicture", "Create single pic");
+        FragmentFullScreenPicture f = new FragmentFullScreenPicture();
+        Bundle b = new Bundle();
+        b.putSerializable(keyListContent, lc);
+        b.putSerializable(keyContext, ctx);
+        f.setArguments(b);
+        return f;
+    }
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.i(TAG,"onCreate");
+        //Log.i(TAG,"onCreate");
     }
 
     @Nullable
@@ -39,7 +50,7 @@ public class FragmentFullScreenPicture extends Fragment {
 
         setViews(view, R.id.fullImage, R.id.title);
 
-        Log.i(TAG,"onCreateView");
+        //Log.i(TAG,"onCreateView");
 
         return view;
     }
@@ -47,29 +58,33 @@ public class FragmentFullScreenPicture extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.i(TAG,"onCreatonDestroyeView");
+        //Log.i(TAG,"onCreatonDestroyeView");
     }
 
     @Override
     public void onDestroyView() {
-        Log.i(TAG,"onDestroyView");
+        //Log.i(TAG,"onDestroyView");
         super.onDestroyView();
     }
 
     public void setViews(View view, int imageViewId, int textViewId){
 
         ImageView imgView = (ImageView)view.findViewById(imageViewId);
+
         final TextView txt =(TextView)view.findViewById(textViewId);
+
         MyImageLoader iml = new MyImageLoader((Context) getArguments().get(keyContext));
-        String url = (String) getArguments().get(keyUrl);
+
+        final ListContent lc = (ListContent) getArguments().get(keyListContent);
+        String url = lc.getImgUrl();
+
         iml.setResourceUrl(url.replace("_m", ""));
         iml.setImgInto(imgView);
-
 
         txt.post(new Runnable() {
             @Override
             public void run() {
-                txt.setText((String)getArguments().get(keyTitle));
+                txt.setText(lc.getFullTitle());
             }
         });
     }

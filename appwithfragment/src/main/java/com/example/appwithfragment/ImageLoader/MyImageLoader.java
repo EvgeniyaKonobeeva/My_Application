@@ -53,11 +53,11 @@ public class MyImageLoader {
     }
 
     public MyImageLoader setImgInto(final ImageView iv) {
-        Log.d("HERE", "call MyImageLoader");
+        //Log.d("HERE", "call MyImageLoader");
         iv.setTag(resUrl);
         if (!oc.setImageTo(resUrl.hashCode(), iv)) {
            if (!mapLoadingImg.containsKey(resUrl.hashCode())) {
-               Log.d("HERE", "running thread");
+               //Log.d("HERE", "running thread");
                 mapLoadingImg.put(resUrl.hashCode(), resUrl);
                 LoadImgRunnable loadImgRunnable = new LoadImgRunnable(handler, resUrl, iv, dc);
                 executorService.submit(loadImgRunnable);
@@ -70,7 +70,7 @@ public class MyImageLoader {
     public class MyHandler extends Handler {
         @Override
         public void handleMessage(final Message msg) {
-            Log.d("HERE","terminating thread");
+            //Log.d("HERE","terminating thread");
                 if(msg.arg1 == 2){
                     oc.putImage(msg.what, (Bitmap) msg.obj);
                     mapLoadingImg.remove(msg.what);
@@ -85,7 +85,7 @@ public class MyImageLoader {
 
 
     public void terminateAllProcess(){
-        Log.d("MyImageLoader", "terminateAllProcess");
+        //Log.d("MyImageLoader", "terminateAllProcess");
         queue.removeAll(queue);
         executorService.shutdownNow();
     }

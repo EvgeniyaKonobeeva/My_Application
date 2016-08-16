@@ -55,12 +55,12 @@ public class LoadFromFlickrTask extends AsyncTask<Void, Integer, Void> {
                 }
 
                 while(countLoadingPhotos < loadingPhotosPerOnce){
-                    Log.d("PAGE", "" + page);
+                    //Log.d("PAGE", "" + page);
                     if(page <= pages) {
                         jsonObjects = new JSONObjects(protocol, page++);
                         int size = photoUrls.size();
-                        Log.d("SIZE URL", "" + size);
-                        Log.d("SIZE OBJECTS", "" + jsonObjects.getCountPhotosPerPage());
+                        //Log.d("SIZE URL", "" + size);
+                        //Log.d("SIZE OBJECTS", "" + jsonObjects.getCountPhotosPerPage());
                         for (int i = 0; i <jsonObjects.getCountPhotosPerPage(); i++) {
                             photoUrls.add(i+size, jsonObjects.getUrl(i));
                             photosInfo.add(i+size, jsonObjects.getPhotoInfo(i)[4]);
@@ -96,10 +96,4 @@ public class LoadFromFlickrTask extends AsyncTask<Void, Integer, Void> {
         this.fragment = fragment;
     }
 
-    @Override
-    protected void onProgressUpdate(Integer... values) {
-        if(fragment != null) {
-            fragment.getProgress(values[0]);
-        }
-    }
 }

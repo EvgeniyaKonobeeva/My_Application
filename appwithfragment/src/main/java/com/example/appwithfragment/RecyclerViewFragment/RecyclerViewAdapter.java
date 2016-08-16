@@ -1,4 +1,4 @@
-package com.example.appwithfragment.RecyclerViewFragment.adapterClasses;
+package com.example.appwithfragment.RecyclerViewFragment;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -24,8 +24,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private List<ListContent> list;
     private MyImageLoader iml;
     private Context ctx;
-
-    private boolean showProgressBar = false;
     private static int PROGRESS_TYPE = 1;
     private static int IMAGE_TYPE = 0;
 
@@ -52,6 +50,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             return new ImageViewHolder(view);
         }else{
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.progress_item, parent, false);
+            int height  = parent.getMinimumHeight()/6;
+            view.setMinimumHeight(height);
             return new ProgressViewHolder(view);
         }
     }
@@ -70,7 +70,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }else if(holder instanceof ProgressViewHolder){
             ProgressViewHolder pvh = (ProgressViewHolder)holder;
             pvh.progressBar.setIndeterminate(true);
-            //pvh.tv.setText("footer");
         }
 
     }
@@ -112,14 +111,5 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         return list;
     }
 
-    @Override
-    public int getItemViewType(int position) {
-        if(position== getItemCount()-1){
-            return PROGRESS_TYPE;
-        }else return IMAGE_TYPE;
-    }
 
-    public void setShowProgressBar( boolean b){
-        showProgressBar = b;
-    }
 }
