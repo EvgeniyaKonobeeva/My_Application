@@ -18,6 +18,7 @@ import com.example.appwithfragment.RecyclerViewFragment.RecyclerViewFragment;
  * Created by e.konobeeva on 16.08.2016.
  */
 public class ViewPagerFragment extends Fragment {
+    private static final String keyPosition = "position";
     FragmentManager fm;
     ViewPager vp;
     public void setFragmentManager(FragmentManager fm){
@@ -28,22 +29,27 @@ public class ViewPagerFragment extends Fragment {
         super.onCreate(savedInstanceState);
         Log.d("ViewPagerFragment", "create view");
     }
-
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         Log.d("ViewPagerFragment", "onCreateView");
         View view = inflater.inflate(R.layout.view_pager, null);
-         vp = (ViewPager)view.findViewById(R.id.viewPager);
+        vp = (ViewPager)view.findViewById(R.id.viewPager);
 
-        ViewPagerAdapter vpAdapter = new ViewPagerAdapter(this.getChildFragmentManager(), RecyclerViewFragment.list, this);
+        final ViewPagerAdapter vpAdapter = new ViewPagerAdapter(this.getChildFragmentManager(), RecyclerViewFragment.list, this);
 
         vp.setAdapter(vpAdapter);
+        vp.setCurrentItem((int)getArguments().get(keyPosition));
+
+        final Fragment fragment = this;
         vp.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                Log.d("ViewPagerFragment", "onPageScrolled" + position);
+                Log.d("ViewPagerFragment", "onPageScrolled position " + position);
+                Log.d("ViewPagerFragment", "onPageScrolled positionOffsetPixels " + positionOffsetPixels);
+
             }
 
             @Override
@@ -53,7 +59,6 @@ public class ViewPagerFragment extends Fragment {
 
             @Override
             public void onPageScrollStateChanged(int state) {
-
                 Log.d("ViewPagerFragment", "onPageScrollStateChanged" + state);
             }
         });
@@ -69,4 +74,10 @@ public class ViewPagerFragment extends Fragment {
         super.onDestroy();
         Log.d("ViewPagerFragment", "destroy view");
     }
+
+    public void onDataSetChanges(){
+        vp.getAdapter().notifyDataSetChanged();
+    }
+
+
 }

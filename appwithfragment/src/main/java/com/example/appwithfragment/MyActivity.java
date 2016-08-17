@@ -1,8 +1,16 @@
 package com.example.appwithfragment;
 
+import android.content.res.Configuration;
+import android.os.PersistableBundle;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.util.Log;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 import com.example.appwithfragment.FullScreenPicture.ViewPagerFragment;
 import com.example.appwithfragment.RecyclerViewFragment.OnRecyclerViewClickListener;
@@ -17,15 +25,17 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
     private static final String keyContext = "Context";
     private static final String keyPosition = "position";
     private Bundle bundle;
+    private ActionBarDrawerToggle actionBarDrawerToggle;
+    DrawerLayout drawerLayout;
 
 
     @Override
     public void doAction(int pos) {
 
-        if(viewPagerFragment == null){
+        //if(viewPagerFragment == null){
             Log.i("FrgFullScreenPicture", "create new FragmentFullScreenPicture");
             viewPagerFragment = new ViewPagerFragment();
-        }
+        //}
 
         bundle = new Bundle();
         /*bundle.putCharSequence(keyUrl,listContent.getImgUrl());
@@ -34,6 +44,7 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
 
         bundle.putInt(keyPosition, pos);
         bundle.putSerializable(keyContext, this);
+
 
         viewPagerFragment.setArguments(bundle);
         //viewPagerFragment.setFragmentManager();
@@ -47,6 +58,44 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+
+        ListView listView = (ListView) findViewById(R.id.navigationList);
+        listView.setAdapter(new ArrayAdapter<String>(this, R.layout.list_view_items, getResources().getStringArray(R.array.list_items)));
+
+        drawerLayout = (DrawerLayout) findViewById(R.id.dddd);
+        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+
+        actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.isOpen, R.string.isClosed){
+            @Override
+            public void onConfigurationChanged(Configuration newConfig) {
+                super.onConfigurationChanged(newConfig);
+                Log.d("ActionBarDrawerToggle", "onConfigurationChanged");
+
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed(drawerView);
+                Log.d("ActionBarDrawerToggle", "onDrawerClosed");
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                Log.d("ActionBarDrawerToggle", "onDrawerOpened");
+            }
+
+            @Override
+            public boolean onOptionsItemSelected(MenuItem item) {
+                Log.d("ActionBarDrawerToggle", "onOptionsItemSelected");
+                return super.onOptionsItemSelected(item);
+
+            }
+        };
+
+
+
+        drawerLayout.addDrawerListener(actionBarDrawerToggle);
 
         Fragment frg =  getSupportFragmentManager().findFragmentByTag("list_img");
         if(frg != null)
@@ -74,6 +123,9 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
 
     }
 
-
-
+    @Override
+    public void onPostCreate(Bundle savedInstanceState, PersistableBundle persistentState) {
+        super.onPostCreate(savedInstanceState, persistentState);
+        actionBarDrawerToggle.syncState();
+    }
 }

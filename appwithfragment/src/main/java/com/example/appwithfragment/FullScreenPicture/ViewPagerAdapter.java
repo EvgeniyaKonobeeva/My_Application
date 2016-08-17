@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.example.appwithfragment.ListContent;
 import com.example.appwithfragment.MyActivity;
@@ -23,31 +24,49 @@ public class ViewPagerAdapter extends FragmentPagerAdapter {
     private static final String keyPosition = "position";
     private ArrayList<ListContent> list;
     private Fragment fragment;
+    private int currentClickedListPosition;
 
     public ViewPagerAdapter(FragmentManager fm, ArrayList<ListContent> list, Fragment fragment){
         super(fm);
         Log.d("ViewPagerAdapter", "Create adapter");
         this.list = list;
         this.fragment = fragment;
+        currentClickedListPosition = (int) fragment.getArguments().get(keyPosition);
     }
+
     @Override
     public Fragment getItem(int position) {
         Log.d("ViewPagerAdapter", "get item 1 : " + position);
-        int pos = position + (Integer)fragment.getArguments().get(keyPosition);
-        Log.d("ViewPagerAdapter", "get item 2 : " + pos);
         MyActivity ctx = (MyActivity)fragment.getArguments().get(keyContext);
-
-        return FragmentFullScreenPicture.newInstance(list.get(pos), ctx);
+        return FragmentFullScreenPicture.newInstance(list.get(position), ctx);
     }
 
     @Override
     public int getCount() {
-        return list.size();
+        if(list == null){
+            Log.d("ViewPagerAdapter", "getCount null");
+            return -1;
+        }else
+            return list.size();
+    }
+
+    @Override
+    public Object instantiateItem(ViewGroup container, int position) {
+        Log.d("ViewPagerAdapter", "instantiateItem 1 : " + position);
+        Log.d("ViewPagerAdapter", "instantiateItem");
+        //container.addView((int)fragment.getArguments().get(keyPosition));
+        return super.instantiateItem(container, position);
     }
 
     @Override
     public int getItemPosition(Object object) {
-        return POSITION_NONE;
+        Log.d("ViewPagerAdapter", "getItemPosition");
+        return 0;
     }
 
+    @Override
+    public long getItemId(int position) {
+        Log.d("ViewPagerAdapter", "getItemId" + position);
+        return position+1;
+    }
 }

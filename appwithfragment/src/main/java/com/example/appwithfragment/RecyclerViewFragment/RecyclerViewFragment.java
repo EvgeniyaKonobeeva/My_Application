@@ -42,9 +42,11 @@ public class RecyclerViewFragment extends Fragment implements GettingResults {
     private boolean lastTaskTerminated = false;
     public static ArrayList<ListContent> list;
 
-
-
-
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        list = new ArrayList<>();
+    }
 
     @Nullable
     @Override
@@ -65,7 +67,7 @@ public class RecyclerViewFragment extends Fragment implements GettingResults {
         } else {
             Log.d("ERROR 0", "connection error");
         }
-        list = new ArrayList<>();
+
 
         recyclerView = setRecyclerView(view, R.id.rl);
 
