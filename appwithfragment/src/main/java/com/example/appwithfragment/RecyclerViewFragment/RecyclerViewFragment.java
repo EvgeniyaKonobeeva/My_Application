@@ -1,6 +1,7 @@
 package com.example.appwithfragment.RecyclerViewFragment;
 
-//import android.app.Fragment;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.support.v4.app.*;
 import android.content.Context;
 import android.content.res.Configuration;
@@ -35,41 +36,40 @@ import java.util.ArrayList;
  */
 public class RecyclerViewFragment extends Fragment implements GettingResults {
 
-    private RecyclerView recyclerView;
-    private LoadFromFlickrTask task;
+    protected RecyclerView recyclerView;
+    protected LoadFromFlickrTask task;
+    protected boolean loadingFinished;
+    protected boolean lastTaskTerminated;
+    protected static ArrayList<ListContent> list;
+    private String protocol = "https://api.flickr.com/services/rest/?method=flickr.interestingness.getList&" +
+            "api_key=b14e644ffd373999f625f4d2ba244522&format=json&nojsoncallback=1";
 
-    private boolean loadingFinished = false;
-    private boolean lastTaskTerminated = false;
-    public static ArrayList<ListContent> list;
-
+    public void setProtocol(String protocol){
+        this.protocol = protocol;
+    }
+    public void setTag(String tag){
+        StringBuilder sb = new StringBuilder(protocol);
+        sb.append("&tag=").append(tag);
+        protocol = sb.toString();
+    }
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         list = new ArrayList<>();
+        loadingFinished = false;
+        lastTaskTerminated = false;
+        task = LoadFromFlickrTask.setTaskParams(protocol, this);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment, null);
+        View view = inflater.inflate(R.layout.recycler_view_frag, null);
+        recyclerView = setRecyclerView(view, R.id.rl);
 
         setHasOptionsMenu(true);
-
-        ConnectivityManager connMgr = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-
-        if (networkInfo != null && networkInfo.isConnected()) {
-            Log.d("PROCESS", "connection established");
-            task = new LoadFromFlickrTask(this);
-            task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
-        } else {
-            Log.d("ERROR 0", "connection error");
-        }
-
-
-        recyclerView = setRecyclerView(view, R.id.rl);
+        tryGetInternetConnection();
 
         return view;
     }
@@ -126,18 +126,16 @@ public class RecyclerViewFragment extends Fragment implements GettingResults {
 
     public class MyOnScrollListener extends RecyclerView.OnScrollListener {
         GridLayoutManager recyclerGridLayout;
-        GettingResults fragment;
 
-        private MyOnScrollListener(GridLayoutManager manager, GettingResults fragment) {
+        private MyOnScrollListener(GridLayoutManager manager) {
             this.recyclerGridLayout = manager;
-            this.fragment = fragment;
         }
 
         @Override
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
 
             if (dy > 0 && recyclerGridLayout.findLastVisibleItemPosition() >= recyclerView.getAdapter().getItemCount()-1 && loadingFinished && !lastTaskTerminated) {
-                loadImageUrls(fragment);
+                loadImageUrlsTask(task);
                 //Log.d("COUNT COLS", "" + recyclerGridLayout.getSpanCount());
             }else if(lastTaskTerminated && recyclerGridLayout.findLastCompletelyVisibleItemPosition() == recyclerView.getAdapter().getItemCount()-1){
                 Toast.makeText(getActivity(), "all photos uploaded", Toast.LENGTH_SHORT).show();
@@ -162,7 +160,7 @@ public class RecyclerViewFragment extends Fragment implements GettingResults {
 
         setSpanSize(recyclerGridLayout, recyclerViewAdapter);
 
-        recyclerView.addOnScrollListener(new MyOnScrollListener(recyclerGridLayout, this));
+        recyclerView.addOnScrollListener(new MyOnScrollListener(recyclerGridLayout));
 
         ItemClickSupport.addTo(recyclerView).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
             @Override
@@ -190,9 +188,36 @@ public class RecyclerViewFragment extends Fragment implements GettingResults {
         });
     }
 
-    public void loadImageUrls(GettingResults fragment){
+    public void loadImageUrlsTask(LoadFromFlickrTask task){
         loadingFinished = false;
-        task = new LoadFromFlickrTask(fragment);
+        task = new LoadFromFlickrTask();
         task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
+
+    public void tryGetInternetConnection(){
+        ConnectivityManager connMgr = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        if (networkInfo != null && networkInfo.isConnected()) {
+            Log.d("PROCESS", "connection established");
+            loadImageUrlsTask(task);
+        } else {
+            Log.d("ERROR 0", "connection error");
+            final AlertDialog alertDialog = new AlertDialog.Builder(getContext()).create();
+            alertDialog.setMessage("Internet not available, Cross check your internet connectivity and try again");
+            alertDialog.setIcon(android.R.drawable.ic_dialog_alert);
+            alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    alertDialog.dismiss();
+                }
+            });
+
+            alertDialog.show();
+        }
+    }
+
+    public static ArrayList<ListContent> getList(){
+        return list;
+    }
+
 }

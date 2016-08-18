@@ -21,17 +21,14 @@ import java.util.ArrayList;
  */
 public class ViewPagerAdapter extends FragmentPagerAdapter {
     private static final String keyContext = "Context";
-    private static final String keyPosition = "position";
     private ArrayList<ListContent> list;
     private Fragment fragment;
-    private int currentClickedListPosition;
 
     public ViewPagerAdapter(FragmentManager fm, ArrayList<ListContent> list, Fragment fragment){
         super(fm);
         Log.d("ViewPagerAdapter", "Create adapter");
         this.list = list;
         this.fragment = fragment;
-        currentClickedListPosition = (int) fragment.getArguments().get(keyPosition);
     }
 
     @Override
@@ -50,23 +47,5 @@ public class ViewPagerAdapter extends FragmentPagerAdapter {
             return list.size();
     }
 
-    @Override
-    public Object instantiateItem(ViewGroup container, int position) {
-        Log.d("ViewPagerAdapter", "instantiateItem 1 : " + position);
-        Log.d("ViewPagerAdapter", "instantiateItem");
-        //container.addView((int)fragment.getArguments().get(keyPosition));
-        return super.instantiateItem(container, position);
-    }
 
-    @Override
-    public int getItemPosition(Object object) {
-        Log.d("ViewPagerAdapter", "getItemPosition");
-        return 0;
-    }
-
-    @Override
-    public long getItemId(int position) {
-        Log.d("ViewPagerAdapter", "getItemId" + position);
-        return position+1;
-    }
 }

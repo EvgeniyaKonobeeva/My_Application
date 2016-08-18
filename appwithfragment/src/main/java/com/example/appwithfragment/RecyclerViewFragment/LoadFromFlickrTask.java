@@ -3,8 +3,6 @@ package com.example.appwithfragment.RecyclerViewFragment;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.example.appwithfragment.JSONObjects;
-
 import org.json.JSONException;
 
 import java.io.IOException;
@@ -15,26 +13,36 @@ import java.util.ArrayList;
  */
 public class LoadFromFlickrTask extends AsyncTask<Void, Integer, Void> {
     private static final String errorTag = "ERROR Task";
-    private String protocol = " https://api.flickr.com/services/rest/?method=flickr.interestingness.getList&api_key=b14e644ffd373999f625f4d2ba244522" +
-            "&format=json&nojsoncallback=1";
-    private GettingResults fragment;
+    private static String protocol;
+    private static GettingResults fragment;
 
-    private static int loadingPhotosPerOnce = 50;
-    private static int page = 1;
+    private static int loadingPhotosPerOnce;
+    private static int page;
     private static boolean photoEnds = false;
     private static int pages;
     private static ArrayList<String> photoUrls = new ArrayList<>();
     private static ArrayList<String> photosInfo = new ArrayList<>();
 
+    public static LoadFromFlickrTask setTaskParams(String protocol, GettingResults fragment){
+        LoadFromFlickrTask.loadingPhotosPerOnce = 50;
+        LoadFromFlickrTask.page = 1;
+        LoadFromFlickrTask.photoEnds = false;
+        LoadFromFlickrTask.photoUrls = new ArrayList<>();
+        LoadFromFlickrTask.photosInfo = new ArrayList<>();
+        LoadFromFlickrTask.protocol = protocol;
+        LoadFromFlickrTask.fragment = fragment;
+        return new LoadFromFlickrTask();
+    }
 
-
-
-
-    public LoadFromFlickrTask(GettingResults fragment){
-        this.fragment = fragment;
+    public LoadFromFlickrTask(){
+        if(loadingPhotosPerOnce == 0 || page == 0 || photoEnds !=  false || photoUrls == null || photosInfo == null || protocol==null){
+            Log.e("ERROR Task ", "you must call setTaskParams() method at first");
+            return;
+        }
         StringBuilder sb = new StringBuilder(protocol);
         sb.append("&per_page=20&page=");
         protocol = sb.toString();
+
     }
 
     private int countLoadingPhotos = 0;
@@ -53,7 +61,9 @@ public class LoadFromFlickrTask extends AsyncTask<Void, Integer, Void> {
                     jsonObjects = new JSONObjects(protocol, page);
                     pages = jsonObjects.getPages();
                 }
-
+/*
+page, pages - текущая позиция и длина всего массива с тегами для одной темы
+ */
                 while(countLoadingPhotos < loadingPhotosPerOnce){
                     //Log.d("PAGE", "" + page);
                     if(page <= pages) {

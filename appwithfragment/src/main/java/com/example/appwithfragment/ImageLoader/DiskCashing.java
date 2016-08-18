@@ -44,7 +44,7 @@ public class DiskCashing {
             File file = new File(fileDir.getAbsolutePath(), keyUrl + ".png");
             if(!file.exists()) {
                 try {
-                    //Log.d("PROCESS", "file creating");
+                    Log.d("PROCESS", "file creating");
 
                     FileOutputStream fileOutputStream = new FileOutputStream(file);
 
@@ -78,11 +78,11 @@ public class DiskCashing {
         synchronized (lock2) {
             File file = new File(fileDir.getAbsolutePath(), keyUrl + ".png");
             if (file.exists()) {
-                //Log.d("PROCESS ", "file exists");
+                Log.d("PROCESS ", "file exists");
                 lock2.notifyAll();
                 return BitmapFactory.decodeFile(file.getPath());
             } else {
-                //Log.d(errorTag, "file does not exists");
+                Log.d(errorTag, "file does not exists");
                 lock2.notifyAll();
                 return null;
             }

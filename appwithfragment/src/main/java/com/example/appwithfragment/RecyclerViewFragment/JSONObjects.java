@@ -1,4 +1,4 @@
-package com.example.appwithfragment;
+package com.example.appwithfragment.RecyclerViewFragment;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -23,9 +23,11 @@ public class JSONObjects {
     public JSONObjects(String protocol, int page)throws IOException, JSONException{
         HttpURLConnection connection = setConnection(protocol + page);
         connection.connect();
-        headObject = getJSONRootPoint(connection).getJSONObject("photos");
-        pages = headObject.getInt("pages");
-        array = headObject.getJSONArray("photo");
+        headObject = getJSONRootPoint(connection).getJSONObject("photos"); // clusters
+        pages = headObject.getInt("pages");// total
+        array = headObject.getJSONArray("photo");//cluster
+        // in cluster get tag(array)
+        // form new protocol
 
     }
 
@@ -34,6 +36,7 @@ public class JSONObjects {
         return array.getJSONObject(i);
     }
     public String[] getPhotoInfo(int i) throws JSONException{
+
         return new String[]{
                 array.getJSONObject(i).getString("farm"),
                 array.getJSONObject(i).getString("server"),
@@ -45,6 +48,7 @@ public class JSONObjects {
 
     public String getUrl(int i)throws JSONException{
         String imgUrl = "https://farm[0].staticflickr.com/[1]/[2]_[3]_m.jpg";
+
         String[] info = getPhotoInfo(i);
         return imgUrl.replace("[0]", info[0]).replace("[1]", info[1]).replace("[2]", info[2]).replace("[3]", info[3]);
     }
@@ -60,6 +64,8 @@ public class JSONObjects {
     private HttpURLConnection setConnection(String protocol)throws IOException {
         URL url = new URL(protocol);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setReadTimeout(20000);
+        connection.setConnectTimeout(20000);
         connection.setRequestMethod("GET");
         connection.setDoInput(true);
         return connection;

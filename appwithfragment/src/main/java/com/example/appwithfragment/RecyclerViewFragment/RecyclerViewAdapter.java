@@ -31,7 +31,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     public RecyclerViewAdapter(List<ListContent> list, Context ctx){
         this.list = list;
         iml = new MyImageLoader(ctx);
-
         this.ctx = ctx;
     }
 
@@ -46,12 +45,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if(viewType == IMAGE_TYPE){
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.image_view_layout, parent, false);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_view_item, parent, false);
             return new ImageViewHolder(view);
         }else{
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.progress_item, parent, false);
-            int height  = parent.getMinimumHeight()/6;
-            view.setMinimumHeight(height);
+            //int height  = parent.getMinimumHeight()/6;
+            //view.setMinimumHeight(height);
             return new ProgressViewHolder(view);
         }
     }
@@ -59,16 +58,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-
-        if(holder instanceof ImageViewHolder) {
+        if (holder instanceof ImageViewHolder) {
             ImageViewHolder ivh = ((ImageViewHolder) holder);
-            final ListContent listContent = list.get(position);
             ivh.imageView.setImageDrawable(null);
-            String keyUrl = listContent.getImgUrl();
+            String keyUrl = list.get(position).getImgUrl();
             iml.setResourceUrl(keyUrl).setImgInto(ivh.imageView);
-            ivh.textView.setText(listContent.getShortTitle());
-        }else if(holder instanceof ProgressViewHolder){
-            ProgressViewHolder pvh = (ProgressViewHolder)holder;
+            ivh.textView.setText(list.get(position).getShortTitle());
+        } else if (holder instanceof ProgressViewHolder) {
+            ProgressViewHolder pvh = (ProgressViewHolder) holder;
             pvh.progressBar.setIndeterminate(true);
         }
 
@@ -90,10 +87,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
     class ProgressViewHolder extends RecyclerView.ViewHolder{
         ProgressBar progressBar;
-        TextView tv;
         public ProgressViewHolder(View view){
             super(view);
-            //v = (TextView)view.findViewById(R.id.Text);
              progressBar = (ProgressBar)view.findViewById(R.id.progressBar);
         }
     }
@@ -107,9 +102,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         return iml;
     }
 
-    public List<ListContent> getList(){
-        return list;
+    @Override
+    public int getItemViewType(int position) {
+        if(position == getItemCount()-1){
+            return PROGRESS_TYPE;
+        }else return IMAGE_TYPE;
     }
-
-
 }

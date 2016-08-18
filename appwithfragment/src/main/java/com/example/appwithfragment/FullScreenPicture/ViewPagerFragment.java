@@ -19,11 +19,7 @@ import com.example.appwithfragment.RecyclerViewFragment.RecyclerViewFragment;
  */
 public class ViewPagerFragment extends Fragment {
     private static final String keyPosition = "position";
-    FragmentManager fm;
     ViewPager vp;
-    public void setFragmentManager(FragmentManager fm){
-        this.fm = fm;
-    }
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,31 +33,10 @@ public class ViewPagerFragment extends Fragment {
         View view = inflater.inflate(R.layout.view_pager, null);
         vp = (ViewPager)view.findViewById(R.id.viewPager);
 
-        final ViewPagerAdapter vpAdapter = new ViewPagerAdapter(this.getChildFragmentManager(), RecyclerViewFragment.list, this);
+        final ViewPagerAdapter vpAdapter = new ViewPagerAdapter(this.getChildFragmentManager(), RecyclerViewFragment.getList(), this);
 
         vp.setAdapter(vpAdapter);
         vp.setCurrentItem((int)getArguments().get(keyPosition));
-
-        final Fragment fragment = this;
-        vp.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                Log.d("ViewPagerFragment", "onPageScrolled position " + position);
-                Log.d("ViewPagerFragment", "onPageScrolled positionOffsetPixels " + positionOffsetPixels);
-
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                Log.d("ViewPagerFragment", "onPageSelected" + position);
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-                Log.d("ViewPagerFragment", "onPageScrollStateChanged" + state);
-            }
-        });
 
         return view;
 
@@ -75,9 +50,6 @@ public class ViewPagerFragment extends Fragment {
         Log.d("ViewPagerFragment", "destroy view");
     }
 
-    public void onDataSetChanges(){
-        vp.getAdapter().notifyDataSetChanged();
-    }
 
 
 }

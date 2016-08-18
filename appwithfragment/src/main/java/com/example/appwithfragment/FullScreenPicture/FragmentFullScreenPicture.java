@@ -1,6 +1,5 @@
 package com.example.appwithfragment.FullScreenPicture;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -38,7 +37,6 @@ public class FragmentFullScreenPicture extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //Log.i(TAG,"onCreate");
     }
 
     @Nullable
@@ -46,11 +44,9 @@ public class FragmentFullScreenPicture extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
 
-        View view = inflater.inflate(R.layout.frag2, null);
+        View view = inflater.inflate(R.layout.single_pic_frag, null);
 
         setViews(view, R.id.fullImage, R.id.title);
-
-        //Log.i(TAG,"onCreateView");
 
         return view;
     }
