@@ -33,7 +33,7 @@ public class ViewPagerFragment extends Fragment {
         View view = inflater.inflate(R.layout.view_pager, null);
         vp = (ViewPager)view.findViewById(R.id.viewPager);
 
-        final ViewPagerAdapter vpAdapter = new ViewPagerAdapter(this.getChildFragmentManager(), RecyclerViewFragment.getList(), this);
+        final ViewPagerAdapter vpAdapter = new ViewPagerAdapter(this.getChildFragmentManager(), new RecyclerViewFragment().getList(), this);
 
         vp.setAdapter(vpAdapter);
         vp.setCurrentItem((int)getArguments().get(keyPosition));

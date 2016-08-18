@@ -11,11 +11,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
 import android.widget.ListView;
 
 import com.example.appwithfragment.FullScreenPicture.ViewPagerFragment;
+import com.example.appwithfragment.RecyclerViewFragment.LoadFromFlickrTask;
 import com.example.appwithfragment.RecyclerViewFragment.OnRecyclerViewClickListener;
 import com.example.appwithfragment.RecyclerViewFragment.RecyclerViewFragment;
+import com.example.appwithfragment.my_package.LoadTask;
 
 import java.io.Serializable;
 
@@ -52,25 +55,30 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
 
         setContentView(R.layout.activity_main);
 
-        Fragment frg =  getSupportFragmentManager().findFragmentByTag("list_img");
+        /*Fragment frg =  getSupportFragmentManager().findFragmentByTag("list_img");
         if(frg != null)
             recyclerViewFragment = (RecyclerViewFragment) frg;
         else{
             recyclerViewFragment = new RecyclerViewFragment();
-        }
+            recyclerViewFragment.setProtocol("https://api.flickr.com/services/rest/?method=flickr.interestingness.getList&" +
+                    "api_key=b14e644ffd373999f625f4d2ba244522&format=json&nojsoncallback=1");
+        }*/
 
-        Fragment frg2 =  getSupportFragmentManager().findFragmentByTag("single_img");
+        /*Fragment frg2 =  getSupportFragmentManager().findFragmentByTag("single_img");
         if(frg2 != null)
             viewPagerFragment = (ViewPagerFragment) frg2;
-        else viewPagerFragment = new ViewPagerFragment();
+        else viewPagerFragment = new ViewPagerFragment();*/
 
-        recyclerViewFragment.setRetainInstance(true);
+
 
 
         Fragment isOpen = getSupportFragmentManager().findFragmentById(R.id.LL);
 
         if(isOpen== null) {
             recyclerViewFragment = new RecyclerViewFragment();
+            recyclerViewFragment.setProtocol("https://api.flickr.com/services/rest/?method=flickr.interestingness.getList&" +
+                    "api_key=b14e644ffd373999f625f4d2ba244522&format=json&nojsoncallback=1");
+            recyclerViewFragment.setTask(new LoadFromFlickrTask());
             recyclerViewFragment.setRetainInstance(true);
             addFragment(recyclerViewFragment, R.id.LL, "list_img");
         }
@@ -129,7 +137,7 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 itemSelected(i);
                 listView.setItemChecked(i, true);
-                setTitle(itemsTitles[i]);
+                //setTitle(itemsTitles[i]);
                 drawerLayout.closeDrawer(listView);
             }
         });
@@ -141,39 +149,71 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
 
     public void itemSelected(int position){
         RecyclerViewFragment rf1;
+        Fragment frg = null;
         switch (position){
             case 0:
-                rf1 = new RecyclerViewFragment();
-                rf1.setProtocol("https://api.flickr.com/services/rest/?method=flickr.tags.getClusterPhotos&" +
-                        "api_key=b14e644ffd373999f625f4d2ba244522&format=json&nojsoncallback=1" +
-                        "&tag=flowers&cluster_id=pink");
-                rf1.setTag("flowers");
-                replaceFragment(rf1, R.id.LL, "tag "+position);
+                frg = getSupportFragmentManager().findFragmentByTag("list_img");
+                if(frg != null)
+                    recyclerViewFragment = (RecyclerViewFragment) frg;
+                else{
+                    recyclerViewFragment = new RecyclerViewFragment();
+                    recyclerViewFragment.setProtocol("https://api.flickr.com/services/rest/?method=flickr.interestingness.getList&" +
+                            "api_key=b14e644ffd373999f625f4d2ba244522&format=json&nojsoncallback=1");
+                    recyclerViewFragment.setTask(new LoadFromFlickrTask());
+                }
+                replaceFragment(recyclerViewFragment, R.id.LL, "list_img");
+
                 break;
             case 1:
-                 rf1 = new RecyclerViewFragment();
-                rf1.setProtocol("https://api.flickr.com/services/rest/?method=flickr.tags.getClusterPhotos&" +
-                        "api_key=b14e644ffd373999f625f4d2ba244522&format=json&nojsoncallback=1" +
-                        "&tag=flowers&cluster_id=pink");
-                rf1.setTag("animals");
-                replaceFragment(rf1, R.id.LL, "tag "+position);
+                frg = getSupportFragmentManager().findFragmentByTag("tag_"+position);
+                Log.d("POSITION", " " + position);
+                if(frg == null){
+                    rf1 = new RecyclerViewFragment();
+                    rf1.setProtocol("https://api.flickr.com/services/rest/?method=flickr.tags.getClusters" +
+                            "&api_key=b14e644ffd373999f625f4d2ba244522&format=json" +
+                            "&nojsoncallback=1");
+                    rf1.setTag("flowers");
+                    rf1.setTask(new LoadTask());
+                    rf1.setRetainInstance(true);
+                    replaceFragment(rf1, R.id.LL, "tag_"+position);
+                }else{
+                    rf1 = (RecyclerViewFragment) frg;
+                    replaceFragment(rf1, R.id.LL, "tag_"+position);
+                }
                 break;
             case 2:
-                 rf1 = new RecyclerViewFragment();
-                rf1.setProtocol("https://api.flickr.com/services/rest/?method=flickr.tags.getClusterPhotos&" +
-                        "api_key=b14e644ffd373999f625f4d2ba244522&format=json&nojsoncallback=1" +
-                        "&tag=flowers&cluster_id=pink");
-                rf1.setTag("city");
-                replaceFragment(rf1, R.id.LL, "tag "+position);
+                 frg = getSupportFragmentManager().findFragmentByTag("tag_"+position);
+                Log.d("POSITION", " " + position);
+                if(frg == null){
+                    rf1 = new RecyclerViewFragment();
+                    rf1.setProtocol("https://api.flickr.com/services/rest/?method=flickr.tags.getClusters" +
+                            "&api_key=b14e644ffd373999f625f4d2ba244522&format=json" +
+                            "&nojsoncallback=1");
+                    rf1.setTag("animals");
+                    rf1.setTask(new LoadTask());
+                    rf1.setRetainInstance(true);
+                }else{
+                    rf1 = (RecyclerViewFragment) frg;
+                }
+
+                replaceFragment(rf1, R.id.LL, "tag_"+position);
                 break;
             case 3:
-                 rf1 = new RecyclerViewFragment();
-                rf1.setProtocol("https://api.flickr.com/services/rest/?method=flickr.tags.getClusterPhotos&" +
-                        "api_key=b14e644ffd373999f625f4d2ba244522&format=json&nojsoncallback=1" +
-                        "&tag=flowers&cluster_id=pink");
-                rf1.setTag("people");
-                replaceFragment(rf1, R.id.LL, "tag "+position);
-                break;
+                 frg = getSupportFragmentManager().findFragmentByTag("tag_"+position);
+                Log.d("POSITION", " " + position);
+                if(frg == null){
+                    rf1 = new RecyclerViewFragment();
+                    rf1.setProtocol("https://api.flickr.com/services/rest/?method=flickr.tags.getClusters" +
+                            "&api_key=b14e644ffd373999f625f4d2ba244522&format=json" +
+                            "&nojsoncallback=1");
+                    rf1.setTag("city");
+                    rf1.setTask(new LoadTask());
+                    rf1.setRetainInstance(true);
+                }else{
+                    rf1 = (RecyclerViewFragment) frg;
+                }
+
+                replaceFragment(rf1, R.id.LL, "tag_"+position);
         }
 
     }

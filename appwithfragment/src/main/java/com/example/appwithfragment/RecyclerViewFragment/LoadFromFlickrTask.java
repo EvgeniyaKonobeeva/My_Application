@@ -11,45 +11,38 @@ import java.util.ArrayList;
 /**
  * Created by e.konobeeva on 05.08.2016.
  */
-public class LoadFromFlickrTask extends AsyncTask<Void, Integer, Void> {
+public class LoadFromFlickrTask extends AsyncTask<Object, Integer, Void> {
     private static final String errorTag = "ERROR Task";
-    private static String protocol;
-    private static GettingResults fragment;
-
-    private static int loadingPhotosPerOnce;
-    private static int page;
-    private static boolean photoEnds = false;
-    private static int pages;
-    private static ArrayList<String> photoUrls = new ArrayList<>();
-    private static ArrayList<String> photosInfo = new ArrayList<>();
-
-    public static LoadFromFlickrTask setTaskParams(String protocol, GettingResults fragment){
-        LoadFromFlickrTask.loadingPhotosPerOnce = 50;
-        LoadFromFlickrTask.page = 1;
-        LoadFromFlickrTask.photoEnds = false;
-        LoadFromFlickrTask.photoUrls = new ArrayList<>();
-        LoadFromFlickrTask.photosInfo = new ArrayList<>();
-        LoadFromFlickrTask.protocol = protocol;
-        LoadFromFlickrTask.fragment = fragment;
-        return new LoadFromFlickrTask();
-    }
-
-    public LoadFromFlickrTask(){
-        if(loadingPhotosPerOnce == 0 || page == 0 || photoEnds !=  false || photoUrls == null || photosInfo == null || protocol==null){
-            Log.e("ERROR Task ", "you must call setTaskParams() method at first");
-            return;
-        }
-        StringBuilder sb = new StringBuilder(protocol);
-        sb.append("&per_page=20&page=");
-        protocol = sb.toString();
-
-    }
-
+    private int loadingPhotosPerOnce = 50;
+    private boolean photoEnds = false;
     private int countLoadingPhotos = 0;
 
 
+    private String protocol;
+    private GettingResults fragment;
+    private int page;
+    private ArrayList<String> photoUrls;
+    private ArrayList<String> photosInfo;
+    private int pages;
+
+
+    public LoadFromFlickrTask(GettingResults fragment, String protocol, ArrayList<String> photoUrls, ArrayList<String> photosInfo, int page){
+        StringBuilder sb = new StringBuilder(protocol);
+        sb.append("&per_page=20&page=");
+        protocol = sb.toString();
+        this.fragment = fragment;
+        this.protocol = protocol;
+        this.photoUrls = photoUrls;
+        this.photosInfo = photosInfo;
+        this.page = page;
+
+    }
+
+    public LoadFromFlickrTask(){}
+
+
     @Override
-    protected Void doInBackground(Void... voids) {
+    protected Void doInBackground(Object... voids) {
 
 
         JSONObjects jsonObjects;
@@ -57,13 +50,9 @@ public class LoadFromFlickrTask extends AsyncTask<Void, Integer, Void> {
         if(!isCancelled()) {
 
             try {
-                if(page == 1) {
-                    jsonObjects = new JSONObjects(protocol, page);
-                    pages = jsonObjects.getPages();
-                }
-/*
-page, pages - текущая позиция и длина всего массива с тегами для одной темы
- */
+                jsonObjects = new JSONObjects(protocol, page);
+                pages = jsonObjects.getPages();
+
                 while(countLoadingPhotos < loadingPhotosPerOnce){
                     //Log.d("PAGE", "" + page);
                     if(page <= pages) {
@@ -100,6 +89,9 @@ page, pages - текущая позиция и длина всего масси�
         if(fragment != null && photoUrls.size() != 0) {
             fragment.onGettingResult(photoUrls, photosInfo, photoEnds);
         }
+    }
+    public int getCurClusterId(){
+        return page;
     }
 
     public void setFragment(GettingResults fragment){

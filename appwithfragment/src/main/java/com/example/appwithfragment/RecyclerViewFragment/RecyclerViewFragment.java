@@ -22,12 +22,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.example.appwithfragment.my_package.LoadTask;
 import com.example.appwithfragment.supportLib.ItemClickSupport;
 import com.example.appwithfragment.ListContent;
 import com.example.appwithfragment.R;
 
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created by e.konobeeva on 02.08.2016.
@@ -36,40 +39,58 @@ import java.util.ArrayList;
  */
 public class RecyclerViewFragment extends Fragment implements GettingResults {
 
-    protected RecyclerView recyclerView;
-    protected LoadFromFlickrTask task;
-    protected boolean loadingFinished;
-    protected boolean lastTaskTerminated;
-    protected static ArrayList<ListContent> list;
-    private String protocol = "https://api.flickr.com/services/rest/?method=flickr.interestingness.getList&" +
-            "api_key=b14e644ffd373999f625f4d2ba244522&format=json&nojsoncallback=1";
+    private ArrayList<ListContent> list;
+    private AsyncTask task;
+    private String tag;
+    private RecyclerView recyclerView;
+    private boolean loadingFinished;
+    private boolean lastTaskTerminated;
+    private String protocol;
+
+    private int curCluster_id;
+    private ArrayList<String> photoUrls;
+    private ArrayList<String> photoTitles;
+
 
     public void setProtocol(String protocol){
+        Log.d("setProtocol ", this.getClass().getName());
         this.protocol = protocol;
     }
-    public void setTag(String tag){
+
+    public void setTag(String _tag){
+        tag = _tag;
         StringBuilder sb = new StringBuilder(protocol);
         sb.append("&tag=").append(tag);
         protocol = sb.toString();
     }
+
+    public void setTask(AsyncTask task){
+        this.task = task;
+    }
+   
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d("RecyclerViewFragment", "onCreate");
         list = new ArrayList<>();
         loadingFinished = false;
         lastTaskTerminated = false;
-        task = LoadFromFlickrTask.setTaskParams(protocol, this);
+        curCluster_id = 0;
+        photoUrls = new ArrayList<>();
+        photoTitles = new ArrayList<>();
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
+        test();
+        Log.d("Fragment ", "onCreateView ");
         View view = inflater.inflate(R.layout.recycler_view_frag, null);
         recyclerView = setRecyclerView(view, R.id.rl);
+        this.setHasOptionsMenu(true);
+        this.tryGetInternetConnection();
 
-        setHasOptionsMenu(true);
-        tryGetInternetConnection();
 
         return view;
     }
@@ -77,21 +98,32 @@ public class RecyclerViewFragment extends Fragment implements GettingResults {
     @Override
     public void onGettingResult(ArrayList<String> photoUrls, ArrayList<String> photosInfo, boolean isTheLast) {
 
+        ArrayList<String> photosInfo2 = removeObjectsRepets(photosInfo);
+        ArrayList<String> photosUrls2 = removeObjectsRepets(photoUrls);
         int size = list.size();
-        for (int i = size; i < photoUrls.size(); i++) {
-            ListContent listContent = new ListContent(photoUrls.get(i), photosInfo.get(i));
+        for (int i = size; i < photosInfo2.size(); i++) {
+            ListContent listContent = new ListContent(photosUrls2.get(i), photosInfo2.get(i));
             list.add(i, listContent);
             recyclerView.getAdapter().notifyItemChanged(i);
         }
         lastTaskTerminated = isTheLast;
         loadingFinished = true;
+        if(task instanceof LoadTask) {
+            curCluster_id = ((LoadTask) task).getCurClusterId();
+        }else{
+            curCluster_id = ((LoadFromFlickrTask) task).getCurClusterId();
+        }
 
     }
 
     @Override
     public void onDestroy() {
         if (task != null) {
-            task.setFragment(null);
+            if(task instanceof LoadFromFlickrTask){
+                ((LoadFromFlickrTask)task).setFragment(null);
+            }else
+                ((LoadTask)task).setFragment(null);
+
             task.cancel(false);
         }
 
@@ -188,10 +220,20 @@ public class RecyclerViewFragment extends Fragment implements GettingResults {
         });
     }
 
-    public void loadImageUrlsTask(LoadFromFlickrTask task){
+
+    public void loadImageUrlsTask(AsyncTask task){
         loadingFinished = false;
-        task = new LoadFromFlickrTask();
-        task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        if(task instanceof LoadFromFlickrTask){
+
+
+            task = new LoadFromFlickrTask(this, protocol, photoUrls, photoTitles, curCluster_id);
+            task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }else{
+            Log.d("cluster current", " " + curCluster_id);
+            task = new LoadTask(this, protocol, photoUrls, photoTitles, curCluster_id, tag);
+            task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }
+
     }
 
     public void tryGetInternetConnection(){
@@ -199,10 +241,14 @@ public class RecyclerViewFragment extends Fragment implements GettingResults {
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
             Log.d("PROCESS", "connection established");
-            loadImageUrlsTask(task);
+
+            this.loadImageUrlsTask(task);
+
         } else {
             Log.d("ERROR 0", "connection error");
+
             final AlertDialog alertDialog = new AlertDialog.Builder(getContext()).create();
+
             alertDialog.setMessage("Internet not available, Cross check your internet connectivity and try again");
             alertDialog.setIcon(android.R.drawable.ic_dialog_alert);
             alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
@@ -216,8 +262,42 @@ public class RecyclerViewFragment extends Fragment implements GettingResults {
         }
     }
 
-    public static ArrayList<ListContent> getList(){
+
+    public ArrayList<ListContent> getList()
+    {
         return list;
     }
 
+
+
+    public ArrayList<String> removeObjectsRepets(ArrayList<String> arr){
+        ArrayList<String> ar2 = new ArrayList<>(arr);
+        for(int i = 0; i< arr.size(); i++ ){
+            int count  = 0;
+            for(int j = 0; j < ar2.size(); j++) {
+                if (arr.get(i).equals(ar2.get(j)) ){
+                    count++;
+                }
+                if (count > 1) {
+                    ar2.remove(j);
+                }
+            }
+
+        }
+        return ar2;
+
+    }
+
+    public void test(){
+        ArrayList<String> ar = new ArrayList<>();
+        ar.add("d1");
+        ar.add("d2");
+        ar.add("d4");
+        ar.add("d3");
+        ar.add("d4");
+        ar.add("d4");
+
+        Log.i("TEST", Arrays.toString(removeObjectsRepets(ar).toArray()));
+
+    }
 }

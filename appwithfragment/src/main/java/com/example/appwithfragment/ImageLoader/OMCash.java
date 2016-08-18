@@ -27,7 +27,7 @@ public class OMCash{
     }
     public void putImage(int keyUrl, Bitmap bitmap){
         synchronized (lock1) {
-            Log.d("OMCash", "putting img into");
+            //Log.d("OMCash", "putting img into");
             WeakReference<Bitmap> weakRef= new WeakReference<>(bitmap);
             storage.put(keyUrl, weakRef);
             lock1.notifyAll();
@@ -38,7 +38,7 @@ public class OMCash{
     public boolean setImageTo(int keyUrl, ImageView im){
         synchronized (lock2) {
             if (storage.containsKey(keyUrl) && storage.get(keyUrl).get() != null) {
-                Log.d("OMCash", "getting img out");
+                //Log.d("OMCash", "getting img out");
                 im.setImageBitmap(storage.get(keyUrl).get());
                 lock2.notifyAll();
                 return true;
@@ -46,7 +46,7 @@ public class OMCash{
                 storage.remove(keyUrl);
                 return false;
             } else {
-                Log.d("OMCash", "doesn't exist");
+                //Log.d("OMCash", "doesn't exist");
                 lock2.notifyAll();
                 return false;
             }
