@@ -1,9 +1,7 @@
-package com.example.appwithfragment.my_package;
+package com.example.appwithfragment.RecyclerViewFragment;
 
 import android.os.AsyncTask;
 import android.util.Log;
-
-import com.example.appwithfragment.RecyclerViewFragment.GettingResults;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -16,7 +14,8 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Евгения on 18.08.2016.
@@ -24,61 +23,56 @@ import java.util.Arrays;
  * перед первым использованием в фрагменте необходимо вызвать инициализацию всех статических параметров методом setTaskParams
  * дальнейшие экземпляры тасков создаются обычным конструктором
  */
-public class LoadTask extends AsyncTask<Object, Integer, Void>{
+public class LoadTask extends AsyncTask<Object, Integer, Map>{
     private static final String errorTag = "ERROR Task";
     private int loadingPhotosPerOnce = 50;
     private boolean photoEnds = false;
-    private int countLoadingPhotos = 0;
+
 
 
     private String protocol;
     private GettingResults fragment;
-    private int curCluster_id;
-    private ArrayList<String> photoUrls;
-    private ArrayList<String> photosInfo;
     private String tag;
     private ArrayList<String> clustersId;
 
 
-
-
-    public LoadTask(GettingResults fragment, String protocol, ArrayList<String> photoUrls, ArrayList<String> photosInfo, int curCluster_id, String tag ){
+    public LoadTask(GettingResults fragment, String protocol, String tag ){
         this.fragment = fragment;
         this.protocol = protocol;
-        this.photoUrls = photoUrls;
-        this.photosInfo = photosInfo;
-        this.curCluster_id = curCluster_id;
         this.tag = tag;
         Log.d("LoadTask ", tag);
     }
 
-    public LoadTask()
-    {}
+    public LoadTask() {}
+
     @Override
-    protected Void doInBackground(Object... voids) {
+    protected Map doInBackground(Object... voids) {
+        Map<String, String> map = new HashMap<>();
         if(!isCancelled()) {
             try {
-                clustersId = clustersIdQuery(protocol);
-                photoArrQuery(clustersId, tag);
+                ArrayList<String> clustersId = clustersIdQuery(protocol);
+                map = photoArrQuery(clustersId, tag);
             } catch (IOException ioEx) {
                 Log.d("LoadTask ER ", ioEx.toString());
             } catch (JSONException jsonEx) {
                 Log.d("LoadTask ER ", jsonEx.toString());
             }
         }else Thread.currentThread().interrupt();
-        return null;
+        return map;
     }
 
     @Override
-    protected void onPostExecute(Void aVoid) {
-        if(fragment != null && photoUrls.size() != 0) {
-            fragment.onGettingResult(photoUrls, photosInfo, photoEnds);
+    protected void onPostExecute(Map aVoid) {
+        if(fragment != null && aVoid.size() != 0) {
+            fragment.onGettingResult(aVoid, photoEnds);
         }
     }
 
     public void setFragment(GettingResults fragment){
         this.fragment = fragment;
     }
+
+
     public  ArrayList<String> clustersIdQuery(String protocol)throws IOException{
         ArrayList<String> clusters_id = new ArrayList<>();
         try {
@@ -86,9 +80,10 @@ public class LoadTask extends AsyncTask<Object, Integer, Void>{
             JSONArray cluster = clusters.getJSONArray("cluster");
             for (int i = 0; i < cluster.length(); i++) {
                 JSONArray tag = cluster.getJSONObject(i).getJSONArray("tag");
-                for (int j = 0; j < tag.length(); j++) {
+                clusters_id.add(tag.getJSONObject(0).getString("_content"));
+                /*for (int j = 0; j < tag.length(); j++) {
                     clusters_id.add(tag.getJSONObject(j).getString("_content"));
-                }
+                }*/
             }
         }catch (JSONException jsonEx){
             Log.d("LoadTask", "clustersIdQuery " +jsonEx.toString());
@@ -96,26 +91,33 @@ public class LoadTask extends AsyncTask<Object, Integer, Void>{
         return clusters_id;
     }
 
-    public void photoArrQuery(ArrayList<String> clusters_id, String tag)throws IOException, JSONException{
+    public Map photoArrQuery(ArrayList<String> clusters_id, String tag)throws IOException, JSONException{
 
         String protocol = " https://api.flickr.com/services/rest/?method=flickr.tags.getClusterPhotos&" +
                 "api_key=b14e644ffd373999f625f4d2ba244522&format=json&nojsoncallback=1&tag=";
+
         StringBuilder sb = new StringBuilder(protocol);
         sb.append(tag).append("&cluster_id=");
         protocol = sb.toString();
+
+        int curCluster_id = ((RecyclerViewFragment)fragment).getCurCluster_id();
+
+        Map<String,String> map = new HashMap<>();
+
+        int countLoadingPhotos = 0;
+
         while(countLoadingPhotos < loadingPhotosPerOnce){
             if(curCluster_id <  clusters_id.size()) {
                 //sb.append(clusters_id.get(curCluster_id++));
                 String str = protocol+clusters_id.get(curCluster_id++);
-                Log.d("cl tag  ", clusters_id.get(curCluster_id));
+                //Log.d("cl tag  ", clusters_id.get(curCluster_id++));
                 JSONObject photos = getJSONRootPoint(str).getJSONObject("photos");
                 Object[] urlArr = ParserJSONToPhotoUrl.getUrlArray(photos.getJSONArray("photo"));
-                Log.d("URL ", urlArr.length + "");
+                //Log.d("URL ", urlArr.length + "");
+               // Log.d("URL ", Arrays.toString(urlArr));
                 Object[] titles =  ParserJSONToPhotoUrl.getTitleArray(photos.getJSONArray("photo"));
-                int size = photoUrls.size();
                 for (int i = 0; i <urlArr.length; i++) {
-                    photoUrls.add(i+size, urlArr[i].toString());
-                    photosInfo.add(i+size, titles[i].toString());
+                    map.put(urlArr[i].toString(), titles[i].toString());
                 }
                 countLoadingPhotos += urlArr.length;
             }else {
@@ -123,10 +125,9 @@ public class LoadTask extends AsyncTask<Object, Integer, Void>{
                 break;
             }
         }
+        ((RecyclerViewFragment)fragment).setCurCluster_id(curCluster_id);
+        return map;
 
-    }
-    public int getCurClusterId(){
-        return curCluster_id;
     }
 
     private HttpURLConnection setConnection(String protocol)throws IOException {
@@ -153,7 +154,7 @@ public class LoadTask extends AsyncTask<Object, Integer, Void>{
         is.close();
         connection.disconnect();
         JSONObject obj = new JSONObject(buf.toString());
-        Log.d("LoadTask jsonObject", obj.toString());
+        //Log.d("LoadTask jsonObject", obj.toString());
         return obj;
 
     }

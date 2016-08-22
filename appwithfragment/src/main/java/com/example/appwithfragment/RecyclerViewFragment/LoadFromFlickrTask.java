@@ -7,34 +7,27 @@ import org.json.JSONException;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by e.konobeeva on 05.08.2016.
  */
-public class LoadFromFlickrTask extends AsyncTask<Object, Integer, Void> {
-    private static final String errorTag = "ERROR Task";
-    private int loadingPhotosPerOnce = 50;
-    private boolean photoEnds = false;
-    private int countLoadingPhotos = 0;
+public class LoadFromFlickrTask extends AsyncTask<Object, Integer, Map> {
 
-
+    private static final String errorTag = "LoadFFTask";
+    private boolean photoEnds;
     private String protocol;
     private GettingResults fragment;
-    private int page;
-    private ArrayList<String> photoUrls;
-    private ArrayList<String> photosInfo;
-    private int pages;
 
 
-    public LoadFromFlickrTask(GettingResults fragment, String protocol, ArrayList<String> photoUrls, ArrayList<String> photosInfo, int page){
+    public LoadFromFlickrTask(GettingResults fragment, String protocol){
         StringBuilder sb = new StringBuilder(protocol);
         sb.append("&per_page=20&page=");
         protocol = sb.toString();
         this.fragment = fragment;
         this.protocol = protocol;
-        this.photoUrls = photoUrls;
-        this.photosInfo = photosInfo;
-        this.page = page;
+        photoEnds = false;
 
     }
 
@@ -42,27 +35,29 @@ public class LoadFromFlickrTask extends AsyncTask<Object, Integer, Void> {
 
 
     @Override
-    protected Void doInBackground(Object... voids) {
+    protected Map doInBackground(Object... voids) {
 
 
         JSONObjects jsonObjects;
+        int page = ((RecyclerViewFragment)fragment).getCurCluster_id();
+        Log.d(errorTag, "doInBackground PAGE:" + page );
+        int countLoadingPhotos = 0;
+        int loadingPhotosPerOnce = 50;
+        int pages;
+        Map<String, String> photosInfo = new HashMap<>();
 
         if(!isCancelled()) {
+            Log.d(errorTag, "doInBackground");
 
             try {
-                jsonObjects = new JSONObjects(protocol, page);
+                jsonObjects = new JSONObjects(protocol, ++page);
                 pages = jsonObjects.getPages();
 
                 while(countLoadingPhotos < loadingPhotosPerOnce){
-                    //Log.d("PAGE", "" + page);
                     if(page <= pages) {
                         jsonObjects = new JSONObjects(protocol, page++);
-                        int size = photoUrls.size();
-                        //Log.d("SIZE URL", "" + size);
-                        //Log.d("SIZE OBJECTS", "" + jsonObjects.getCountPhotosPerPage());
                         for (int i = 0; i <jsonObjects.getCountPhotosPerPage(); i++) {
-                            photoUrls.add(i+size, jsonObjects.getUrl(i));
-                            photosInfo.add(i+size, jsonObjects.getPhotoInfo(i)[4]);
+                            photosInfo.put(jsonObjects.getUrl(i), jsonObjects.getPhotoInfo(i)[4]);
                         }
                         countLoadingPhotos += jsonObjects.getCountPhotosPerPage();
                     }else {
@@ -70,8 +65,8 @@ public class LoadFromFlickrTask extends AsyncTask<Object, Integer, Void> {
                         break;
                     }
                 }
-                //publishProgress(countLoadingPhotos);
-                countLoadingPhotos = 0;
+                ((RecyclerViewFragment)fragment).setCurCluster_id(page);
+
             } catch (IOException ioe) {
                 Log.d(errorTag, ioe.toString());
             } catch (JSONException je) {
@@ -81,17 +76,15 @@ public class LoadFromFlickrTask extends AsyncTask<Object, Integer, Void> {
             Thread.currentThread().interrupt();
         }
 
-        return null;
+        return photosInfo;
     }
 
     @Override
-    protected void onPostExecute(Void aVoid) {
-        if(fragment != null && photoUrls.size() != 0) {
-            fragment.onGettingResult(photoUrls, photosInfo, photoEnds);
+    protected void onPostExecute(Map aVoid) {
+        if(fragment != null && aVoid.size() != 0) {
+            Log.d(errorTag, "onPostExecute");
+            fragment.onGettingResult(aVoid, photoEnds);
         }
-    }
-    public int getCurClusterId(){
-        return page;
     }
 
     public void setFragment(GettingResults fragment){

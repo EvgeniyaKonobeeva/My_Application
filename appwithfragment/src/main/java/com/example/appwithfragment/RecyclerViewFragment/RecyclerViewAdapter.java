@@ -23,15 +23,15 @@ import java.util.List;
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<ListContent> list;
     private MyImageLoader iml;
-    private Context ctx;
     private static int PROGRESS_TYPE = 1;
     private static int IMAGE_TYPE = 0;
+
+    private boolean lastPhoto = false;
 
 
     public RecyclerViewAdapter(List<ListContent> list, Context ctx){
         this.list = list;
         iml = new MyImageLoader(ctx);
-        this.ctx = ctx;
     }
 
     @Override
@@ -91,6 +91,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             super(view);
              progressBar = (ProgressBar)view.findViewById(R.id.progressBar);
         }
+
     }
 
     @Override

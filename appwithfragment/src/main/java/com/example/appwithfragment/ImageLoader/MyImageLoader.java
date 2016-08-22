@@ -70,8 +70,8 @@ public class MyImageLoader {
     public class MyHandler extends Handler {
         @Override
         public void handleMessage(final Message msg) {
-            //Log.d("HERE","terminating thread");
-                if(msg.arg1 == 2){
+            Log.d("HERE","terminating thread");
+                if(msg.arg1 == 2 || msg.arg1 == 1){
                     oc.putImage(msg.what, (Bitmap) msg.obj);
                     mapLoadingImg.remove(msg.what);
                 }else{

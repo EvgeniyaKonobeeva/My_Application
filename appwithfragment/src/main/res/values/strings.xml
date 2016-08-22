@@ -2,10 +2,12 @@
     <string name="app_name">Flickr photos</string>
     <item name="item_click_support" type="id" />
     <string-array name="list_items">
-        <item>menu 1</item>
-        <item>menu 2</item>
-        <item>menu 3</item>
-        <item>menu 4</item>
+        <item>interestingness</item>
+        <item>plants</item>
+        <item>animals</item>
+        <item>people</item>
+        <item>cities</item>
+        <item>nature</item>
     </string-array>
     <string name="isOpen">Opened</string>
     <string name="isClosed">Closed</string>

@@ -1,4 +1,4 @@
-package com.example.appwithfragment.my_package;
+package com.example.appwithfragment.RecyclerViewFragment;
 
 import org.json.JSONArray;
 import org.json.JSONException;

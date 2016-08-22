@@ -11,8 +11,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.appwithfragment.ListContent;
 import com.example.appwithfragment.R;
 import com.example.appwithfragment.RecyclerViewFragment.RecyclerViewFragment;
+
+import java.util.ArrayList;
 
 /**
  * Created by e.konobeeva on 16.08.2016.
@@ -33,14 +36,12 @@ public class ViewPagerFragment extends Fragment {
         View view = inflater.inflate(R.layout.view_pager, null);
         vp = (ViewPager)view.findViewById(R.id.viewPager);
 
-        final ViewPagerAdapter vpAdapter = new ViewPagerAdapter(this.getChildFragmentManager(), new RecyclerViewFragment().getList(), this);
-
+        final ViewPagerAdapter vpAdapter = new ViewPagerAdapter(this.getChildFragmentManager(),
+                (ArrayList<ListContent>) getArguments().get("recyclerViewFragmentList"), this);
         vp.setAdapter(vpAdapter);
         vp.setCurrentItem((int)getArguments().get(keyPosition));
 
         return view;
-
-
     }
 
     @Override

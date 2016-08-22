@@ -21,8 +21,8 @@ import com.example.appwithfragment.ImageLoader.MyImageLoader.*;
  */
 public class LoadImgRunnable implements Runnable {
     private static final String errorTag = "ERROR LoadImgRunnable";
-    private static final String KEYDrawable = "Drawable";
-    private static final String KEYUrl = "URL";
+    //private static final String KEYDrawable = "Drawable";
+    //private static final String KEYUrl = "URL";
     private MyHandler handler;
     private String url;
     private ImageView iv;
@@ -61,7 +61,7 @@ public class LoadImgRunnable implements Runnable {
                             public void run() {
                                 handler.sendMessage(handler.obtainMessage(url.hashCode(),2,0, bitmap1));
                                 if (iv.getTag().equals(url)) {
-                                    //Log.d("THREAD OPERATION", iv.getTag().toString());
+                                    Log.d("THREAD OPERATION", iv.getTag().toString());
                                     iv.setImageBitmap(bitmap1);
 
                                 }

@@ -22,15 +22,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.example.appwithfragment.my_package.LoadTask;
 import com.example.appwithfragment.supportLib.ItemClickSupport;
 import com.example.appwithfragment.ListContent;
 import com.example.appwithfragment.R;
 
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Map;
 
 /**
  * Created by e.konobeeva on 02.08.2016.
@@ -48,9 +46,6 @@ public class RecyclerViewFragment extends Fragment implements GettingResults {
     private String protocol;
 
     private int curCluster_id;
-    private ArrayList<String> photoUrls;
-    private ArrayList<String> photoTitles;
-
 
     public void setProtocol(String protocol){
         Log.d("setProtocol ", this.getClass().getName());
@@ -76,15 +71,12 @@ public class RecyclerViewFragment extends Fragment implements GettingResults {
         loadingFinished = false;
         lastTaskTerminated = false;
         curCluster_id = 0;
-        photoUrls = new ArrayList<>();
-        photoTitles = new ArrayList<>();
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        test();
         Log.d("Fragment ", "onCreateView ");
         View view = inflater.inflate(R.layout.recycler_view_frag, null);
         recyclerView = setRecyclerView(view, R.id.rl);
@@ -96,23 +88,19 @@ public class RecyclerViewFragment extends Fragment implements GettingResults {
     }
 
     @Override
-    public void onGettingResult(ArrayList<String> photoUrls, ArrayList<String> photosInfo, boolean isTheLast) {
+    public void onGettingResult(Map<String, String> map, boolean isTheLast) {
 
-        ArrayList<String> photosInfo2 = removeObjectsRepets(photosInfo);
-        ArrayList<String> photosUrls2 = removeObjectsRepets(photoUrls);
         int size = list.size();
-        for (int i = size; i < photosInfo2.size(); i++) {
-            ListContent listContent = new ListContent(photosUrls2.get(i), photosInfo2.get(i));
-            list.add(i, listContent);
-            recyclerView.getAdapter().notifyItemChanged(i);
+        for (Map.Entry<String,String> entry : map.entrySet()){
+            //Log.d("RecvFrag" , "onGettingResult key : " + entry.getKey() + " value : " + entry.getValue());
+            ListContent listContent = new ListContent(entry.getKey(), entry.getValue());
+            list.add(size, listContent);
+            recyclerView.getAdapter().notifyItemChanged(size);
+            size++;
         }
         lastTaskTerminated = isTheLast;
         loadingFinished = true;
-        if(task instanceof LoadTask) {
-            curCluster_id = ((LoadTask) task).getCurClusterId();
-        }else{
-            curCluster_id = ((LoadFromFlickrTask) task).getCurClusterId();
-        }
+
 
     }
 
@@ -167,10 +155,11 @@ public class RecyclerViewFragment extends Fragment implements GettingResults {
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
 
             if (dy > 0 && recyclerGridLayout.findLastVisibleItemPosition() >= recyclerView.getAdapter().getItemCount()-1 && loadingFinished && !lastTaskTerminated) {
-                loadImageUrlsTask(task);
+                runLoadImageUrlsTask(task);
                 //Log.d("COUNT COLS", "" + recyclerGridLayout.getSpanCount());
             }else if(lastTaskTerminated && recyclerGridLayout.findLastCompletelyVisibleItemPosition() == recyclerView.getAdapter().getItemCount()-1){
                 Toast.makeText(getActivity(), "all photos uploaded", Toast.LENGTH_SHORT).show();
+                recyclerView.getAdapter().notifyItemRemoved(recyclerGridLayout.findLastCompletelyVisibleItemPosition()+1);
             }
         }
 
@@ -190,14 +179,14 @@ public class RecyclerViewFragment extends Fragment implements GettingResults {
         recyclerView.setAdapter(recyclerViewAdapter);
 
 
-        setSpanSize(recyclerGridLayout, recyclerViewAdapter);
+        this.setSpanSize(recyclerGridLayout, recyclerViewAdapter);
 
         recyclerView.addOnScrollListener(new MyOnScrollListener(recyclerGridLayout));
 
         ItemClickSupport.addTo(recyclerView).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
             @Override
             public void onItemClicked(RecyclerView recyclerView, int position, View v) {
-                ((OnRecyclerViewClickListener)getActivity()).doAction(position);
+                ((OnRecyclerViewClickListener)getActivity()).doAction(position, list);
             }
         });
 
@@ -206,7 +195,7 @@ public class RecyclerViewFragment extends Fragment implements GettingResults {
     }
 
 
-    //метод менеджера - установка в зависимости от позиции viewholder - его определенный тип - колонки или нет
+    //метод менеджера - установка в зависимости от позиции viewholder - его определенный тип - колонки или строка
     public void setSpanSize(final GridLayoutManager gridMan, final RecyclerView.Adapter adapter){
         gridMan.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
@@ -221,28 +210,30 @@ public class RecyclerViewFragment extends Fragment implements GettingResults {
     }
 
 
-    public void loadImageUrlsTask(AsyncTask task){
+    public void runLoadImageUrlsTask(AsyncTask task){
         loadingFinished = false;
         if(task instanceof LoadFromFlickrTask){
-
-
-            task = new LoadFromFlickrTask(this, protocol, photoUrls, photoTitles, curCluster_id);
+            task = new LoadFromFlickrTask(this, protocol);
+            //Log.d("RecVfrag", "task LoadFromFlickrTask ");
             task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
         }else{
             Log.d("cluster current", " " + curCluster_id);
-            task = new LoadTask(this, protocol, photoUrls, photoTitles, curCluster_id, tag);
+            //Log.d("RecVfrag", "task LoadFromFlickrTask ");
+            task = new LoadTask(this, protocol,tag);
             task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
 
     }
 
+    //перое создание фрагмента - проверка интернет соединения, запуск первого таска
     public void tryGetInternetConnection(){
         ConnectivityManager connMgr = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
             Log.d("PROCESS", "connection established");
 
-            this.loadImageUrlsTask(task);
+            this.runLoadImageUrlsTask(task);
 
         } else {
             Log.d("ERROR 0", "connection error");
@@ -269,35 +260,16 @@ public class RecyclerViewFragment extends Fragment implements GettingResults {
     }
 
 
-
-    public ArrayList<String> removeObjectsRepets(ArrayList<String> arr){
-        ArrayList<String> ar2 = new ArrayList<>(arr);
-        for(int i = 0; i< arr.size(); i++ ){
-            int count  = 0;
-            for(int j = 0; j < ar2.size(); j++) {
-                if (arr.get(i).equals(ar2.get(j)) ){
-                    count++;
-                }
-                if (count > 1) {
-                    ar2.remove(j);
-                }
-            }
-
-        }
-        return ar2;
-
+    public int getCurCluster_id(){
+        return curCluster_id;
     }
 
-    public void test(){
-        ArrayList<String> ar = new ArrayList<>();
-        ar.add("d1");
-        ar.add("d2");
-        ar.add("d4");
-        ar.add("d3");
-        ar.add("d4");
-        ar.add("d4");
-
-        Log.i("TEST", Arrays.toString(removeObjectsRepets(ar).toArray()));
-
+    public void setCurCluster_id(int id){
+        curCluster_id = id;
     }
+
+
+
+
+
 }
