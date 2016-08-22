@@ -49,8 +49,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             return new ImageViewHolder(view);
         }else{
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.progress_item, parent, false);
-            //int height  = parent.getMinimumHeight()/6;
-            //view.setMinimumHeight(height);
             return new ProgressViewHolder(view);
         }
     }
@@ -63,7 +61,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             ivh.imageView.setImageDrawable(null);
             String keyUrl = list.get(position).getImgUrl();
             iml.setResourceUrl(keyUrl).setImgInto(ivh.imageView);
-            ivh.textView.setText(list.get(position).getShortTitle());
+            //ivh.textView.setText(list.get(position).getShortTitle());
         } else if (holder instanceof ProgressViewHolder) {
             ProgressViewHolder pvh = (ProgressViewHolder) holder;
             pvh.progressBar.setIndeterminate(true);
@@ -74,12 +72,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
 
     class ImageViewHolder extends RecyclerView.ViewHolder{
-        TextView textView;
+        //TextView textView;
         ImageView imageView;
 
         public ImageViewHolder(View view){
             super(view);
-            textView = (TextView) view.findViewById(R.id.IDTextView);
+            //textView = (TextView) view.findViewById(R.id.IDTextView);
             imageView = (ImageView) view.findViewById(R.id.IDImageView);
         }
 

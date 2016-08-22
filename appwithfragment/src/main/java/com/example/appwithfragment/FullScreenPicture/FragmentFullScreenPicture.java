@@ -68,7 +68,7 @@ public class FragmentFullScreenPicture extends Fragment {
     public void setViews(View view, int imageViewId, int textViewId){
 
         ImageView imgView = (ImageView)view.findViewById(imageViewId);
-        imgView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+        //imgView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
 
         final TextView txt =(TextView)view.findViewById(textViewId);
 

@@ -177,6 +177,7 @@ public class RecyclerViewFragment extends Fragment implements GettingResults {
 
         RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter(list, getActivity());
         recyclerView.setAdapter(recyclerViewAdapter);
+        recyclerView.addItemDecoration(new RecyclerViewDecorator(5));
 
 
         this.setSpanSize(recyclerGridLayout, recyclerViewAdapter);

@@ -1,6 +1,8 @@
 package com.example.appwithfragment;
 
 import android.content.res.Configuration;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.PersistableBundle;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
