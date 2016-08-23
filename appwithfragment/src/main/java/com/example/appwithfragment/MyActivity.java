@@ -21,6 +21,8 @@ import com.example.appwithfragment.RecyclerViewFragment.LoadFromFlickrTask;
 import com.example.appwithfragment.RecyclerViewFragment.OnRecyclerViewClickListener;
 import com.example.appwithfragment.RecyclerViewFragment.RecyclerViewFragment;
 import com.example.appwithfragment.RecyclerViewFragment.LoadTask;
+import com.example.appwithfragment.TabsFragments.FavoritesFragment;
+import com.example.appwithfragment.TabsFragments.TabsFragment;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -57,6 +59,8 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
 
     RecyclerViewFragment recyclerViewFragment;
     ViewPagerFragment viewPagerFragment;
+
+    TabsFragment tabsFragment;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,22 +72,35 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
         Fragment isOpen = getSupportFragmentManager().findFragmentById(R.id.LL);
 
         if(isOpen== null) {
-            recyclerViewFragment = new RecyclerViewFragment();
+            tabsFragment = new TabsFragment();
+            tabsFragment.setListOfFragments(setPhotoFragment(), new FavoritesFragment());
+            addFragment(tabsFragment, R.id.LL, "list_img");
+            /*recyclerViewFragment = new RecyclerViewFragment();
             recyclerViewFragment.setProtocol(protocolInterestingness);
             recyclerViewFragment.setTask(new LoadFromFlickrTask());
             recyclerViewFragment.setRetainInstance(true);
-            addFragment(recyclerViewFragment, R.id.LL, "list_img");
+            addFragment(recyclerViewFragment, R.id.LL, "list_img");*/
         }
 
 
         drawerLayout = setDrawerLayout();
-        actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout,null, R.string.isOpen, R.string.isClosed);
+        actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout,null, R.string.isOpen, R.string.isClosed){
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                //getSupportActionBar().setHomeAsUpIndicator(android.R.drawable.ic);
+            }
 
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed(drawerView);
+                getSupportActionBar().setHomeAsUpIndicator(android.R.drawable.ic_menu_today);
+            }
+        };
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
-
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-       // getSupportActionBar().setHomeAsUpIndicator(android.R.drawable.ic_menu_today);
+        getSupportActionBar().setHomeAsUpIndicator(android.R.drawable.ic_menu_today);
 
     }
 
@@ -149,7 +166,7 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
         Fragment frg;
         switch (position){
             case 0:
-                frg = getSupportFragmentManager().findFragmentByTag("list_img");
+                /*frg = getSupportFragmentManager().findFragmentByTag("list_img");
                 if(frg != null)
                     recyclerViewFragment = (RecyclerViewFragment) frg;
                 else{
@@ -157,23 +174,23 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
                     recyclerViewFragment.setProtocol(protocolInterestingness);
                     recyclerViewFragment.setTask(new LoadFromFlickrTask());
                 }
-                replaceFragment(recyclerViewFragment, R.id.LL, "list_img");
-
+                replaceFragment(recyclerViewFragment, R.id.LL, "list_img");*/
+                setNewFragment2("interestigness");
                 break;
             case 1:
-                setNewFragment("flower");
+                setNewFragment2("flower");
                 break;
             case 2:
-                setNewFragment("animals");
+                setNewFragment2("animals");
                 break;
             case 3:
-                setNewFragment("people");
+                setNewFragment2("people");
                 break;
             case 4:
-                setNewFragment("city");
+                setNewFragment2("city");
                 break;
             case 5:
-                setNewFragment("nature");
+                setNewFragment2("nature");
         }
 
     }
@@ -192,6 +209,28 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
         }
 
         replaceFragment(rf1, R.id.LL, tag);
+    }
+
+    public void setNewFragment2(String tag){
+        Fragment frg = getSupportFragmentManager().findFragmentByTag("list_img");
+        //if(frg == null){
+            tabsFragment = new TabsFragment();
+            //tabsFragment.setListOfFragments(setPhotoFragment(), new FavoritesFragment());
+        //}else {
+            //tabsFragment = (TabsFragment) frg;
+            //Fragment recFrg1 = tabsFragment.getFragmentManager().findFragmentByTag(tag);
+            //Fragment favFrg2 = tabsFragment.getFragmentManager().findFragmentByTag(tag+"F");
+            //if(recFrg1 == null || favFrg2 == null){
+            Fragment recFrg1 = new RecyclerViewFragment().setProtocol(protocol).setTask(new LoadTask()).setTag(tag);
+            Fragment favFrg2 = new FavoritesFragment();
+            //}
+            tabsFragment.setListOfFragments(recFrg1, favFrg2);
+        //}
+        replaceFragment(tabsFragment, R.id.LL, "list_img");
+    }
+
+    public RecyclerViewFragment setPhotoFragment(){
+        return new RecyclerViewFragment().setProtocol(protocolInterestingness).setTask(new LoadFromFlickrTask());
     }
 
 

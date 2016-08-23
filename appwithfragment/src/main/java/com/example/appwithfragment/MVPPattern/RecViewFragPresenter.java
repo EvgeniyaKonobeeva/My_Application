@@ -40,23 +40,22 @@ public class RecViewFragPresenter implements GettingResults, IFragmentPresenter{
         this.fragment = frag;
     }
 
-    public IFragmentPresenter setTask(AsyncTask task){
+    public void setTask(AsyncTask task){
         this.task = task;
-        return this;
     }
 
-    public IFragmentPresenter setProtocol(String protocol){
+    public void setProtocol(String protocol){
         this.protocol = protocol;
-        return this;
+
     }
 
-    public IFragmentPresenter setTag(String tag){
+    public void setTag(String tag){
         this.tag = tag;
         StringBuilder sb = new StringBuilder(protocol);
         sb.append("&tag=").append(tag);
         protocol = sb.toString();
         this.tag = tag;
-        return this;
+
     }
 
     @Override

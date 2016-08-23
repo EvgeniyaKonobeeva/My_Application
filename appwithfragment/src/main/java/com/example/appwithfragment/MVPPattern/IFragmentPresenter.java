@@ -12,7 +12,7 @@ public interface IFragmentPresenter {
     void onCreateFragment();
     void onFragmentDestroy();
     void runLoadImageUrlsTask();
-    IFragmentPresenter setTag(String tag);
-    IFragmentPresenter setProtocol(String protocol);
-    IFragmentPresenter setTask(AsyncTask task);
+    void setTag(String tag);
+    void setProtocol(String protocol);
+    void setTask(AsyncTask task);
 }

@@ -46,18 +46,21 @@ public class RecyclerViewFragment extends Fragment implements IFragment {
     private IFragmentPresenter presenter;
 
 
-    public void setProtocol(String protocol){
+    public RecyclerViewFragment setProtocol(String protocol){
         Log.d("setProtocol ", this.getClass().getName());
         presenter = new RecViewFragPresenter(this);
         presenter.setProtocol(protocol);
+        return this;
     }
 
-    public void setTag(String _tag){
+    public RecyclerViewFragment setTag(String _tag){
         presenter.setTag(_tag);
+        return this;
     }
 
-    public void setTask(AsyncTask task){
+    public RecyclerViewFragment setTask(AsyncTask task){
         presenter.setTask(task);
+        return this;
     }
    
     @Override
@@ -182,6 +185,7 @@ public class RecyclerViewFragment extends Fragment implements IFragment {
     public void setList(ArrayList<ListContent> list) {
         this.list = list;
     }
+
 
 
 }
