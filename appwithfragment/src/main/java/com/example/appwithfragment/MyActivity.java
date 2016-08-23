@@ -81,9 +81,9 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
 
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
 
+        getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        //getSupportActionBar().setHomeButtonEnabled(true);
+       // getSupportActionBar().setHomeAsUpIndicator(android.R.drawable.ic_menu_today);
 
     }
 
