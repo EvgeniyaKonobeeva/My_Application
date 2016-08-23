@@ -9,4 +9,6 @@ import java.util.Map;
  */
 public interface GettingResults {
     void onGettingResult(Map<String, String> photosInfo,  boolean isEnded);
+    int getCurCluster_id();
+    void setCurCluster_id(int clusters_id);
 }

@@ -3,6 +3,8 @@ package com.example.appwithfragment.RecyclerViewFragment;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.example.appwithfragment.MVPPattern.RecViewFragPresenter;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -33,7 +35,6 @@ public class LoadTask extends AsyncTask<Object, Integer, Map>{
     private String protocol;
     private GettingResults fragment;
     private String tag;
-    private ArrayList<String> clustersId;
 
 
     public LoadTask(GettingResults fragment, String protocol, String tag ){
@@ -100,7 +101,7 @@ public class LoadTask extends AsyncTask<Object, Integer, Map>{
         sb.append(tag).append("&cluster_id=");
         protocol = sb.toString();
 
-        int curCluster_id = ((RecyclerViewFragment)fragment).getCurCluster_id();
+        int curCluster_id = fragment.getCurCluster_id();
 
         Map<String,String> map = new HashMap<>();
 
@@ -108,13 +109,9 @@ public class LoadTask extends AsyncTask<Object, Integer, Map>{
 
         while(countLoadingPhotos < loadingPhotosPerOnce){
             if(curCluster_id <  clusters_id.size()) {
-                //sb.append(clusters_id.get(curCluster_id++));
                 String str = protocol+clusters_id.get(curCluster_id++);
-                //Log.d("cl tag  ", clusters_id.get(curCluster_id++));
                 JSONObject photos = getJSONRootPoint(str).getJSONObject("photos");
                 Object[] urlArr = ParserJSONToPhotoUrl.getUrlArray(photos.getJSONArray("photo"));
-                //Log.d("URL ", urlArr.length + "");
-               // Log.d("URL ", Arrays.toString(urlArr));
                 Object[] titles =  ParserJSONToPhotoUrl.getTitleArray(photos.getJSONArray("photo"));
                 for (int i = 0; i <urlArr.length; i++) {
                     map.put(urlArr[i].toString(), titles[i].toString());
@@ -125,7 +122,7 @@ public class LoadTask extends AsyncTask<Object, Integer, Map>{
                 break;
             }
         }
-        ((RecyclerViewFragment)fragment).setCurCluster_id(curCluster_id);
+        fragment.setCurCluster_id(curCluster_id);
         return map;
 
     }

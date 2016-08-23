@@ -28,18 +28,15 @@ public class LoadFromFlickrTask extends AsyncTask<Object, Integer, Map> {
         this.fragment = fragment;
         this.protocol = protocol;
         photoEnds = false;
-
     }
 
     public LoadFromFlickrTask(){}
 
-
     @Override
     protected Map doInBackground(Object... voids) {
 
-
         JSONObjects jsonObjects;
-        int page = ((RecyclerViewFragment)fragment).getCurCluster_id();
+        int page = fragment.getCurCluster_id();
         Log.d(errorTag, "doInBackground PAGE:" + page );
         int countLoadingPhotos = 0;
         int loadingPhotosPerOnce = 50;
@@ -65,7 +62,7 @@ public class LoadFromFlickrTask extends AsyncTask<Object, Integer, Map> {
                         break;
                     }
                 }
-                ((RecyclerViewFragment)fragment).setCurCluster_id(page);
+                fragment.setCurCluster_id(page);
 
             } catch (IOException ioe) {
                 Log.d(errorTag, ioe.toString());
