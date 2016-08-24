@@ -25,11 +25,18 @@ public class TabsFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        Log.d("TabsFragment", "onCreateView " );
         View view = inflater.inflate(R.layout.tabs_layout, null);
 
         viewPager = (ViewPager) view.findViewById(R.id.tabViewPager);
-        viewPager.setAdapter(TabViewPagerAdapter.getInstance(getChildFragmentManager()));
+        viewPager.setOffscreenPageLimit(0);
+        viewPager.setAdapter(new TabViewPagerAdapter(getChildFragmentManager()));
+        //((TabViewPagerAdapter)viewPager.getAdapter()).setMap();
         viewPager.setCurrentItem(0);
+        //viewPager.getAdapter().notifyDataSetChanged();
+        //viewPager.getAdapter().saveState();
+        //
+
 
         TabLayout tabLayout = (TabLayout)view.findViewById(R.id.tabLayout);
         tabLayout.setupWithViewPager(viewPager);
@@ -37,9 +44,12 @@ public class TabsFragment extends Fragment {
     }
 
     public void setTag(String tag){
-        TabViewPagerAdapter.getInstance(getChildFragmentManager()).setTag(tag);
-        TabViewPagerAdapter.getInstance(getChildFragmentManager()).notifyDataSetChanged();
+        Log.d("TabsFragment", "setTag " + tag);
+        ((TabViewPagerAdapter)viewPager.getAdapter()).setTag(tag);
+        viewPager.getAdapter().notifyDataSetChanged();
+        //viewPager.getAdapter().saveState();
         viewPager.setCurrentItem(0);
+
 
     }
 }

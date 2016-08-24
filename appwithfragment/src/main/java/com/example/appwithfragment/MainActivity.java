@@ -12,7 +12,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.i("FrgFullScreenPicture", "activity onDestroy");
+        Log.i("MainActivity", "activity onDestroy");
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {

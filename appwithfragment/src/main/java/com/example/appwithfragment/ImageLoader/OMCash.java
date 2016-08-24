@@ -38,7 +38,7 @@ public class OMCash{
     public boolean setImageTo(int keyUrl, ImageView im){
         synchronized (lock2) {
             if (storage.containsKey(keyUrl) && storage.get(keyUrl).get() != null) {
-                Log.d("OMCash", "getting img out");
+                //Log.d("OMCash", "getting img out");
                 im.setImageBitmap(storage.get(keyUrl).get());
                 lock2.notifyAll();
                 return true;

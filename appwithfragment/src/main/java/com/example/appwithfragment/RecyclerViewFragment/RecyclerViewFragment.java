@@ -43,13 +43,19 @@ public class RecyclerViewFragment extends Fragment implements IFragment {
 
     private ArrayList<ListContent> list;
     private RecyclerView recyclerView;
+    private String tag;
+    private String protocol;
+    private AsyncTask task;
 
-    private IFragmentPresenter presenter = new RecViewFragPresenter(this);
+    private IFragmentPresenter presenter;
 
     public static RecyclerViewFragment getNewInstance(String tag){
+        Log.d("RecyclerViewFragment", "getNewInstance tag " + tag);
         if(tag.isEmpty()){
+            Log.d("RecyclerViewFragment", "getNewInstance if tag " + tag);
             return new RecyclerViewFragment().setProtocol(MyActivity.protocolInterestingness).setTask(new LoadFromFlickrTask());
         }else {
+            Log.d("RecyclerViewFragment", "getNewInstance else tag " + tag);
             return new RecyclerViewFragment().setProtocol(MyActivity.protocol).setTask(new LoadTask()).setTag(tag);
         }
 
@@ -58,17 +64,20 @@ public class RecyclerViewFragment extends Fragment implements IFragment {
     public RecyclerViewFragment setProtocol(String protocol){
         Log.d("setProtocol ", this.getClass().getName());
         //presenter = new RecViewFragPresenter(this);
-        presenter.setProtocol(protocol);
+        this.protocol = protocol;
+        //presenter.setProtocol(protocol);
         return this;
     }
 
     public RecyclerViewFragment setTag(String _tag){
-        presenter.setTag(_tag);
+        this.tag = _tag;
+        //presenter.setTag(_tag);
         return this;
     }
 
     public RecyclerViewFragment setTask(AsyncTask task){
-        presenter.setTask(task);
+        this.task = task;
+        //presenter.setTask(task);
         return this;
     }
    
@@ -77,15 +86,21 @@ public class RecyclerViewFragment extends Fragment implements IFragment {
         super.onCreate(savedInstanceState);
         Log.d("RecyclerViewFragment", "onCreate");
         list = new ArrayList<>();
-        presenter.onCreateFragment();
+        this.setRetainInstance(true);
+
 
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        presenter = new RecViewFragPresenter(this);
+        presenter.onCreateFragment();
+        presenter.setTask(this.task);
+        presenter.setProtocol(this.protocol);
+        presenter.setTag(this.tag);
 
-        Log.d("Fragment ", "onCreateView ");
+        Log.d("RecyclerViewFragment ", "onCreateView ");
         View view = inflater.inflate(R.layout.recycler_view_frag, null);
         recyclerView = setRecyclerView(view, R.id.rl);
         this.setHasOptionsMenu(true);
@@ -101,12 +116,14 @@ public class RecyclerViewFragment extends Fragment implements IFragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+
         getActivity().getMenuInflater().inflate(R.menu.my_menu, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
         RecyclerViewAdapter ra = (RecyclerViewAdapter) recyclerView.getAdapter();
         ra.getMyImageLoader().getDiskCashing().cleanDisk();
         return super.onOptionsItemSelected(item);

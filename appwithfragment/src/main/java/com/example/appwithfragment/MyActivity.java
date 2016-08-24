@@ -17,11 +17,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.example.appwithfragment.FullScreenPicture.ViewPagerFragment;
-import com.example.appwithfragment.RecyclerViewFragment.LoadFromFlickrTask;
 import com.example.appwithfragment.RecyclerViewFragment.OnRecyclerViewClickListener;
 import com.example.appwithfragment.RecyclerViewFragment.RecyclerViewFragment;
 import com.example.appwithfragment.RecyclerViewFragment.LoadTask;
-import com.example.appwithfragment.TabsFragments.FavoritesFragment;
 import com.example.appwithfragment.TabsFragments.TabsFragment;
 
 import java.io.Serializable;
@@ -56,11 +54,10 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
         replaceFragment(viewPagerFragment, R.id.LL, "single_img");
 
     }
-
-    RecyclerViewFragment recyclerViewFragment;
     ViewPagerFragment viewPagerFragment;
 
     TabsFragment tabsFragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,14 +69,18 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
         Fragment isOpen = getSupportFragmentManager().findFragmentById(R.id.LL);
 
         if(isOpen== null) {
+            Log.d("MyActivity", "onCreate isOpen " + isOpen);
             tabsFragment = new TabsFragment();
+            tabsFragment.setRetainInstance(true);
             addFragment(tabsFragment, R.id.LL, "list_img");
+
             /*recyclerViewFragment = new RecyclerViewFragment();
             recyclerViewFragment.setProtocol(protocolInterestingness);
             recyclerViewFragment.setTask(new LoadFromFlickrTask());
             recyclerViewFragment.setRetainInstance(true);
             addFragment(recyclerViewFragment, R.id.LL, "list_img");*/
         }
+        Log.d("MyActivity", "onCreate isOpen " + isOpen);
 
 
         drawerLayout = setDrawerLayout();
@@ -160,23 +161,35 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
     }
 
     public void itemSelected(int position){
+        Fragment frg = getSupportFragmentManager().findFragmentByTag("list_img");
+        if(frg == null){
+            tabsFragment = new TabsFragment();
+        }else {
+            tabsFragment = (TabsFragment) frg;
+        }
         switch (position){
             case 0:
+                Log.d("MyActivity" , "position " + position);
                 tabsFragment.setTag("");
                 break;
             case 1:
+                Log.d("MyActivity" , "position " + position);
                 tabsFragment.setTag("flowers");
                 break;
             case 2:
+                Log.d("MyActivity" , "position " + position);
                 tabsFragment.setTag("animals");
                 break;
             case 3:
+                Log.d("MyActivity" , "position " + position);
                 tabsFragment.setTag("people");
                 break;
             case 4:
+                Log.d("MyActivity" , "position " + position);
                 tabsFragment.setTag("cities");
                 break;
             case 5:
+                Log.d("MyActivity" , "position " + position);
                 tabsFragment.setTag("nature");
                 break;
         }

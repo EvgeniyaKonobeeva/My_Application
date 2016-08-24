@@ -51,11 +51,14 @@ public class RecViewFragPresenter implements GettingResults, IFragmentPresenter{
 
     public void setTag(String tag){
         this.tag = tag;
-        StringBuilder sb = new StringBuilder(protocol);
-        sb.append("&tag=").append(tag);
-        protocol = sb.toString();
-        this.tag = tag;
-
+        if(tag != null){
+            if(!tag.isEmpty()) {
+                StringBuilder sb = new StringBuilder(protocol);
+                sb.append("&tag=").append(tag);
+                protocol = sb.toString();
+                this.tag = tag;
+            }
+        }
     }
 
     @Override
