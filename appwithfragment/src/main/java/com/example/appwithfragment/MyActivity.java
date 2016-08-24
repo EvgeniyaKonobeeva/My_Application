@@ -73,7 +73,6 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
 
         if(isOpen== null) {
             tabsFragment = new TabsFragment();
-            tabsFragment.setListOfFragments(setPhotoFragment(), new FavoritesFragment());
             addFragment(tabsFragment, R.id.LL, "list_img");
             /*recyclerViewFragment = new RecyclerViewFragment();
             recyclerViewFragment.setProtocol(protocolInterestingness);
@@ -157,40 +156,29 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
             }
         });
 
-
-
         return drawerLayout;
     }
 
     public void itemSelected(int position){
-        Fragment frg;
         switch (position){
             case 0:
-                /*frg = getSupportFragmentManager().findFragmentByTag("list_img");
-                if(frg != null)
-                    recyclerViewFragment = (RecyclerViewFragment) frg;
-                else{
-                    recyclerViewFragment = new RecyclerViewFragment();
-                    recyclerViewFragment.setProtocol(protocolInterestingness);
-                    recyclerViewFragment.setTask(new LoadFromFlickrTask());
-                }
-                replaceFragment(recyclerViewFragment, R.id.LL, "list_img");*/
-                setNewFragment2("interestigness");
+                tabsFragment.setTag("");
                 break;
             case 1:
-                setNewFragment2("flower");
+                tabsFragment.setTag("flowers");
                 break;
             case 2:
-                setNewFragment2("animals");
+                tabsFragment.setTag("animals");
                 break;
             case 3:
-                setNewFragment2("people");
+                tabsFragment.setTag("people");
                 break;
             case 4:
-                setNewFragment2("city");
+                tabsFragment.setTag("cities");
                 break;
             case 5:
-                setNewFragment2("nature");
+                tabsFragment.setTag("nature");
+                break;
         }
 
     }
@@ -209,28 +197,6 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
         }
 
         replaceFragment(rf1, R.id.LL, tag);
-    }
-
-    public void setNewFragment2(String tag){
-        Fragment frg = getSupportFragmentManager().findFragmentByTag("list_img");
-        //if(frg == null){
-            tabsFragment = new TabsFragment();
-            //tabsFragment.setListOfFragments(setPhotoFragment(), new FavoritesFragment());
-        //}else {
-            //tabsFragment = (TabsFragment) frg;
-            //Fragment recFrg1 = tabsFragment.getFragmentManager().findFragmentByTag(tag);
-            //Fragment favFrg2 = tabsFragment.getFragmentManager().findFragmentByTag(tag+"F");
-            //if(recFrg1 == null || favFrg2 == null){
-            Fragment recFrg1 = new RecyclerViewFragment().setProtocol(protocol).setTask(new LoadTask()).setTag(tag);
-            Fragment favFrg2 = new FavoritesFragment();
-            //}
-            tabsFragment.setListOfFragments(recFrg1, favFrg2);
-        //}
-        replaceFragment(tabsFragment, R.id.LL, "list_img");
-    }
-
-    public RecyclerViewFragment setPhotoFragment(){
-        return new RecyclerViewFragment().setProtocol(protocolInterestingness).setTask(new LoadFromFlickrTask());
     }
 
 

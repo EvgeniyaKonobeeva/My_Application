@@ -14,6 +14,10 @@ import android.view.ViewGroup;
 public class FavoritesFragment extends Fragment {
     RecyclerView recyclerView;
 
+    public static FavoritesFragment getNewInstance(){
+        return new FavoritesFragment();
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

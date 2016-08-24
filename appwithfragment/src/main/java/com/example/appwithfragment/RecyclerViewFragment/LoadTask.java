@@ -41,7 +41,7 @@ public class LoadTask extends AsyncTask<Object, Integer, Map>{
         this.fragment = fragment;
         this.protocol = protocol;
         this.tag = tag;
-        Log.d("LoadTask ", tag);
+        //Log.d("LoadTask ", tag);
     }
 
     public LoadTask() {}

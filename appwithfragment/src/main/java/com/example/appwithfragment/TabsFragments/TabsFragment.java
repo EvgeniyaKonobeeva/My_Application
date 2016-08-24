@@ -16,9 +16,10 @@ import com.example.appwithfragment.R;
 /**
  * Created by e.konobeeva on 23.08.2016.
  */
+
+//TODO make method to give tag to the adapter
 public class TabsFragment extends Fragment {
 
-    private Fragment[] listOfFragments = new Fragment[2];
     private ViewPager viewPager;
 
     @Nullable
@@ -27,22 +28,18 @@ public class TabsFragment extends Fragment {
         View view = inflater.inflate(R.layout.tabs_layout, null);
 
         viewPager = (ViewPager) view.findViewById(R.id.tabViewPager);
-        viewPager.setAdapter(new TabViewPagerAdapter(this.getChildFragmentManager(), listOfFragments));
+        viewPager.setAdapter(TabViewPagerAdapter.getInstance(getChildFragmentManager()));
+        viewPager.setCurrentItem(0);
 
         TabLayout tabLayout = (TabLayout)view.findViewById(R.id.tabLayout);
         tabLayout.setupWithViewPager(viewPager);
         return view;
     }
 
-    public void setListOfFragments(Fragment... fragments){
-        for(int i = 0; i < fragments.length; i++){
-            listOfFragments[i] = fragments[i];
-        }
-        if( viewPager != null){
-            viewPager.getAdapter().notifyDataSetChanged();
-            viewPager.setCurrentItem(0);
-            Log.d("TabsFragment", "setListOfFragments if ");
-        }
+    public void setTag(String tag){
+        TabViewPagerAdapter.getInstance(getChildFragmentManager()).setTag(tag);
+        TabViewPagerAdapter.getInstance(getChildFragmentManager()).notifyDataSetChanged();
+        viewPager.setCurrentItem(0);
 
     }
 }

@@ -24,6 +24,7 @@ import android.view.ViewGroup;
 import com.example.appwithfragment.MVPPattern.IFragment;
 import com.example.appwithfragment.MVPPattern.IFragmentPresenter;
 import com.example.appwithfragment.MVPPattern.RecViewFragPresenter;
+import com.example.appwithfragment.MyActivity;
 import com.example.appwithfragment.supportLib.ItemClickSupport;
 import com.example.appwithfragment.ListContent;
 import com.example.appwithfragment.R;
@@ -43,12 +44,20 @@ public class RecyclerViewFragment extends Fragment implements IFragment {
     private ArrayList<ListContent> list;
     private RecyclerView recyclerView;
 
-    private IFragmentPresenter presenter;
+    private IFragmentPresenter presenter = new RecViewFragPresenter(this);
 
+    public static RecyclerViewFragment getNewInstance(String tag){
+        if(tag.isEmpty()){
+            return new RecyclerViewFragment().setProtocol(MyActivity.protocolInterestingness).setTask(new LoadFromFlickrTask());
+        }else {
+            return new RecyclerViewFragment().setProtocol(MyActivity.protocol).setTask(new LoadTask()).setTag(tag);
+        }
+
+    }
 
     public RecyclerViewFragment setProtocol(String protocol){
         Log.d("setProtocol ", this.getClass().getName());
-        presenter = new RecViewFragPresenter(this);
+        //presenter = new RecViewFragPresenter(this);
         presenter.setProtocol(protocol);
         return this;
     }
@@ -68,7 +77,6 @@ public class RecyclerViewFragment extends Fragment implements IFragment {
         super.onCreate(savedInstanceState);
         Log.d("RecyclerViewFragment", "onCreate");
         list = new ArrayList<>();
-
         presenter.onCreateFragment();
 
     }
