@@ -11,11 +11,11 @@ import android.view.ViewGroup;
 /**
  * Created by e.konobeeva on 23.08.2016.
  */
-public class FavoritesFragment extends Fragment {
+public class LikedPhotosFragment extends Fragment {
     RecyclerView recyclerView;
 
-    public static FavoritesFragment getNewInstance(){
-        return new FavoritesFragment();
+    public static LikedPhotosFragment getNewInstance(){
+        return new LikedPhotosFragment();
     }
 
     @Nullable

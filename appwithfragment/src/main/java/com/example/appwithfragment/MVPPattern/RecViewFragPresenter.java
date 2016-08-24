@@ -13,13 +13,12 @@ import android.widget.Toast;
 
 import com.example.appwithfragment.ListContent;
 import com.example.appwithfragment.RecyclerViewFragment.GettingResults;
-import com.example.appwithfragment.RecyclerViewFragment.LoadFromFlickrTask;
-import com.example.appwithfragment.RecyclerViewFragment.LoadTask;
+import com.example.appwithfragment.RecyclerViewFragment.Tasks.LoadFromFlickrTask;
+import com.example.appwithfragment.RecyclerViewFragment.Tasks.LoadTask;
 import com.example.appwithfragment.RecyclerViewFragment.RecyclerViewAdapter;
 
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 /**

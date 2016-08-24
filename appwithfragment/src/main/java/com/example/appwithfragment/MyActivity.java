@@ -1,8 +1,6 @@
 package com.example.appwithfragment;
 
 import android.content.res.Configuration;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.PersistableBundle;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -19,7 +17,9 @@ import android.widget.ListView;
 import com.example.appwithfragment.FullScreenPicture.ViewPagerFragment;
 import com.example.appwithfragment.RecyclerViewFragment.OnRecyclerViewClickListener;
 import com.example.appwithfragment.RecyclerViewFragment.RecyclerViewFragment;
-import com.example.appwithfragment.RecyclerViewFragment.LoadTask;
+import com.example.appwithfragment.RecyclerViewFragment.Tasks.LoadTask;
+import com.example.appwithfragment.TabsFragments.IOnLikePhotoListener;
+import com.example.appwithfragment.TabsFragments.OnLikePhotoListener;
 import com.example.appwithfragment.TabsFragments.TabsFragment;
 
 import java.io.Serializable;
@@ -29,42 +29,48 @@ import java.util.ArrayList;
  * Created by Евгения on 15.08.2016.
  */
 public class MyActivity extends MainActivity implements OnRecyclerViewClickListener, Serializable {
-    private static final String keyContext = "Context";
-    private static final String keyPosition = "position";
+    public static final String keyContext = "Context";
+    public static final String keyPosition = "position";
+    public static final String keyList = "recyclerViewFragmentList";
+    public static final String keyLikeListener = "likeListener";
+
+
     public static final String protocolInterestingness = "https://api.flickr.com/services/rest/?method=flickr.interestingness.getList&" +
             "api_key=b14e644ffd373999f625f4d2ba244522&format=json&nojsoncallback=1";
     public static final String protocol = "https://api.flickr.com/services/rest/?method=flickr.tags.getClusters&" +
             "api_key=b14e644ffd373999f625f4d2ba244522&format=json&nojsoncallback=1";
 
+
     private ActionBarDrawerToggle actionBarDrawerToggle;
-    DrawerLayout drawerLayout;
+    private DrawerLayout drawerLayout;
+    private ViewPagerFragment viewPagerFragment;
+    private TabsFragment tabsFragment;
 
 
     @Override
-    public void doAction(int pos, ArrayList<ListContent> list) {
+    public void doAction(int pos, ArrayList<ListContent> list, IOnLikePhotoListener onLPListener) {
 
         Log.i("FrgFullScreenPicture", "create new FragmentFullScreenPicture");
         viewPagerFragment = new ViewPagerFragment();
         Bundle bundle = new Bundle();
+
         bundle.putInt(keyPosition, pos);
         bundle.putSerializable(keyContext, this);
-        bundle.putSerializable("recyclerViewFragmentList", list);
+        bundle.putSerializable(keyList, list);
+        bundle.putSerializable(keyLikeListener, onLPListener);
 
         viewPagerFragment.setArguments(bundle);
         replaceFragment(viewPagerFragment, R.id.LL, "single_img");
 
     }
-    ViewPagerFragment viewPagerFragment;
 
-    TabsFragment tabsFragment;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
-
-
 
         Fragment isOpen = getSupportFragmentManager().findFragmentById(R.id.LL);
 
@@ -73,12 +79,6 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
             tabsFragment = new TabsFragment();
             tabsFragment.setRetainInstance(true);
             addFragment(tabsFragment, R.id.LL, "list_img");
-
-            /*recyclerViewFragment = new RecyclerViewFragment();
-            recyclerViewFragment.setProtocol(protocolInterestingness);
-            recyclerViewFragment.setTask(new LoadFromFlickrTask());
-            recyclerViewFragment.setRetainInstance(true);
-            addFragment(recyclerViewFragment, R.id.LL, "list_img");*/
         }
         Log.d("MyActivity", "onCreate isOpen " + isOpen);
 
@@ -88,7 +88,6 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
             @Override
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
-                //getSupportActionBar().setHomeAsUpIndicator(android.R.drawable.ic);
             }
 
             @Override
@@ -98,6 +97,7 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
             }
         };
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
+
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(android.R.drawable.ic_menu_today);

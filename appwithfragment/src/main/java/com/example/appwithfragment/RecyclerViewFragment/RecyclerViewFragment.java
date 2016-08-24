@@ -1,12 +1,7 @@
 package com.example.appwithfragment.RecyclerViewFragment;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.support.v4.app.*;
-import android.content.Context;
 import android.content.res.Configuration;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
@@ -25,14 +20,16 @@ import com.example.appwithfragment.MVPPattern.IFragment;
 import com.example.appwithfragment.MVPPattern.IFragmentPresenter;
 import com.example.appwithfragment.MVPPattern.RecViewFragPresenter;
 import com.example.appwithfragment.MyActivity;
+import com.example.appwithfragment.RecyclerViewFragment.Tasks.LoadFromFlickrTask;
+import com.example.appwithfragment.RecyclerViewFragment.Tasks.LoadTask;
+import com.example.appwithfragment.TabsFragments.IOnLikePhotoListener;
+import com.example.appwithfragment.TabsFragments.OnLikePhotoListener;
 import com.example.appwithfragment.supportLib.ItemClickSupport;
 import com.example.appwithfragment.ListContent;
 import com.example.appwithfragment.R;
 
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Created by e.konobeeva on 02.08.2016.
@@ -43,9 +40,12 @@ public class RecyclerViewFragment extends Fragment implements IFragment {
 
     private ArrayList<ListContent> list;
     private RecyclerView recyclerView;
+
     private String tag;
     private String protocol;
     private AsyncTask task;
+
+    private IOnLikePhotoListener likePhotoListener;
 
     private IFragmentPresenter presenter;
 
@@ -63,21 +63,17 @@ public class RecyclerViewFragment extends Fragment implements IFragment {
 
     public RecyclerViewFragment setProtocol(String protocol){
         Log.d("setProtocol ", this.getClass().getName());
-        //presenter = new RecViewFragPresenter(this);
         this.protocol = protocol;
-        //presenter.setProtocol(protocol);
         return this;
     }
 
     public RecyclerViewFragment setTag(String _tag){
         this.tag = _tag;
-        //presenter.setTag(_tag);
         return this;
     }
 
     public RecyclerViewFragment setTask(AsyncTask task){
         this.task = task;
-        //presenter.setTask(task);
         return this;
     }
    
@@ -86,8 +82,8 @@ public class RecyclerViewFragment extends Fragment implements IFragment {
         super.onCreate(savedInstanceState);
         Log.d("RecyclerViewFragment", "onCreate");
         list = new ArrayList<>();
+        likePhotoListener = new OnLikePhotoListener();
         this.setRetainInstance(true);
-
 
     }
 
@@ -173,7 +169,7 @@ public class RecyclerViewFragment extends Fragment implements IFragment {
         ItemClickSupport.addTo(recyclerView).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
             @Override
             public void onItemClicked(RecyclerView recyclerView, int position, View v) {
-                ((OnRecyclerViewClickListener)getActivity()).doAction(position, list);
+                ((OnRecyclerViewClickListener)getActivity()).doAction(position, list, likePhotoListener);
             }
         });
 

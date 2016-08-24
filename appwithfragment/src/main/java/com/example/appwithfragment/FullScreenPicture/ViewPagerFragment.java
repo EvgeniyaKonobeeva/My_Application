@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.appwithfragment.ListContent;
+import com.example.appwithfragment.MyActivity;
 import com.example.appwithfragment.R;
 import com.example.appwithfragment.RecyclerViewFragment.RecyclerViewFragment;
 
@@ -21,7 +22,7 @@ import java.util.ArrayList;
  * Created by e.konobeeva on 16.08.2016.
  */
 public class ViewPagerFragment extends Fragment {
-    private static final String keyPosition = "position";
+
     ViewPager vp;
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -35,11 +36,10 @@ public class ViewPagerFragment extends Fragment {
         Log.d("ViewPagerFragment", "onCreateView");
         View view = inflater.inflate(R.layout.view_pager, null);
         vp = (ViewPager)view.findViewById(R.id.viewPager);
-
-        final ViewPagerAdapter vpAdapter = new ViewPagerAdapter(this.getChildFragmentManager(),
-                (ArrayList<ListContent>) getArguments().get("recyclerViewFragmentList"), this);
+        vp.setOffscreenPageLimit(0);
+        final ViewPagerAdapter vpAdapter = new ViewPagerAdapter(this.getChildFragmentManager(), this);
         vp.setAdapter(vpAdapter);
-        vp.setCurrentItem((int)getArguments().get(keyPosition));
+        vp.setCurrentItem((int)getArguments().get(MyActivity.keyPosition));
 
         return view;
     }

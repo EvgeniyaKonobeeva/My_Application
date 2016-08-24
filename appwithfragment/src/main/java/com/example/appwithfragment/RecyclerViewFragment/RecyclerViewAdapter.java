@@ -26,8 +26,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private static int PROGRESS_TYPE = 1;
     private static int IMAGE_TYPE = 0;
 
-    private boolean lastPhoto = false;
-
 
     public RecyclerViewAdapter(List<ListContent> list, Context ctx){
         this.list = list;

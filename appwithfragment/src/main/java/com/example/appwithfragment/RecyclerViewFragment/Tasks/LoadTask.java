@@ -1,9 +1,11 @@
-package com.example.appwithfragment.RecyclerViewFragment;
+package com.example.appwithfragment.RecyclerViewFragment.Tasks;
 
 import android.os.AsyncTask;
 import android.util.Log;
 
 import com.example.appwithfragment.MVPPattern.RecViewFragPresenter;
+import com.example.appwithfragment.RecyclerViewFragment.GettingResults;
+import com.example.appwithfragment.RecyclerViewFragment.ParserJSONToPhotoUrl;
 
 import org.json.JSONArray;
 import org.json.JSONException;

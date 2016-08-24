@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -15,23 +16,32 @@ import com.example.appwithfragment.ImageLoader.MyImageLoader;
 import com.example.appwithfragment.ListContent;
 import com.example.appwithfragment.MyActivity;
 import com.example.appwithfragment.R;
+import com.example.appwithfragment.TabsFragments.IOnLikePhotoListener;
 
 /**
  * Created by e.konobeeva on 02.08.2016.
  */
 public class FragmentFullScreenPicture extends Fragment {
     public static final String TAG = "FrgFullScreenPicture";
-    private static final String keyContext = "Context";
     private static final String keyListContent = "ListContent";
+    private static final String keyIsLiked = "liked";
+    private IOnLikePhotoListener onLikePhotoListener;
+    private boolean isLiked = false;
+    private ImageButton imgButton;
 
 
-    public static FragmentFullScreenPicture newInstance(ListContent lc, MyActivity ctx ){
+    public static FragmentFullScreenPicture newInstance(ListContent lc, MyActivity ctx, IOnLikePhotoListener onLikePhotoListener){
         Log.d("FragmentFullPicture", "Create single pic");
         FragmentFullScreenPicture f = new FragmentFullScreenPicture();
+
         Bundle b = new Bundle();
         b.putSerializable(keyListContent, lc);
-        b.putSerializable(keyContext, ctx);
+        b.putSerializable(MyActivity.keyContext, ctx);
+        b.putSerializable(MyActivity.keyLikeListener, onLikePhotoListener);
+        b.putBoolean(keyIsLiked, onLikePhotoListener.isLikedPhoto(lc));
+
         f.setArguments(b);
+
         return f;
     }
 
@@ -72,7 +82,7 @@ public class FragmentFullScreenPicture extends Fragment {
 
         final TextView txt =(TextView)view.findViewById(textViewId);
 
-        MyImageLoader iml = new MyImageLoader((Context) getArguments().get(keyContext));
+        MyImageLoader iml = new MyImageLoader((Context) getArguments().get(MyActivity.keyContext));
 
         final ListContent lc = (ListContent) getArguments().get(keyListContent);
         String url = lc.getImgUrl();
@@ -86,6 +96,39 @@ public class FragmentFullScreenPicture extends Fragment {
                 txt.setText(lc.getFullTitle());
             }
         });
+
+
+        isLiked = (boolean)getArguments().get(keyIsLiked);
+        onLikePhotoListener = (IOnLikePhotoListener)getArguments().get(MyActivity.keyLikeListener);
+
+        imgButton = (ImageButton)view.findViewById(R.id.imageButton);
+        if (isLiked) {
+            //лайнуто
+            imgButton.setImageResource(R.mipmap.favorite_heart_button);
+        }
+
+        imgButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (isLiked) {
+                    imgButton.setImageResource(R.mipmap.heart);
+                    onLikePhotoListener.removePhoto(lc);
+                    isLiked = false;
+                }
+                else{
+                    imgButton.setImageResource(R.mipmap.favorite_heart_button);
+                    onLikePhotoListener.onLikePhotoListener(lc);
+                    isLiked = true;
+                }
+
+            }
+        });
+
+
     }
+
+
+
+
 
 }

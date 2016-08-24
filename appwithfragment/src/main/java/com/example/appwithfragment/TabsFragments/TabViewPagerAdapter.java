@@ -1,20 +1,12 @@
 package com.example.appwithfragment.TabsFragments;
 
-import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.ViewGroup;
 
-import com.example.appwithfragment.R;
 import com.example.appwithfragment.RecyclerViewFragment.RecyclerViewFragment;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by e.konobeeva on 23.08.2016.
@@ -61,7 +53,7 @@ public class TabViewPagerAdapter extends FragmentPagerAdapter {
             return f;
         }else{
             Log.d("TabViewPagerAdapter", "getItem tag " + tag);
-            Fragment f= new FavoritesFragment();
+            Fragment f= new LikedPhotosFragment();
 
             return f;
         }

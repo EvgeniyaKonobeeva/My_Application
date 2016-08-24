@@ -17,7 +17,6 @@ import com.example.appwithfragment.R;
  * Created by e.konobeeva on 23.08.2016.
  */
 
-//TODO make method to give tag to the adapter
 public class TabsFragment extends Fragment {
 
     private ViewPager viewPager;
