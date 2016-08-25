@@ -29,6 +29,7 @@ import com.example.appwithfragment.ListContent;
 import com.example.appwithfragment.R;
 
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -36,7 +37,7 @@ import java.util.ArrayList;
  * фрагмент, содержащий RecyclerView.
  * выполняет задания по загрузке url изображений - LoadFromFlickrTask
  */
-public class RecyclerViewFragment extends Fragment implements IFragment {
+public class RecyclerViewFragment extends ARecyclerViewFragment implements IFragment, Serializable {
 
     private ArrayList<ListContent> list;
     private RecyclerView recyclerView;
@@ -53,10 +54,14 @@ public class RecyclerViewFragment extends Fragment implements IFragment {
         Log.d("RecyclerViewFragment", "getNewInstance tag " + tag);
         if(tag.isEmpty()){
             Log.d("RecyclerViewFragment", "getNewInstance if tag " + tag);
-            return new RecyclerViewFragment().setProtocol(MyActivity.protocolInterestingness).setTask(new LoadFromFlickrTask());
+            RecyclerViewFragment fragment = new RecyclerViewFragment().setProtocol(MyActivity.protocolInterestingness).setTask(new LoadFromFlickrTask());
+            fragment.likePhotoListener = new OnLikePhotoListener();
+            return fragment;
         }else {
             Log.d("RecyclerViewFragment", "getNewInstance else tag " + tag);
-            return new RecyclerViewFragment().setProtocol(MyActivity.protocol).setTask(new LoadTask()).setTag(tag);
+            RecyclerViewFragment fragment = new RecyclerViewFragment().setProtocol(MyActivity.protocol).setTask(new LoadTask()).setTag(tag);
+            fragment.likePhotoListener = new OnLikePhotoListener();
+            return fragment;
         }
 
     }
@@ -82,7 +87,9 @@ public class RecyclerViewFragment extends Fragment implements IFragment {
         super.onCreate(savedInstanceState);
         Log.d("RecyclerViewFragment", "onCreate");
         list = new ArrayList<>();
-        likePhotoListener = new OnLikePhotoListener();
+        if(likePhotoListener == null){
+            likePhotoListener = new OnLikePhotoListener();
+        }
         this.setRetainInstance(true);
 
     }
@@ -126,13 +133,7 @@ public class RecyclerViewFragment extends Fragment implements IFragment {
 
     }
 
-    public boolean landOrientation() {
-        if (getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            return true;
-        } else {
-            return false;
-        }
-    }
+
 
     public class MyOnScrollListener extends RecyclerView.OnScrollListener {
         GridLayoutManager recyclerGridLayout;
@@ -166,12 +167,7 @@ public class RecyclerViewFragment extends Fragment implements IFragment {
 
         recyclerView.addOnScrollListener(new MyOnScrollListener(recyclerGridLayout));
 
-        ItemClickSupport.addTo(recyclerView).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
-            @Override
-            public void onItemClicked(RecyclerView recyclerView, int position, View v) {
-                ((OnRecyclerViewClickListener)getActivity()).doAction(position, list, likePhotoListener);
-            }
-        });
+        setOnItemClickListener(recyclerView, list, likePhotoListener);
 
         return recyclerView;
 
@@ -179,18 +175,7 @@ public class RecyclerViewFragment extends Fragment implements IFragment {
 
 
     //метод менеджера - установка в зависимости от позиции viewholder - его определенный тип - колонки или строка
-    public void setSpanSize(final GridLayoutManager gridMan, final RecyclerView.Adapter adapter){
-        gridMan.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-            @Override
-            public int getSpanSize(int position) {
-                if(adapter.getItemViewType(position) == 1)
-                    return gridMan.getSpanCount();
-                else if(adapter.getItemViewType(position) == 0){
-                    return 1;
-                }else return -1;
-            }
-        });
-    }
+
     @Override
     public ArrayList<ListContent> getList()
     {
@@ -207,6 +192,8 @@ public class RecyclerViewFragment extends Fragment implements IFragment {
         this.list = list;
     }
 
-
+    public IOnLikePhotoListener getLikePhotoListener(){
+        return likePhotoListener;
+    }
 
 }

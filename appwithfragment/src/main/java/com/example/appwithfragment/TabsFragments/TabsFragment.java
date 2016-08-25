@@ -28,7 +28,7 @@ public class TabsFragment extends Fragment {
         View view = inflater.inflate(R.layout.tabs_layout, null);
 
         viewPager = (ViewPager) view.findViewById(R.id.tabViewPager);
-        viewPager.setOffscreenPageLimit(0);
+        viewPager.setOffscreenPageLimit(1);
         viewPager.setAdapter(new TabViewPagerAdapter(getChildFragmentManager()));
         //((TabViewPagerAdapter)viewPager.getAdapter()).setMap();
         viewPager.setCurrentItem(0);

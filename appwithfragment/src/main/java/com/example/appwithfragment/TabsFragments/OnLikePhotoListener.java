@@ -48,4 +48,6 @@ public class OnLikePhotoListener implements IOnLikePhotoListener{
         Log.d("OnLikePhotoListener", "removePhoto " + lc);
         likedList.remove(lc);
     }
+
+
 }

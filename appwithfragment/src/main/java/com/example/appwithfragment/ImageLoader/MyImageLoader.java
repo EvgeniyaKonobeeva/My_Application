@@ -53,7 +53,7 @@ public class MyImageLoader {
     }
 
     public MyImageLoader setImgInto(final ImageView iv) {
-        //Log.d("HERE", "call MyImageLoader");
+        Log.d("MyImageLoader", "call MyImageLoader");
         iv.setTag(resUrl);
         if (!oc.setImageTo(resUrl.hashCode(), iv)) {
            if (!mapLoadingImg.containsKey(resUrl.hashCode())) {

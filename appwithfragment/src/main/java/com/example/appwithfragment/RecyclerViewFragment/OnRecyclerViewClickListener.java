@@ -7,10 +7,11 @@ import com.example.appwithfragment.TabsFragments.IOnLikePhotoListener;
 import com.example.appwithfragment.TabsFragments.OnLikePhotoListener;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by e.konobeeva on 16.08.2016.
  */
 public interface OnRecyclerViewClickListener {
-    void doAction(int object, ArrayList<ListContent> urls, IOnLikePhotoListener onLPListener);
+    void doAction(int object, List<ListContent> urls, IOnLikePhotoListener onLPListener);
 }

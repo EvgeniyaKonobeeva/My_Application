@@ -10,6 +10,7 @@ import com.example.appwithfragment.ListContent;
 import com.example.appwithfragment.MyActivity;
 import com.example.appwithfragment.TabsFragments.IOnLikePhotoListener;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,7 +23,7 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
     public ViewPagerAdapter(FragmentManager fm, Fragment viewPagerFragment){
         super(fm);
         Log.d("ViewPagerAdapter", "Create adapter");
-        this.list = (List) viewPagerFragment.getArguments().get(MyActivity.keyList);
+        this.list = (ArrayList<ListContent>) viewPagerFragment.getArguments().get(MyActivity.keyList);
         this.viewPagerFragment = viewPagerFragment;
     }
 

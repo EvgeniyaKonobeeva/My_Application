@@ -20,18 +20,10 @@ public class TabViewPagerAdapter extends FragmentPagerAdapter {
     private static TabViewPagerAdapter tabViewPagerAdapter;
     private static String tag = "";
     private final static int countItems = 2;
+    private IOnLikePhotoListener likePhotoListener;
 
     //private FragmentManager fragmentManager;
 
-    public static TabViewPagerAdapter getInstance(FragmentManager fm){
-        if(tabViewPagerAdapter == null){
-            Log.d("TabViewPagerAdapter", "getInstance new");
-            return (tabViewPagerAdapter = new TabViewPagerAdapter(fm));
-        }else {
-            Log.d("TabViewPagerAdapter", "getInstance old");
-            return tabViewPagerAdapter;
-        }
-    }
     public TabViewPagerAdapter(FragmentManager fm){
 
         super(fm);
@@ -46,15 +38,16 @@ public class TabViewPagerAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int position) {
         Log.d("TabViewPagerAdapter", "getItem");
+
         if(position % 2 == 0){
             Log.d("TabViewPagerAdapter", "getItem tag " + tag);
             Fragment f= RecyclerViewFragment.getNewInstance(tag);
-
+            likePhotoListener = ((RecyclerViewFragment)f).getLikePhotoListener();
             return f;
         }else{
             Log.d("TabViewPagerAdapter", "getItem tag " + tag);
-            Fragment f= new LikedPhotosFragment();
-
+            //RecyclerViewFragment recyclerViewFragment = (RecyclerViewFragment) getItem(0);
+            Fragment f= LikedPhotosFragment.getNewInstance(likePhotoListener);
             return f;
         }
     }
@@ -77,7 +70,6 @@ public class TabViewPagerAdapter extends FragmentPagerAdapter {
         Log.d("TabViewPagerAdapter", "instantiateItem tag " + tag);
         //Log.d("TabViewPagerAdapter", "instantiateItem " + super.instantiateItem(container, position));
         //fragmentMap.put(getItemId(position), )
-        Object f = super.instantiateItem(container, position);
         return super.instantiateItem(container, position);
     }
 
