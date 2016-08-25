@@ -19,7 +19,7 @@ public class DBHelper extends SQLiteOpenHelper {
     /*col category table*/
     public final static String tableName = "categories";
     public final static String category_col = "category";
-    public final static String category_id = "category_id";
+    public final static String category_id = "categories_id";
 
 
     /*col likes table*/
@@ -31,12 +31,12 @@ public class DBHelper extends SQLiteOpenHelper {
     public final static String categoryId = "category_id";
 
 
-    private String createCategoryTableQuery = "create table " + tableName + " ( categories_id" +
+    private String createCategoryTableQuery = "create table " + tableName + " ( " + category_id +
             " integer primary key autoincrement, " + category_col +
             " text not null); ";
 
-    private String createLikesTableQuery = "create table likes ( likes_id integer primary key desc, " +
-            "url text not null, title text not null, isliked boolean not null, category_id foreign key references " + tableName + "( categories_id )";
+    private String createLikesTableQuery = "create table likes ( likes_id integer primary key autoincrement, " +
+            "url text not null, title text not null, isliked boolean not null, category_id integer);";
 
     public DBHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version){
         super(context, name, factory, version);
@@ -44,6 +44,8 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public DBHelper(Context ctx){
         super(ctx, DB_NAME, null, DB_VERSION);
+        SQLiteDatabase sqLiteDatabase= this.getWritableDatabase();
+        sqLiteDatabase.delete(likesTableN, null, null);
     }
 
     @Override

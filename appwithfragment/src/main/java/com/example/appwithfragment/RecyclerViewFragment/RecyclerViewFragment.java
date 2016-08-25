@@ -54,16 +54,18 @@ public class RecyclerViewFragment extends ARecyclerViewFragment implements IFrag
 
     private IFragmentPresenter presenter;
 
-    public static RecyclerViewFragment getNewInstance(String tag){
+    public static RecyclerViewFragment getNewInstance(String tag, DBHelper dbHelper){
         Log.d("RecyclerViewFragment", "getNewInstance tag " + tag);
         if(tag.isEmpty()){
             Log.d("RecyclerViewFragment", "getNewInstance if tag " + tag);
-            RecyclerViewFragment fragment = new RecyclerViewFragment().setProtocol(MyActivity.protocolInterestingness).setTask(new LoadFromFlickrTask());
+            RecyclerViewFragment fragment = new RecyclerViewFragment().setProtocol(MyActivity.protocolInterestingness)
+                    .setTask(new LoadFromFlickrTask()).setDbHelper(dbHelper);
             //fragment.likePhotoListener = new OnLikePhotoListener(fragment.getActivity());
             return fragment;
         }else {
             Log.d("RecyclerViewFragment", "getNewInstance else tag " + tag);
-            RecyclerViewFragment fragment = new RecyclerViewFragment().setProtocol(MyActivity.protocol).setTask(new LoadTask()).setTag(tag);
+            RecyclerViewFragment fragment = new RecyclerViewFragment().setProtocol(MyActivity.protocol)
+                    .setTask(new LoadTask()).setTag(tag).setDbHelper(dbHelper);
             //fragment.likePhotoListener = new OnLikePhotoListener(fragment.getActivity());
             return fragment;
         }
@@ -86,11 +88,15 @@ public class RecyclerViewFragment extends ARecyclerViewFragment implements IFrag
         return this;
     }
 
+    public RecyclerViewFragment setDbHelper(DBHelper dbHelper){
+        this.dbHelper = dbHelper;
+        return this;
+    }
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         Log.d("RecyclerViewFragment", "onActivityCreated");
-        dbHelper = new DBHelper(getActivity());
     }
 
     @Override
@@ -99,11 +105,9 @@ public class RecyclerViewFragment extends ARecyclerViewFragment implements IFrag
         Log.d("RecyclerViewFragment", "onCreate");
         list = new ArrayList<>();
         if(likePhotoListener == null){
-            likePhotoListener = new OnLikePhotoListener(dbHelper);
+            likePhotoListener = new OnLikePhotoListener(dbHelper, tag);
         }
-        if(tag == null){
-            likePhotoListener.setCategory(Categories.interestingness.toString());
-        }else likePhotoListener.setCategory(tag);
+
 
 
         this.setRetainInstance(true);
@@ -212,7 +216,7 @@ public class RecyclerViewFragment extends ARecyclerViewFragment implements IFrag
     }
 
     public IOnLikePhotoListener getLikePhotoListener(){
-        likePhotoListener = new OnLikePhotoListener(dbHelper);
+        likePhotoListener = new OnLikePhotoListener(dbHelper, tag);
         return likePhotoListener;
     }
 

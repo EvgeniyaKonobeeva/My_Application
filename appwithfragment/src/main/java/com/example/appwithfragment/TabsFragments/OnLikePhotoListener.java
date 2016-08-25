@@ -34,26 +34,25 @@ import java.util.Stack;
 /**
  * Created by Евгения on 24.08.2016.
  */
-public class OnLikePhotoListener implements IOnLikePhotoListener{
+public class OnLikePhotoListener implements IOnLikePhotoListener, Serializable{
     private Stack<ListContent> likedList;
     DBHelper dbHelper;
     String category;
 
-    public OnLikePhotoListener(DBHelper dbHelper){
+    public OnLikePhotoListener(DBHelper dbHelper, String category){
         Log.d("OnLikePhotoListener", "onLikePhotoListener create");
         likedList = new Stack<>();
+
+        setCategory(category);
         if(dbHelper != null){
             this.dbHelper = dbHelper;
             getLikedPhotos();
         }
-    }
-    public void setContext(Context ctx){
 
     }
-
     //метод вызывается фрагментом FragmentFullScreenPicture по нажатию кнопки
     public void onLikePhotoListener(ListContent lc){
-        //likedList.push(lc);
+        likedList.push(lc);
 
 
         SQLiteDatabase sqLiteDatabase = dbHelper.getWritableDatabase();
@@ -62,21 +61,24 @@ public class OnLikePhotoListener implements IOnLikePhotoListener{
         contentValues.put(DBHelper.likesUrl, lc.getImgUrl());
         contentValues.put(DBHelper.title, lc.getFullTitle());
         contentValues.put(DBHelper.isliked, true);
-        contentValues.put(DBHelper.category_id, catIdQuery(sqLiteDatabase, category));
+        contentValues.put(DBHelper.categoryId, catIdQuery(sqLiteDatabase, category));
 
         sqLiteDatabase.insert(DBHelper.likesTableN, null, contentValues);
 
         sqLiteDatabase.close();
 
-        Log.d("OnLikePhotoListener", "onLikePhotoListener " + Arrays.toString(likedList.toArray()));
+        //getLikedPhotos();
+
+
     }
 
     //метод вызывается для получения списка фотографий фрагментом LikedPhotosFragment
     public Stack getLikedPhotos(){
 
+        likedList.clear();
         SQLiteDatabase sqLiteDatabase = dbHelper.getWritableDatabase();
-
-        Cursor cursor = sqLiteDatabase.query(DBHelper.likesTableN, null, null, null, null, null, null );
+        int category_id = catIdQuery(sqLiteDatabase, category);
+        Cursor cursor = sqLiteDatabase.query(DBHelper.likesTableN, null, DBHelper.categoryId + " = ?", new String[]{Integer.toString(category_id)}, null, null, null );
 
         while (cursor.moveToNext()){
             ListContent lc = new ListContent(cursor.getString(cursor.getColumnIndex(DBHelper.likesUrl)), cursor.getString(cursor.getColumnIndex(DBHelper.title)));
@@ -84,13 +86,16 @@ public class OnLikePhotoListener implements IOnLikePhotoListener{
         }
 
         sqLiteDatabase.close();
-
+        Log.d("OnLikePhotoListener", "getLikedPhotos " + Arrays.toString(likedList.toArray()));
         return likedList;
     }
 
     @Override
     public boolean isLikedPhoto(ListContent lc) {
-        Log.d("OnLikePhotoListener", "isLikedPhoto");
+        //Log.d("OnLikePhotoListener", "getLikedPhotos " + Arrays.toString(likedList.toArray()));
+        //Log.d("OnLikePhotoListener", "getLikedPhotos " + likedList.peek().getImgUrl());
+        //getLikedPhotos();
+        Log.d("OnLikePhotoListener", "isLikedPhoto " + lc);
         if(likedList.contains(lc)){
             Log.d("OnLikePhotoListener", "isLikedPhoto true");
             return true;
@@ -102,26 +107,32 @@ public class OnLikePhotoListener implements IOnLikePhotoListener{
 
     public void removePhoto(ListContent lc){
         Log.d("OnLikePhotoListener", "removePhoto " + lc);
-        //likedList.remove(lc);
+        likedList.remove(lc);
         SQLiteDatabase sqLiteDatabase = dbHelper.getWritableDatabase();
 
-        sqLiteDatabase.delete(DBHelper.likesTableN, DBHelper.likesUrl + "=?", new String[]{lc.getImgUrl()});
+        sqLiteDatabase.delete(DBHelper.likesTableN, DBHelper.likesUrl + " = ?", new String[]{lc.getImgUrl()});
 
 
         sqLiteDatabase.close();
 
+        getLikedPhotos();
+
     }
 
     public void setCategory(String category){
-        this.category = category;
+        if(category == null){
+            this.category = "interestingness";
+        }else
+            this.category = category;
     }
 
 
+    //возвращает id категории
     private int catIdQuery(SQLiteDatabase sqLiteDatabase, String catName) {
 
         Cursor cursor = sqLiteDatabase.query(DBHelper.tableName,
                 new String[]{DBHelper.category_id},
-                DBHelper.category_col + "=?",
+                DBHelper.category_col + " = ?",
                 new String[]{catName} ,
                 null,null,null,null);
 

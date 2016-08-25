@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.util.Log;
 import android.view.ViewGroup;
 
+import com.example.appwithfragment.DataBasePack.DBHelper;
 import com.example.appwithfragment.RecyclerViewFragment.RecyclerViewFragment;
 
 /**
@@ -21,6 +22,7 @@ public class TabViewPagerAdapter extends FragmentPagerAdapter {
     private static String tag = "";
     private final static int countItems = 2;
     private IOnLikePhotoListener likePhotoListener;
+    private DBHelper dbHelper;
 
     //private FragmentManager fragmentManager;
 
@@ -41,7 +43,7 @@ public class TabViewPagerAdapter extends FragmentPagerAdapter {
 
         if(position % 2 == 0){
             Log.d("TabViewPagerAdapter", "getItem tag " + tag);
-            Fragment f= RecyclerViewFragment.getNewInstance(tag);
+            Fragment f= RecyclerViewFragment.getNewInstance(tag, dbHelper);
             likePhotoListener = ((RecyclerViewFragment)f).getLikePhotoListener();
             return f;
         }else{
@@ -76,7 +78,9 @@ public class TabViewPagerAdapter extends FragmentPagerAdapter {
     @Override
     public long getItemId(int position) {
         if(position == 0){
-            return position + tag.hashCode();
+            //if(tag != null)
+                return position + tag.hashCode();
+            //else return position;
         }else return position + (tag + "FS").hashCode();
 
     }
@@ -85,5 +89,9 @@ public class TabViewPagerAdapter extends FragmentPagerAdapter {
         Log.d("TabViewPagerAdapter", "setTag 1 " + this.tag);
         this.tag = tag;
         Log.d("TabViewPagerAdapter", "setTag 2 " + this.tag);
+    }
+
+    public void setDbHelper(DBHelper dbHelper){
+        this.dbHelper = dbHelper;
     }
 }

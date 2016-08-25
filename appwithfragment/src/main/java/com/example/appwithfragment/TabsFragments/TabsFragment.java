@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 
+import com.example.appwithfragment.DataBasePack.DBHelper;
 import com.example.appwithfragment.R;
 
 /**
@@ -20,6 +21,9 @@ import com.example.appwithfragment.R;
 public class TabsFragment extends Fragment {
 
     private ViewPager viewPager;
+    private TabViewPagerAdapter adapter;
+    private DBHelper dbHelper;
+    private String tag;
 
     @Nullable
     @Override
@@ -29,7 +33,12 @@ public class TabsFragment extends Fragment {
 
         viewPager = (ViewPager) view.findViewById(R.id.tabViewPager);
         viewPager.setOffscreenPageLimit(1);
-        viewPager.setAdapter(new TabViewPagerAdapter(getChildFragmentManager()));
+        adapter = new TabViewPagerAdapter(getChildFragmentManager());
+        viewPager.setAdapter(adapter);
+        adapter.setDbHelper(dbHelper);
+        adapter.setTag(tag);
+        adapter.notifyDataSetChanged();
+
         //((TabViewPagerAdapter)viewPager.getAdapter()).setMap();
         viewPager.setCurrentItem(0);
         //viewPager.getAdapter().notifyDataSetChanged();
@@ -44,11 +53,18 @@ public class TabsFragment extends Fragment {
 
     public void setTag(String tag){
         Log.d("TabsFragment", "setTag " + tag);
-        ((TabViewPagerAdapter)viewPager.getAdapter()).setTag(tag);
-        viewPager.getAdapter().notifyDataSetChanged();
+        this.tag = tag;
+        if(viewPager !=null && viewPager.getAdapter() != null){
+            adapter.setTag(tag);
+            adapter.notifyDataSetChanged();
+            viewPager.setCurrentItem(0);
+        }
         //viewPager.getAdapter().saveState();
-        viewPager.setCurrentItem(0);
 
 
+
+    }
+    public void setDBHelper(DBHelper dbHelper){
+        this.dbHelper = dbHelper;
     }
 }

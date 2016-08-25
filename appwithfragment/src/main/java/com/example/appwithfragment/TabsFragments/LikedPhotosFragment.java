@@ -65,7 +65,8 @@ public class LikedPhotosFragment extends ARecyclerViewFragment {
             recyclerGridLayout = new GridLayoutManager(view.getContext(), 2);
         }
         recyclerView.setLayoutManager(recyclerGridLayout);
-        recyclerView.getAdapter().notifyItemRemoved(recyclerGridLayout.findLastVisibleItemPosition());
+        recyclerView.getAdapter().notifyItemRemoved(recyclerGridLayout.findLastVisibleItemPosition()+1);
+        setSpanSize(recyclerGridLayout, recyclerView.getAdapter());
         setOnItemClickListener(recyclerView, list, likePhotoListener);
 
         return view;

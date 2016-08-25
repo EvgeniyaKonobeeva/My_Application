@@ -47,6 +47,7 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
     private DrawerLayout drawerLayout;
     private ViewPagerFragment viewPagerFragment;
     private TabsFragment tabsFragment;
+    private DBHelper dBHelper;
 
 
     @Override
@@ -74,13 +75,15 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
 
         setContentView(R.layout.activity_main);
 // /data/data/com.example.appwithfragment/cache
-        DBHelper mDBHelper = new DBHelper(this);
+        dBHelper = new DBHelper(getApplicationContext());
 
         Fragment isOpen = getSupportFragmentManager().findFragmentById(R.id.LL);
 
         if(isOpen== null) {
             Log.d("MyActivity", "onCreate isOpen " + isOpen);
             tabsFragment = new TabsFragment();
+            tabsFragment.setDBHelper(dBHelper);
+            tabsFragment.setTag("");
             tabsFragment.setRetainInstance(true);
             addFragment(tabsFragment, R.id.LL, "list_img");
         }
@@ -168,6 +171,7 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
         Fragment frg = getSupportFragmentManager().findFragmentByTag("list_img");
         if(frg == null){
             tabsFragment = new TabsFragment();
+            tabsFragment.setDBHelper(dBHelper);
         }else {
             tabsFragment = (TabsFragment) frg;
         }
