@@ -14,12 +14,13 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.example.appwithfragment.DataBasePack.DBHelper;
 import com.example.appwithfragment.FullScreenPicture.ViewPagerFragment;
+import com.example.appwithfragment.RecyclerViewFragment.Categories;
 import com.example.appwithfragment.RecyclerViewFragment.OnRecyclerViewClickListener;
 import com.example.appwithfragment.RecyclerViewFragment.RecyclerViewFragment;
 import com.example.appwithfragment.RecyclerViewFragment.Tasks.LoadTask;
 import com.example.appwithfragment.TabsFragments.IOnLikePhotoListener;
-import com.example.appwithfragment.TabsFragments.OnLikePhotoListener;
 import com.example.appwithfragment.TabsFragments.TabsFragment;
 
 import java.io.Serializable;
@@ -72,6 +73,8 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+// /data/data/com.example.appwithfragment/cache
+        DBHelper mDBHelper = new DBHelper(this);
 
         Fragment isOpen = getSupportFragmentManager().findFragmentById(R.id.LL);
 
@@ -175,23 +178,23 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
                 break;
             case 1:
                 Log.d("MyActivity" , "position " + position);
-                tabsFragment.setTag("flowers");
+                tabsFragment.setTag(Categories.flowers.toString());
                 break;
             case 2:
                 Log.d("MyActivity" , "position " + position);
-                tabsFragment.setTag("animals");
+                tabsFragment.setTag(Categories.animals.toString());
                 break;
             case 3:
                 Log.d("MyActivity" , "position " + position);
-                tabsFragment.setTag("people");
+                tabsFragment.setTag(Categories.people.toString());
                 break;
             case 4:
                 Log.d("MyActivity" , "position " + position);
-                tabsFragment.setTag("cities");
+                tabsFragment.setTag(Categories.cities.toString());
                 break;
             case 5:
                 Log.d("MyActivity" , "position " + position);
-                tabsFragment.setTag("nature");
+                tabsFragment.setTag(Categories.nature.toString());
                 break;
         }
 

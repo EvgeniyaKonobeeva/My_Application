@@ -18,6 +18,7 @@ public class ListContent implements Serializable{
         this.imgUrl = imgUrl;
 
     }
+    public ListContent(){}
 
     public void setFullTitle(String fullTitle) {
         this.fullTitle = fullTitle;
