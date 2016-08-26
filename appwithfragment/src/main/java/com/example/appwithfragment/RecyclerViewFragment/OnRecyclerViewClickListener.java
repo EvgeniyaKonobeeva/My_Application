@@ -1,12 +1,8 @@
 package com.example.appwithfragment.RecyclerViewFragment;
 
-import android.support.v4.app.Fragment;
-
 import com.example.appwithfragment.ListContent;
 import com.example.appwithfragment.TabsFragments.IOnLikePhotoListener;
-import com.example.appwithfragment.TabsFragments.OnLikePhotoListener;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**

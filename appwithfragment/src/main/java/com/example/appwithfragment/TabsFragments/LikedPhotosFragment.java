@@ -19,6 +19,7 @@ import com.example.appwithfragment.RecyclerViewFragment.RecyclerViewDecorator;
 import com.example.appwithfragment.RecyclerViewFragment.RecyclerViewFragment;
 import com.example.appwithfragment.supportLib.ItemClickSupport;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -43,7 +44,7 @@ public class LikedPhotosFragment extends ARecyclerViewFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         Log.d("LikedPhotosFragment", "onCreate");
         likePhotoListener = (IOnLikePhotoListener)getArguments().get(keyLikeListener);
-
+        list = new ArrayList<>();
         this.setRetainInstance(true);
         super.onCreate(savedInstanceState);
     }
@@ -53,6 +54,9 @@ public class LikedPhotosFragment extends ARecyclerViewFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         Log.d("LikedPhotosFragment", "onCreateView");
         View view = inflater.inflate(R.layout.recycler_view_frag, null);
+        if(list == null){
+            list = new ArrayList<>();
+        }
         list = likePhotoListener.getLikedPhotos();
 
         recyclerView = (RecyclerView) view.findViewById(R.id.rl);

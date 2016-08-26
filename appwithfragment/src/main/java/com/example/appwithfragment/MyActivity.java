@@ -1,6 +1,7 @@
 package com.example.appwithfragment;
 
 import android.content.res.Configuration;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.PersistableBundle;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -76,6 +77,7 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
         setContentView(R.layout.activity_main);
 // /data/data/com.example.appwithfragment/cache
         dBHelper = new DBHelper(getApplicationContext());
+
 
         Fragment isOpen = getSupportFragmentManager().findFragmentById(R.id.LL);
 
@@ -172,8 +174,10 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
         if(frg == null){
             tabsFragment = new TabsFragment();
             tabsFragment.setDBHelper(dBHelper);
+            replaceFragment(tabsFragment, R.id.LL, "list_img");
         }else {
             tabsFragment = (TabsFragment) frg;
+            replaceFragment(tabsFragment, R.id.LL, "list_img");
         }
         switch (position){
             case 0:
@@ -204,21 +208,9 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
 
     }
 
-    public void setNewFragment(String tag){
-        Fragment frg = getSupportFragmentManager().findFragmentByTag(tag);
-        RecyclerViewFragment rf1;
-        if(frg == null){
-            rf1 = new RecyclerViewFragment();
-            rf1.setProtocol(protocol);
-            rf1.setTag(tag);
-            rf1.setTask(new LoadTask());
-            rf1.setRetainInstance(true);
-        }else{
-            rf1 = (RecyclerViewFragment) frg;
-        }
+    @Override
+    protected void onDestroy() {
 
-        replaceFragment(rf1, R.id.LL, tag);
+        super.onDestroy();
     }
-
-
 }

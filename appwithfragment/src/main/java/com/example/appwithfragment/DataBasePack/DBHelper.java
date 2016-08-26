@@ -35,8 +35,12 @@ public class DBHelper extends SQLiteOpenHelper {
             " integer primary key autoincrement, " + category_col +
             " text not null); ";
 
-    private String createLikesTableQuery = "create table likes ( likes_id integer primary key autoincrement, " +
-            "url text not null, title text not null, isliked boolean not null, category_id integer);";
+    private String createLikesTableQuery = "create table likes ( " +
+            "likes_id integer primary key autoincrement, " +
+            "url text not null unique," +
+            " title text not null," +
+            " isliked boolean not null," +
+            " category_id integer);";
 
     public DBHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version){
         super(context, name, factory, version);
@@ -44,12 +48,16 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public DBHelper(Context ctx){
         super(ctx, DB_NAME, null, DB_VERSION);
-        SQLiteDatabase sqLiteDatabase= this.getWritableDatabase();
-        sqLiteDatabase.delete(likesTableN, null, null);
+        //SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
+        //sqLiteDatabase.execSQL("DROP TABLE IF EXISTS 'likes' ");
+        //sqLiteDatabase.execSQL(createLikesTableQuery);
+        //SQLiteDatabase sqLiteDatabase= this.getWritableDatabase();
+        //sqLiteDatabase.delete(likesTableN, null, null);
     }
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
+
         sqLiteDatabase.execSQL(createCategoryTableQuery);
         sqLiteDatabase.execSQL(createLikesTableQuery);
         putCategories(sqLiteDatabase);

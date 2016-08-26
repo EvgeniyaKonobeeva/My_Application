@@ -6,6 +6,7 @@ import com.example.appwithfragment.RecyclerViewFragment.Categories;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Stack;
 
 /**
@@ -13,8 +14,9 @@ import java.util.Stack;
  */
 public interface IOnLikePhotoListener extends Serializable{
     void onLikePhotoListener(ListContent lc);
-    Stack getLikedPhotos();
+    ArrayList getLikedPhotos();
     boolean isLikedPhoto(ListContent lc);
     void removePhoto(ListContent lc);
     void setCategory(String cat);
+    void onDestroyApp();
 }

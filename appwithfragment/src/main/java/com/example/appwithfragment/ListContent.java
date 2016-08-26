@@ -40,5 +40,16 @@ public class ListContent implements Serializable{
         return imgUrl;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        ListContent lc = (ListContent)obj;
+        if(this.getImgUrl().equals(lc.getImgUrl()) && this.getFullTitle().equals(lc.getFullTitle()))
+            return true;
+        else return false;
+    }
 
+    @Override
+    public int hashCode() {
+        return this.getImgUrl().hashCode();
+    }
 }

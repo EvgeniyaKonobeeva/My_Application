@@ -1,7 +1,5 @@
 package com.example.appwithfragment.RecyclerViewFragment;
 
-import android.support.v4.app.*;
-import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
@@ -25,13 +23,10 @@ import com.example.appwithfragment.RecyclerViewFragment.Tasks.LoadFromFlickrTask
 import com.example.appwithfragment.RecyclerViewFragment.Tasks.LoadTask;
 import com.example.appwithfragment.TabsFragments.IOnLikePhotoListener;
 import com.example.appwithfragment.TabsFragments.OnLikePhotoListener;
-import com.example.appwithfragment.supportLib.ItemClickSupport;
 import com.example.appwithfragment.ListContent;
 import com.example.appwithfragment.R;
 
 
-import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 
