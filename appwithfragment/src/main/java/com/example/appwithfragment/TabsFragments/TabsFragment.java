@@ -55,10 +55,11 @@ public class TabsFragment extends Fragment {
         Log.d("TabsFragment", "setTag " + tag);
         this.tag = tag;
         if(viewPager !=null && viewPager.getAdapter() != null){
+            viewPager.setCurrentItem(0);
             Log.d("TabsFragment", "setTag if " + tag);
             adapter.setTag(tag);
             adapter.notifyDataSetChanged();
-            viewPager.setCurrentItem(0);
+
         }
         //viewPager.getAdapter().saveState();
 

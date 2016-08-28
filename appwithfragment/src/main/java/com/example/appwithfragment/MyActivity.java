@@ -1,5 +1,6 @@
 package com.example.appwithfragment;
 
+import android.content.Context;
 import android.content.res.Configuration;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.PersistableBundle;
@@ -37,6 +38,7 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
     public static final String keyList = "recyclerViewFragmentList";
     public static final String keyLikeListener = "likeListener";
 
+    public static Context context;
 
     public static final String protocolInterestingness = "https://api.flickr.com/services/rest/?method=flickr.interestingness.getList&" +
             "api_key=b14e644ffd373999f625f4d2ba244522&format=json&nojsoncallback=1";
@@ -76,7 +78,10 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
 
         setContentView(R.layout.activity_main);
 // /data/data/com.example.appwithfragment/cache
-        dBHelper = new DBHelper(getApplicationContext());
+
+        context = getApplicationContext();
+        dBHelper = DBHelper.getInstance(context);
+        //dBHelper.open();
 
 
         Fragment isOpen = getSupportFragmentManager().findFragmentById(R.id.LL);
@@ -123,6 +128,7 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         actionBarDrawerToggle.onConfigurationChanged(newConfig);
+
     }
     @Override
     public void setTitle(CharSequence title) {
@@ -210,7 +216,7 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
 
     @Override
     protected void onDestroy() {
-
+        dBHelper.close();
         super.onDestroy();
     }
 }

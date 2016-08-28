@@ -1,6 +1,7 @@
 package com.example.appwithfragment.TabsFragments;
 
 import com.example.appwithfragment.ListContent;
+import com.example.appwithfragment.MVPPattern.IFragment;
 import com.example.appwithfragment.RecyclerViewFragment.Categories;
 
 import java.io.File;
@@ -18,5 +19,6 @@ public interface IOnLikePhotoListener extends Serializable{
     boolean isLikedPhoto(ListContent lc);
     void removePhoto(ListContent lc);
     void setCategory(String cat);
-    void onDestroyApp();
+    void setFragment(IFragment f);
+
 }

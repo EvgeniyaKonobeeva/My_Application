@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class MyImageLoader {
     private static final String errorTag = "ERROR MyImageLoader";
-    private static final int threadPoolSize = 500;
+    private static final int threadPoolSize = 50;
 
     private String resUrl;
 
@@ -43,7 +43,7 @@ public class MyImageLoader {
         dc = DiskCashing.getInstance(ctx);
         handler = new MyHandler();
         mapLoadingImg = new HashMap<>();
-        queue = new LIFOQueue(10);
+        queue = new LIFOQueue(100);
         executorService = new ThreadPoolExecutor(threadPoolSize, threadPoolSize, 50L, TimeUnit.SECONDS, queue);
     }
 
@@ -60,7 +60,7 @@ public class MyImageLoader {
                //Log.d("HERE", "running thread");
                 mapLoadingImg.put(resUrl.hashCode(), resUrl);
                 LoadImgRunnable loadImgRunnable = new LoadImgRunnable(handler, resUrl, iv, dc);
-                executorService.submit(loadImgRunnable);
+                executorService.execute(loadImgRunnable);
            }
         }
 

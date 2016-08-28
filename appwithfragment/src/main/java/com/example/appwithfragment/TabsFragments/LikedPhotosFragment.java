@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.appwithfragment.ListContent;
+import com.example.appwithfragment.MVPPattern.IFragment;
 import com.example.appwithfragment.R;
 import com.example.appwithfragment.RecyclerViewFragment.ARecyclerViewFragment;
 import com.example.appwithfragment.RecyclerViewFragment.OnRecyclerViewClickListener;
@@ -25,7 +26,7 @@ import java.util.List;
 /**
  * Created by e.konobeeva on 23.08.2016.
  */
-public class LikedPhotosFragment extends ARecyclerViewFragment {
+public class LikedPhotosFragment extends ARecyclerViewFragment implements IFragment {
     public static final String keyLikeListener = "keyLikeListener";
     private RecyclerView recyclerView;
     private IOnLikePhotoListener likePhotoListener;
@@ -43,21 +44,24 @@ public class LikedPhotosFragment extends ARecyclerViewFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         Log.d("LikedPhotosFragment", "onCreate");
-        likePhotoListener = (IOnLikePhotoListener)getArguments().get(keyLikeListener);
         list = new ArrayList<>();
+        likePhotoListener = (IOnLikePhotoListener)getArguments().get(keyLikeListener);
+        likePhotoListener.setFragment(this);
         this.setRetainInstance(true);
         super.onCreate(savedInstanceState);
     }
+
+
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         Log.d("LikedPhotosFragment", "onCreateView");
         View view = inflater.inflate(R.layout.recycler_view_frag, null);
-        if(list == null){
+        /*if(list == null){
             list = new ArrayList<>();
         }
-        list = likePhotoListener.getLikedPhotos();
+        list = likePhotoListener.getLikedPhotos();*/
 
         recyclerView = (RecyclerView) view.findViewById(R.id.rl);
         recyclerView.setAdapter(new RecyclerViewAdapter(list, getActivity()));
@@ -76,5 +80,20 @@ public class LikedPhotosFragment extends ARecyclerViewFragment {
         return view;
     }
 
+    @Override
+    public ArrayList<ListContent> getList() {
+        return (ArrayList<ListContent>) list;
+    }
 
+    @Override
+    public RecyclerView getRecyclerView() {
+        return recyclerView;
+    }
+
+    public void setList(ArrayList<ListContent> list) {
+        //this.list = list;
+        this.list.clear();
+        this.list.addAll(list);
+        recyclerView.getAdapter().notifyDataSetChanged();
+    }
 }

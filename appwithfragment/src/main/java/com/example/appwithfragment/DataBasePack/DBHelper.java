@@ -16,6 +16,9 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String DB_NAME = "likedPhotosDb.db";
     private static final int DB_VERSION = 1;
 
+    private SQLiteDatabase sqLiteDatabase;
+    private static DBHelper dbHelper;
+
     /*col category table*/
     public final static String tableName = "categories";
     public final static String category_col = "category";
@@ -53,6 +56,27 @@ public class DBHelper extends SQLiteOpenHelper {
         //sqLiteDatabase.execSQL(createLikesTableQuery);
         //SQLiteDatabase sqLiteDatabase= this.getWritableDatabase();
         //sqLiteDatabase.delete(likesTableN, null, null);
+    }
+
+    public void open(){
+        sqLiteDatabase = this.getWritableDatabase();
+    }
+    public SQLiteDatabase getSSQLiteDatabase(){
+        return sqLiteDatabase;
+    }
+    public void close(){
+        sqLiteDatabase.close();
+    }
+    public static DBHelper getInstance(Context context){
+        if(dbHelper == null){
+            dbHelper = new DBHelper(context);
+            dbHelper.open();
+            return dbHelper;
+        }else {
+            dbHelper.open();
+            return dbHelper;
+        }
+
     }
 
     @Override
