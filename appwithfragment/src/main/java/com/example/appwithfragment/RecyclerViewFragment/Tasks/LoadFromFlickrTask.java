@@ -22,6 +22,7 @@ public class LoadFromFlickrTask extends AsyncTask<Object, Integer, Map> {
     private boolean photoEnds;
     private String protocol;
     private GettingResults fragment;
+    private int startPageNum;
 
 
     public LoadFromFlickrTask(GettingResults fragment, String protocol){
@@ -39,8 +40,9 @@ public class LoadFromFlickrTask extends AsyncTask<Object, Integer, Map> {
     protected Map doInBackground(Object... voids) {
 
         JSONObjects jsonObjects;
-        int page = fragment.getCurCluster_id();
-        Log.d(errorTag, "doInBackground PAGE:" + page );
+        int curPage = fragment.getCurCluster_id();
+        startPageNum = curPage;
+        Log.d(errorTag, "doInBackground PAGE:" + curPage );
         int countLoadingPhotos = 0;
         int loadingPhotosPerOnce = 50;
         int pages;
@@ -50,12 +52,12 @@ public class LoadFromFlickrTask extends AsyncTask<Object, Integer, Map> {
             Log.d(errorTag, "doInBackground");
 
             try {
-                jsonObjects = new JSONObjects(protocol, ++page);
+                jsonObjects = new JSONObjects(protocol, ++curPage);
                 pages = jsonObjects.getPages();
 
                 while(countLoadingPhotos < loadingPhotosPerOnce){
-                    if(page <= pages) {
-                        jsonObjects = new JSONObjects(protocol, page++);
+                    if(curPage <= pages) {
+                        jsonObjects = new JSONObjects(protocol, curPage++);
                         for (int i = 0; i <jsonObjects.getCountPhotosPerPage(); i++) {
                             photosInfo.put(jsonObjects.getUrl(i), jsonObjects.getPhotoInfo(i)[4]);
                         }
@@ -65,15 +67,20 @@ public class LoadFromFlickrTask extends AsyncTask<Object, Integer, Map> {
                         break;
                     }
                 }
-                fragment.setCurCluster_id(page);
+                fragment.setCurCluster_id(curPage);
 
             } catch (IOException ioe) {
-                Log.d(errorTag, ioe.getMessage());
+                Log.d(errorTag, "IOException " + ioe.getMessage());
+                Log.d("LoadFromFlickrTask", "Exception interrapted");
+                this.cancel(true);
             } catch (JSONException je) {
-                Log.d(errorTag, je.getMessage());
+                Log.d(errorTag, "JSONException " + je.getMessage());
+                Log.d("LoadFromFlickrTask", "Exception interrapted");
+                this.cancel(true);
             }
         }else {
-            Thread.currentThread().interrupt();
+            Log.d("LoadFromFlickrTask", "interrapted");
+            this.cancel(true);
         }
 
         return photosInfo;
@@ -85,6 +92,16 @@ public class LoadFromFlickrTask extends AsyncTask<Object, Integer, Map> {
             Log.d(errorTag, "onPostExecute");
             fragment.onGettingResult(aVoid, photoEnds);
         }
+    }
+
+    @Override
+    protected void onCancelled() {
+        Log.d("LoadFromFlickrTask", "onCancelled");
+        if(fragment != null) {
+            fragment.setCurCluster_id(startPageNum);
+        }
+        super.onCancelled();
+
     }
 
     public void setFragment(GettingResults fragment){

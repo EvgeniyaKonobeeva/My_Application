@@ -1,8 +1,13 @@
 package com.example.appwithfragment.ImageLoader;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Looper;
 import android.util.Log;
 import android.widget.ImageView;
@@ -13,7 +18,9 @@ import java.io.InterruptedIOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import com.example.appwithfragment.BroadcastReciever.InternetStateReceiver;
 import com.example.appwithfragment.ImageLoader.MyImageLoader.*;
+import com.example.appwithfragment.MVPPattern.IFragment;
 
 
 /**
@@ -27,6 +34,8 @@ public class LoadImgRunnable implements Runnable {
     private String url;
     private ImageView iv;
     private DiskCashing dc;
+    private InternetStateReceiver receiver;
+
 
     public LoadImgRunnable(MyHandler handler, String url, ImageView iv, DiskCashing dc){
         this.handler = handler;
@@ -49,7 +58,7 @@ public class LoadImgRunnable implements Runnable {
                             iv.setImageBitmap(bitmap);
                     }
                 });
-            } else {
+            } else {/*internet connection here req*/
                 try {
                     InputStream is = (InputStream) new URL(url).getContent();
                     final Bitmap bitmap1 = BitmapFactory.decodeStream(is);
@@ -72,13 +81,16 @@ public class LoadImgRunnable implements Runnable {
                         handler.sendMessage(handler.obtainMessage(url.hashCode(), -1));
                     }
                 } catch (MalformedURLException me) {
-                    Log.d(errorTag, me.getMessage());
+                    Log.d(errorTag, "MalformedURLException " + me.getMessage());
+                    handler.sendMessage(handler.obtainMessage(url.hashCode(), -1));
                 } catch (InterruptedIOException ioe) {
                     handler.sendMessage(handler.obtainMessage(url.hashCode(), -1));
-                    Log.d(errorTag, ioe.getMessage());
+                    Log.d(errorTag, "InterruptedIOException " + ioe.getMessage());
+                    handler.sendMessage(handler.obtainMessage(url.hashCode(), -1));
                     Thread.currentThread().interrupt();
                 } catch (IOException ioe2) {
-                    Log.d(errorTag, ioe2.getMessage());
+                    Log.d(errorTag, "IOException " + ioe2.getMessage());
+                    handler.sendMessage(handler.obtainMessage(url.hashCode(), -1));
                     Thread.currentThread().interrupt();
                 }
             }

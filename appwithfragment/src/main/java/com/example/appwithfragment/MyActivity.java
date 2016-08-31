@@ -165,6 +165,9 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
                     replaceFragment(tabsFragment,R.id.LL,"list_img");
                 }else{
                     Log.d("MyActivity", "else 2 " + getSupportFragmentManager().getBackStackEntryCount());
+                    if(getSupportFragmentManager().getBackStackEntryCount() == 1){
+                        this.finish();
+                    }
                     //clearBackStack();
                     super.onBackPressed();
                 }

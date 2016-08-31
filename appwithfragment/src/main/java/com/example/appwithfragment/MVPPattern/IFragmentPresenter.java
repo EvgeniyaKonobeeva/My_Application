@@ -15,4 +15,6 @@ public interface IFragmentPresenter {
     void setTag(String tag);
     void setProtocol(String protocol);
     void setTask(AsyncTask task);
+    void onPauseFragment();
+    void onResume();
 }

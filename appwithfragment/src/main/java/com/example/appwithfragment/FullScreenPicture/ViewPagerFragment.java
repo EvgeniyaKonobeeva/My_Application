@@ -1,5 +1,10 @@
 package com.example.appwithfragment.FullScreenPicture;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -11,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.appwithfragment.BroadcastReciever.InternetStateReceiver;
 import com.example.appwithfragment.ListContent;
 import com.example.appwithfragment.MyActivity;
 import com.example.appwithfragment.R;
@@ -24,6 +30,9 @@ import java.util.ArrayList;
 public class ViewPagerFragment extends Fragment {
 
     ViewPager vp;
+    private InternetStateReceiver receiver;
+    int curItem;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,6 +60,25 @@ public class ViewPagerFragment extends Fragment {
         Log.d("ViewPagerFragment", "destroy view");
     }
 
+
+    public void createReceiver(){
+        receiver = new InternetStateReceiver(){
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                ConnectivityManager connMgr = (ConnectivityManager)getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+                NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+                if (networkInfo != null && networkInfo.isConnected()){
+                    vp.setCurrentItem(curItem);
+
+                }else{
+                    curItem = vp.getCurrentItem();
+                }
+            }
+        };
+
+        getActivity().registerReceiver(receiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+
+    }
 
 
 }

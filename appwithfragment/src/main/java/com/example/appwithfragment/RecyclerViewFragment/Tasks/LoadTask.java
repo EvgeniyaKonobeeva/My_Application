@@ -38,6 +38,8 @@ public class LoadTask extends AsyncTask<Object, Integer, Map>{
     private GettingResults fragment;
     private String tag;
 
+    private int startPageNum;
+
 
     public LoadTask(GettingResults fragment, String protocol, String tag ){
         this.fragment = fragment;
@@ -104,6 +106,7 @@ public class LoadTask extends AsyncTask<Object, Integer, Map>{
         protocol = sb.toString();
 
         int curCluster_id = fragment.getCurCluster_id();
+        startPageNum = curCluster_id;
 
         Map<String,String> map = new HashMap<>();
 
@@ -127,6 +130,15 @@ public class LoadTask extends AsyncTask<Object, Integer, Map>{
         fragment.setCurCluster_id(curCluster_id);
         return map;
 
+    }
+
+    @Override
+    protected void onCancelled() {
+        Log.d("LoadTask", "onCancelled");
+        if(fragment != null) {
+            fragment.setCurCluster_id(startPageNum);
+        }
+        super.onCancelled();
     }
 
     private HttpURLConnection setConnection(String protocol)throws IOException {

@@ -1,5 +1,9 @@
 package com.example.appwithfragment.RecyclerViewFragment;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
@@ -13,6 +17,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 
 import com.example.appwithfragment.DataBasePack.DBHelper;
 import com.example.appwithfragment.MVPPattern.IFragment;
@@ -39,6 +45,7 @@ public class RecyclerViewFragment extends ARecyclerViewFragment implements IFrag
 
     private ArrayList<ListContent> list;
     private RecyclerView recyclerView;
+    private static String logTag = "RecyclerViewFragment";
 
     private String tag;
     private String protocol;
@@ -48,6 +55,8 @@ public class RecyclerViewFragment extends ARecyclerViewFragment implements IFrag
     private IOnLikePhotoListener likePhotoListener;
 
     private IFragmentPresenter presenter;
+    private WifiManager wifiManager;
+    private CheckBox checkBox;
 
     public static RecyclerViewFragment getNewInstance(String tag, DBHelper dbHelper){
         Log.d("RecyclerViewFragment", "getNewInstance tag " + tag);
@@ -104,6 +113,7 @@ public class RecyclerViewFragment extends ARecyclerViewFragment implements IFrag
         }
         presenter = new RecViewFragPresenter(this);
         presenter.onCreateFragment();
+        wifiManager = (WifiManager)getActivity().getSystemService(Context.WIFI_SERVICE);
         this.setRetainInstance(true);
 
     }
@@ -111,25 +121,29 @@ public class RecyclerViewFragment extends ARecyclerViewFragment implements IFrag
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.d("RecyclerViewFragment ", "onCreateView ");
 
         presenter.setTask(this.task);
         presenter.setProtocol(this.protocol);
         presenter.setTag(this.tag);
 
-        Log.d("RecyclerViewFragment ", "onCreateView ");
+
         View view = inflater.inflate(R.layout.recycler_view_frag, null);
         recyclerView = setRecyclerView(view, R.id.rl);
         this.setHasOptionsMenu(true);
         presenter.onAttachedToView();
+        if(checkBox != null && wifiManager != null){
+            checkBox.setChecked(wifiManager.isWifiEnabled());
+        }
         return view;
     }
 
     @Override
     public void onDestroy() {
+        Log.d("RecyclerViewFragment", " onDestroy");
         if(presenter != null){
             presenter.onFragmentDestroy();
         }
-
         super.onDestroy();
     }
 
@@ -137,14 +151,28 @@ public class RecyclerViewFragment extends ARecyclerViewFragment implements IFrag
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 
         getActivity().getMenuInflater().inflate(R.menu.my_menu, menu);
+        MenuItem item = menu.findItem(R.id.wifi);
+        checkBox = (CheckBox)item.getActionView();
+        checkBox.setChecked(wifiManager.isWifiEnabled());
+        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                wifiManager.setWifiEnabled(checkBox.isChecked());
+            }
+        });
         super.onCreateOptionsMenu(menu, inflater);
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        RecyclerViewAdapter ra = (RecyclerViewAdapter) recyclerView.getAdapter();
-        ra.getMyImageLoader().getDiskCashing().cleanDisk();
+        if(item.getItemId() == R.id.item1){
+            RecyclerViewAdapter ra = (RecyclerViewAdapter) recyclerView.getAdapter();
+            ra.getMyImageLoader().getDiskCashing().cleanDisk();
+        }else{
+            Log.d(logTag, "item " + ((CheckBox)item.getActionView()).isChecked());
+        }
         return super.onOptionsItemSelected(item);
 
     }
@@ -216,4 +244,17 @@ public class RecyclerViewFragment extends ARecyclerViewFragment implements IFrag
         return likePhotoListener;
     }
 
+    @Override
+    public void onPause() {
+        Log.d("RecyclerViewFragment", "onPause");
+        presenter.onPauseFragment();
+        super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        Log.d("RecyclerViewFragment", "onResume");
+        presenter.onResume();
+        super.onResume();
+    }
 }

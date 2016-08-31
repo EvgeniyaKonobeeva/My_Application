@@ -57,7 +57,6 @@ public class DiskCashing {
                             deleteLatestFile(fileDir);
                         }
                         bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
-                        bitmap.recycle();
                         fileOutputStream.flush();
                         fileOutputStream.close();
                     }

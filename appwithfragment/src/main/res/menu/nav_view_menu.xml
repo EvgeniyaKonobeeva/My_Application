@@ -7,31 +7,31 @@
         android:id="@+id/interestingness"
     />
 </group>
-    <group android:id="@+id/gr1" android:checkableBehavior="single">
+    <group android:checkableBehavior="single">
         <item
             android:title="flowers"
             android:id="@+id/plants"
             />
     </group>
-    <group android:id="@+id/gr2" android:checkableBehavior="single">
+    <group android:checkableBehavior="single">
         <item
             android:title="animals"
             android:id="@+id/animals"
             />
     </group>
-    <group android:id="@+id/gr3" android:checkableBehavior="single">
+    <group android:checkableBehavior="single">
         <item
             android:title="people"
             android:id="@+id/people"
             />
     </group>
-    <group android:id="@+id/gr4" android:checkableBehavior="single">
+    <group android:checkableBehavior="single">
         <item
             android:title="cities"
             android:id="@+id/cities"
             />
     </group>
-    <group android:id="@+id/gr5" android:checkableBehavior="single">
+    <group android:checkableBehavior="single">
         <item
             android:title="nature"
             android:id="@+id/nature"

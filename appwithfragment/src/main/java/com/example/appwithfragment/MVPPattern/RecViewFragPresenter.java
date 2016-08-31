@@ -3,6 +3,8 @@ package com.example.appwithfragment.MVPPattern;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -11,6 +13,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.appwithfragment.BroadcastReciever.InternetStateReceiver;
 import com.example.appwithfragment.ListContent;
 import com.example.appwithfragment.RecyclerViewFragment.GettingResults;
 import com.example.appwithfragment.RecyclerViewFragment.Tasks.LoadFromFlickrTask;
@@ -32,12 +35,18 @@ public class RecViewFragPresenter implements GettingResults, IFragmentPresenter{
     private String protocol;
     private String tag;
     private int curCluster_id;
+    private boolean firstTaskExecution = true;
+    private String tagg = "RecViewFragPresenter ";
+    boolean isShownDialog = false;
 
     private RecyclerView recyclerView;
+    private InternetStateReceiver receiver;
 
     public RecViewFragPresenter(IFragment frag){
         Log.d("RecViewFragPresenter", "constructor");
         this.fragment = frag;
+
+
     }
 
     public void setTask(AsyncTask task){
@@ -114,6 +123,7 @@ public class RecViewFragPresenter implements GettingResults, IFragmentPresenter{
     }
 
     public void onAttachedToView(){
+        Log.d("RecViewFragPresenter", "onAttachedToView");
         getInternetConnection();
         recyclerView = fragment.getRecyclerView();
     }
@@ -133,16 +143,51 @@ public class RecViewFragPresenter implements GettingResults, IFragmentPresenter{
         }
     }
 
-    protected void getInternetConnection(){
-        ConnectivityManager connMgr = (ConnectivityManager) fragment.getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-        if (networkInfo != null && networkInfo.isConnected()) {
-            Log.d("PROCESS", "connection established");
-            this.runLoadImageUrlsTask();
+    public void getInternetConnection(){
+        Log.d("RecViewFragPresenter", "getInternetConnection");
+        runLoadImageUrlsTask();
+        if(receiver == null) {
+            receiver = new InternetStateReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    //super.onReceive(context, intent);
+                    Log.d("RecViewFragPresenter", " internet state changed " + tag);
+                    ConnectivityManager connMgr = (ConnectivityManager) fragment.getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+                    NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+                    if (networkInfo != null && networkInfo.isConnected()) {
+                        Log.d("PROCESS", "connection established");
+                        if (task.isCancelled() || firstTaskExecution) {
+                            Log.d("RecViewFragPresenter", " run task again ");
+                            runLoadImageUrlsTask();
+                            firstTaskExecution = false;
+                        }
+                    } else{
+                        if (task.getStatus() == AsyncTask.Status.RUNNING) {
+                            task.cancel(true);
+                            Log.d("RecViewFragPresenter", " cancel task ");
+                        }
+                        Log.d("ERROR 0", "connection error");
+                        showAlertDialog();
 
-        } else {
-            Log.d("ERROR 0", "connection error");
+                    }
+                }
+            };
+        }
 
+    }
+
+    public void onResume(){
+        Log.d(tagg, "onResume");
+        fragment.getActivity().registerReceiver(receiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+    }
+
+    public void onPauseFragment(){
+        Log.d(tagg, "onPauseFragment");
+        fragment.getActivity().unregisterReceiver(receiver);
+    }
+
+    protected void showAlertDialog(){
+        if(!isShownDialog){
             final AlertDialog alertDialog = new AlertDialog.Builder(fragment.getActivity()).create();
             alertDialog.setMessage("Internet not available, Cross check your internet connectivity and try again");
             alertDialog.setIcon(android.R.drawable.ic_dialog_alert);
@@ -153,6 +198,7 @@ public class RecViewFragPresenter implements GettingResults, IFragmentPresenter{
                 }
             });
             alertDialog.show();
+            isShownDialog = true;
         }
     }
 }

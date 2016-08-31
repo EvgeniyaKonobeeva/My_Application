@@ -1,6 +1,9 @@
 package com.example.appwithfragment.FullScreenPicture;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -12,6 +15,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.appwithfragment.BroadcastReciever.InternetStateReceiver;
 import com.example.appwithfragment.ImageLoader.MyImageLoader;
 import com.example.appwithfragment.ListContent;
 import com.example.appwithfragment.MyActivity;
@@ -28,6 +32,8 @@ public class FragmentFullScreenPicture extends Fragment {
     private IOnLikePhotoListener onLikePhotoListener;
     private boolean isLiked = false;
     private ImageButton imgButton;
+    private InternetStateReceiver receiver;
+    private String url;
 
 
     public static FragmentFullScreenPicture newInstance(ListContent lc, MyActivity ctx, IOnLikePhotoListener onLikePhotoListener){
@@ -91,7 +97,7 @@ public class FragmentFullScreenPicture extends Fragment {
         MyImageLoader iml = new MyImageLoader((Context) getArguments().get(MyActivity.keyContext));
 
         final ListContent lc = (ListContent) getArguments().get(keyListContent);
-        String url = lc.getImgUrl();
+        url = lc.getImgUrl();
 
         iml.setResourceUrl(url.replace("_m", ""));
         iml.setImgInto(imgView);
@@ -109,7 +115,6 @@ public class FragmentFullScreenPicture extends Fragment {
 
         imgButton = (ImageButton)view.findViewById(R.id.imageButton);
         if (isLiked) {
-            //лайнуто
             imgButton.setImageResource(R.mipmap.favorite_heart_button);
         }
 
@@ -135,6 +140,12 @@ public class FragmentFullScreenPicture extends Fragment {
 
 
 
+
+    @Override
+    public void onPause() {
+
+        super.onPause();
+    }
 
 
 }
