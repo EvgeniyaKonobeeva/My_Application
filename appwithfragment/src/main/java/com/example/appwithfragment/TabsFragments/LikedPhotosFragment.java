@@ -20,13 +20,14 @@ import com.example.appwithfragment.RecyclerViewFragment.RecyclerViewDecorator;
 import com.example.appwithfragment.RecyclerViewFragment.RecyclerViewFragment;
 import com.example.appwithfragment.supportLib.ItemClickSupport;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by e.konobeeva on 23.08.2016.
  */
-public class LikedPhotosFragment extends ARecyclerViewFragment implements IFragment {
+public class LikedPhotosFragment extends ARecyclerViewFragment implements IFragment, Serializable {
     public static final String keyLikeListener = "keyLikeListener";
     private RecyclerView recyclerView;
     private IOnLikePhotoListener likePhotoListener;
@@ -58,10 +59,7 @@ public class LikedPhotosFragment extends ARecyclerViewFragment implements IFragm
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         Log.d("LikedPhotosFragment", "onCreateView");
         View view = inflater.inflate(R.layout.recycler_view_frag, null);
-        /*if(list == null){
-            list = new ArrayList<>();
-        }
-        list = likePhotoListener.getLikedPhotos();*/
+
 
         recyclerView = (RecyclerView) view.findViewById(R.id.rl);
         recyclerView.setAdapter(new RecyclerViewAdapter(list, getActivity()));

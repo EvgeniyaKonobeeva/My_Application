@@ -15,7 +15,6 @@ import java.util.Stack;
  */
 public interface IOnLikePhotoListener extends Serializable{
     void onLikePhotoListener(ListContent lc);
-    ArrayList getLikedPhotos();
     boolean isLikedPhoto(ListContent lc);
     void removePhoto(ListContent lc);
     void setCategory(String cat);

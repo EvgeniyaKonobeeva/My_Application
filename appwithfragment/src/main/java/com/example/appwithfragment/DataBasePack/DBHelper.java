@@ -6,13 +6,16 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
+import android.util.Log;
 
 import com.example.appwithfragment.RecyclerViewFragment.Categories;
+
+import java.io.Serializable;
 
 /**
  * Created by e.konobeeva on 25.08.2016.
  */
-public class DBHelper extends SQLiteOpenHelper {
+public class DBHelper extends SQLiteOpenHelper implements Serializable {
     private static final String DB_NAME = "likedPhotosDb.db";
     private static final int DB_VERSION = 1;
 
@@ -81,7 +84,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-
+        Log.d("DBHelper", "onCreate");
         sqLiteDatabase.execSQL(createCategoryTableQuery);
         sqLiteDatabase.execSQL(createLikesTableQuery);
         putCategories(sqLiteDatabase);

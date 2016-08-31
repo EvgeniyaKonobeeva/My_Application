@@ -36,6 +36,7 @@ public class RecViewFragPresenter implements GettingResults, IFragmentPresenter{
     private RecyclerView recyclerView;
 
     public RecViewFragPresenter(IFragment frag){
+        Log.d("RecViewFragPresenter", "constructor");
         this.fragment = frag;
     }
 
@@ -51,7 +52,7 @@ public class RecViewFragPresenter implements GettingResults, IFragmentPresenter{
     public void setTag(String tag){
         this.tag = tag;
         if(tag != null){
-            if(!tag.isEmpty()) {
+            if(!tag.equals("interestingness")) {
                 StringBuilder sb = new StringBuilder(protocol);
                 sb.append("&tag=").append(tag);
                 protocol = sb.toString();
@@ -65,12 +66,9 @@ public class RecViewFragPresenter implements GettingResults, IFragmentPresenter{
         loadingFinished = false;
         if(task instanceof LoadFromFlickrTask){
             task = new LoadFromFlickrTask(this, protocol);
-            //Log.d("RecVfrag", "task LoadFromFlickrTask ");
             task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
         }else{
-            //Log.d("cluster current", " " + curCluster_id);
-            //Log.d("RecVfrag", "task LoadFromFlickrTask ");
             task = new LoadTask(this, protocol,tag);
             task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }

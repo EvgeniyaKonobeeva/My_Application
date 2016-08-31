@@ -55,16 +55,22 @@ public class FragmentFullScreenPicture extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-
+        MyActivity mainActivity=(MyActivity)getActivity();
+        mainActivity.setDrawerIndicatorEnabled(false);
         View view = inflater.inflate(R.layout.single_pic_frag, null);
 
         setViews(view, R.id.fullImage, R.id.title);
+
+
+
 
         return view;
     }
 
     @Override
     public void onDestroy() {
+        MyActivity mainActivity=(MyActivity)getActivity();
+        mainActivity.setDrawerIndicatorEnabled(true);
         super.onDestroy();
         //Log.i(TAG,"onCreatonDestroyeView");
     }

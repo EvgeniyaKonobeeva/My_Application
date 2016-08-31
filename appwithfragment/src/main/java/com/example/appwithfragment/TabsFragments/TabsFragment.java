@@ -23,7 +23,7 @@ public class TabsFragment extends Fragment {
     private ViewPager viewPager;
     private TabViewPagerAdapter adapter;
     private DBHelper dbHelper;
-    private String tag;
+    private String category;
 
     @Nullable
     @Override
@@ -36,28 +36,26 @@ public class TabsFragment extends Fragment {
         adapter = new TabViewPagerAdapter(getChildFragmentManager());
         viewPager.setAdapter(adapter);
         adapter.setDbHelper(dbHelper);
-        adapter.setTag(tag);
+        adapter.setTag(category);
         adapter.notifyDataSetChanged();
 
-        //((TabViewPagerAdapter)viewPager.getAdapter()).setMap();
         viewPager.setCurrentItem(0);
-        //viewPager.getAdapter().notifyDataSetChanged();
-        //viewPager.getAdapter().saveState();
-        //
+
 
 
         TabLayout tabLayout = (TabLayout)view.findViewById(R.id.tabLayout);
         tabLayout.setupWithViewPager(viewPager);
+
         return view;
     }
 
-    public void setTag(String tag){
-        Log.d("TabsFragment", "setTag " + tag);
-        this.tag = tag;
+    public void setCategory(String category){
+        Log.d("TabsFragment", "setCategory " + category);
+        this.category = category;
         if(viewPager !=null && viewPager.getAdapter() != null){
             viewPager.setCurrentItem(0);
-            Log.d("TabsFragment", "setTag if " + tag);
-            adapter.setTag(tag);
+            Log.d("TabsFragment", "setCategory if " + category);
+            adapter.setTag(category);
             adapter.notifyDataSetChanged();
 
         }
@@ -68,5 +66,13 @@ public class TabsFragment extends Fragment {
     }
     public void setDBHelper(DBHelper dbHelper){
         this.dbHelper = dbHelper;
+    }
+
+    public ViewPager getViewPager(){
+        return viewPager;
+    }
+
+    public String getCategory(){
+        return category;
     }
 }

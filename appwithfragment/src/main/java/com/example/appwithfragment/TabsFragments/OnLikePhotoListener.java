@@ -4,6 +4,8 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -13,9 +15,6 @@ import com.example.appwithfragment.DataBasePack.DBHelper;
 import com.example.appwithfragment.ListContent;
 import com.example.appwithfragment.MVPPattern.IFragment;
 import com.example.appwithfragment.MyActivity;
-import com.example.appwithfragment.RecyclerViewFragment.LikedPhotoLoader;
-import com.example.appwithfragment.RecyclerViewFragment.Tasks.GetPhotosList;
-import com.example.appwithfragment.RecyclerViewFragment.Tasks.RemovePhotoTask;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -23,7 +22,7 @@ import java.util.ArrayList;
 /**
  * Created by Евгения on 24.08.2016.
  */
-public class OnLikePhotoListener implements IOnLikePhotoListener, Serializable, LoaderManager.LoaderCallbacks<Cursor> {
+public class OnLikePhotoListener implements IOnLikePhotoListener, Serializable, LoaderManager.LoaderCallbacks<Cursor>, Parcelable {
     private ArrayList<ListContent> likedList;
     DBHelper dbHelper;
     String category;
@@ -31,8 +30,38 @@ public class OnLikePhotoListener implements IOnLikePhotoListener, Serializable, 
 
 
     private IFragment fragment;
+    public static final Parcelable.Creator<OnLikePhotoListener> CREATOR
+            = new Parcelable.Creator<OnLikePhotoListener>() {
+        public OnLikePhotoListener createFromParcel(Parcel in) {
+            return new OnLikePhotoListener(in.readBundle());
+        }
 
+        public OnLikePhotoListener[] newArray(int size) {
+            return new OnLikePhotoListener[size];
+        }
+    };
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+
+    }
+
+    public OnLikePhotoListener(Bundle bundle){
+        String category = bundle.getString("category");
+        DBHelper dbHelper = (DBHelper) bundle.getSerializable("dbHelper");
+        Log.d("OnLikePhotoListener", "onLikePhotoListener create");
+        likedList = new ArrayList<>();
+        setCategory(category);
+        if(dbHelper != null){
+            this.dbHelper = dbHelper;
+        }
+
+    }
     public OnLikePhotoListener(DBHelper dbHelper, String category){
         Log.d("OnLikePhotoListener", "onLikePhotoListener create");
         likedList = new ArrayList<>();
@@ -42,6 +71,8 @@ public class OnLikePhotoListener implements IOnLikePhotoListener, Serializable, 
         }
 
     }
+
+
 
     public void setFragment(IFragment f){
         fragment = f;

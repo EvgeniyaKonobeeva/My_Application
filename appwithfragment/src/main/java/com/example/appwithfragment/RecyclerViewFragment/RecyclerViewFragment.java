@@ -51,19 +51,19 @@ public class RecyclerViewFragment extends ARecyclerViewFragment implements IFrag
 
     public static RecyclerViewFragment getNewInstance(String tag, DBHelper dbHelper){
         Log.d("RecyclerViewFragment", "getNewInstance tag " + tag);
-        if(tag.isEmpty()){
-            Log.d("RecyclerViewFragment", "getNewInstance if tag " + tag);
+        if(tag.equals("interestingness")){
+            Log.d("RecyclerViewFragment", "getNewInstance LoadFromFlickrTask " + tag);
             RecyclerViewFragment fragment = new RecyclerViewFragment().setProtocol(MyActivity.protocolInterestingness)
                     .setTask(new LoadFromFlickrTask()).setDbHelper(dbHelper);
-            //fragment.likePhotoListener = new OnLikePhotoListener(fragment.getActivity());
             return fragment;
         }else {
-            Log.d("RecyclerViewFragment", "getNewInstance else tag " + tag);
+            Log.d("RecyclerViewFragment", "getNewInstance LoadTask " + tag);
             RecyclerViewFragment fragment = new RecyclerViewFragment().setProtocol(MyActivity.protocol)
                     .setTask(new LoadTask()).setTag(tag).setDbHelper(dbHelper);
-            //fragment.likePhotoListener = new OnLikePhotoListener(fragment.getActivity());
             return fragment;
         }
+
+        //Log.d("RecyclerViewFragment", "getNewInstance else tag " + tag);
 
     }
 
@@ -102,9 +102,8 @@ public class RecyclerViewFragment extends ARecyclerViewFragment implements IFrag
         if(likePhotoListener == null){
             likePhotoListener = new OnLikePhotoListener(dbHelper, tag);
         }
-
-
-
+        presenter = new RecViewFragPresenter(this);
+        presenter.onCreateFragment();
         this.setRetainInstance(true);
 
     }
@@ -112,8 +111,7 @@ public class RecyclerViewFragment extends ARecyclerViewFragment implements IFrag
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        presenter = new RecViewFragPresenter(this);
-        presenter.onCreateFragment();
+
         presenter.setTask(this.task);
         presenter.setProtocol(this.protocol);
         presenter.setTag(this.tag);
@@ -211,7 +209,10 @@ public class RecyclerViewFragment extends ARecyclerViewFragment implements IFrag
     }
 
     public IOnLikePhotoListener getLikePhotoListener(){
-        likePhotoListener = new OnLikePhotoListener(dbHelper, tag);
+        Bundle bundle = new Bundle();
+        bundle.putString("category", tag);
+        bundle.putSerializable("dbHelper", dbHelper);
+        likePhotoListener = new OnLikePhotoListener(bundle);
         return likePhotoListener;
     }
 

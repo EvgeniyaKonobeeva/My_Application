@@ -1,4 +1,4 @@
-package com.example.appwithfragment.RecyclerViewFragment;
+package com.example.appwithfragment.TabsFragments;
 
 import android.content.Context;
 import android.database.Cursor;

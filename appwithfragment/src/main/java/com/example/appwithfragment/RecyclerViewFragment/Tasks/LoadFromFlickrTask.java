@@ -68,9 +68,9 @@ public class LoadFromFlickrTask extends AsyncTask<Object, Integer, Map> {
                 fragment.setCurCluster_id(page);
 
             } catch (IOException ioe) {
-                Log.d(errorTag, ioe.toString());
+                Log.d(errorTag, ioe.getMessage());
             } catch (JSONException je) {
-                Log.d(errorTag, je.toString());
+                Log.d(errorTag, je.getMessage());
             }
         }else {
             Thread.currentThread().interrupt();

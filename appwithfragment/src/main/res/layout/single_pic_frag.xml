@@ -30,8 +30,9 @@
             android:id="@+id/title"
             android:layout_gravity="center_horizontal|top"
             android:textStyle="italic"
-            android:textColor="#7c7c7c"
-            android:text="photo" />
+            android:textColor="#000000"
+            android:text="photo"
+            android:background="#eaeae7"/>
         <!--<View
             android:layout_width="match_parent"
             android:layout_height="1.5dp"

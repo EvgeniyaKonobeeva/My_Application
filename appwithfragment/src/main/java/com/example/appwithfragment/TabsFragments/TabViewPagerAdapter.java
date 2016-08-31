@@ -86,9 +86,9 @@ public class TabViewPagerAdapter extends FragmentPagerAdapter {
     }
 
     public void setTag(String tag){
-        Log.d("TabViewPagerAdapter", "setTag 1 " + this.tag);
+        Log.d("TabViewPagerAdapter", "setCategory 1 " + this.tag);
         this.tag = tag;
-        Log.d("TabViewPagerAdapter", "setTag 2 " + this.tag);
+        Log.d("TabViewPagerAdapter", "setCategory 2 " + this.tag);
     }
 
     public void setDbHelper(DBHelper dbHelper){

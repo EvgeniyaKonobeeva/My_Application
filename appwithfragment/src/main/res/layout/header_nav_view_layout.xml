@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:id="@+id/nav_view_head_img"
+        android:src="@mipmap/nav_header_pic"
+        android:layout_gravity="top"
+        android:scaleType="fitStart"
+        android:background="#dedede"
+        />
+</LinearLayout>
