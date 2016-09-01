@@ -42,6 +42,7 @@ public class RecViewFragPresenter implements GettingResults, IFragmentPresenter{
     private RecyclerView recyclerView;
     private InternetStateReceiver receiver;
 
+    /*init presenter*/
     public RecViewFragPresenter(IFragment frag){
         Log.d("RecViewFragPresenter", "constructor");
         this.fragment = frag;
@@ -69,6 +70,8 @@ public class RecViewFragPresenter implements GettingResults, IFragmentPresenter{
             }
         }
     }
+
+
 
     @Override
     public void runLoadImageUrlsTask() {
@@ -122,13 +125,17 @@ public class RecViewFragPresenter implements GettingResults, IFragmentPresenter{
         ra.getMyImageLoader().terminateAllProcess();
     }
 
-    public void onAttachedToView(){
-        Log.d("RecViewFragPresenter", "onAttachedToView");
-        getInternetConnection();
+    public void onCreateView(){
+        Log.d("RecViewFragPresenter", "onCreateView presenter");
+        //runFirstTask();
         recyclerView = fragment.getRecyclerView();
     }
 
     public void onCreateFragment(){
+        if(receiver == null) {
+            receiver = getReceiverInstance();
+        }
+        runFirstTask();
         curCluster_id = 0;
     }
 
@@ -143,37 +150,10 @@ public class RecViewFragPresenter implements GettingResults, IFragmentPresenter{
         }
     }
 
-    public void getInternetConnection(){
-        Log.d("RecViewFragPresenter", "getInternetConnection");
+    public void runFirstTask(){
+        Log.d("RecViewFragPresenter", "runFirstTask");
+        firstTaskExecution = false;
         runLoadImageUrlsTask();
-        if(receiver == null) {
-            receiver = new InternetStateReceiver() {
-                @Override
-                public void onReceive(Context context, Intent intent) {
-                    //super.onReceive(context, intent);
-                    Log.d("RecViewFragPresenter", " internet state changed " + tag);
-                    ConnectivityManager connMgr = (ConnectivityManager) fragment.getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
-                    NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-                    if (networkInfo != null && networkInfo.isConnected()) {
-                        Log.d("PROCESS", "connection established");
-                        if (task.isCancelled() || firstTaskExecution) {
-                            Log.d("RecViewFragPresenter", " run task again ");
-                            runLoadImageUrlsTask();
-                            firstTaskExecution = false;
-                        }
-                    } else{
-                        if (task.getStatus() == AsyncTask.Status.RUNNING) {
-                            task.cancel(true);
-                            Log.d("RecViewFragPresenter", " cancel task ");
-                        }
-                        Log.d("ERROR 0", "connection error");
-                        showAlertDialog();
-
-                    }
-                }
-            };
-        }
-
     }
 
     public void onResume(){
@@ -186,6 +166,40 @@ public class RecViewFragPresenter implements GettingResults, IFragmentPresenter{
         fragment.getActivity().unregisterReceiver(receiver);
     }
 
+
+
+    public InternetStateReceiver getReceiverInstance(){
+        receiver = new InternetStateReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                //super.onReceive(context, intent);
+                Log.d("RecViewFragPresenter", " internet state changed " + tag);
+
+                ConnectivityManager connMgr = (ConnectivityManager) fragment.getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+                NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+
+                if (networkInfo != null && networkInfo.isConnected()) {
+                    Log.d("PROCESS", "connection established");
+                    //isShownDialog= false;
+                    if (task.isCancelled() || firstTaskExecution) {
+                        Log.d("RecViewFragPresenter", " run task again ");
+                        runLoadImageUrlsTask();
+                        firstTaskExecution = false;
+                    }
+                } else {
+                    if (task.getStatus() == AsyncTask.Status.RUNNING) {
+                        task.cancel(true);
+                        Log.d("RecViewFragPresenter", " cancel task ");
+                    }
+                    Log.d("ERROR 0", "connection error");
+                    showAlertDialog();
+
+                }
+            }
+        };
+        return receiver;
+    }
+
     protected void showAlertDialog(){
         if(!isShownDialog){
             final AlertDialog alertDialog = new AlertDialog.Builder(fragment.getActivity()).create();
@@ -195,6 +209,7 @@ public class RecViewFragPresenter implements GettingResults, IFragmentPresenter{
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     alertDialog.dismiss();
+                    isShownDialog = false;
                 }
             });
             alertDialog.show();

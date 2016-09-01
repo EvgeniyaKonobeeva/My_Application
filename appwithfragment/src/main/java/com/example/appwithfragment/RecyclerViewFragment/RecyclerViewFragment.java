@@ -1,8 +1,6 @@
 package com.example.appwithfragment.RecyclerViewFragment;
 
 import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -111,8 +109,15 @@ public class RecyclerViewFragment extends ARecyclerViewFragment implements IFrag
         if(likePhotoListener == null){
             likePhotoListener = new OnLikePhotoListener(dbHelper, tag);
         }
+
         presenter = new RecViewFragPresenter(this);
+        presenter.setTask(this.task);
+        presenter.setProtocol(this.protocol);
+        presenter.setTag(this.tag);
+
+
         presenter.onCreateFragment();
+
         wifiManager = (WifiManager)getActivity().getSystemService(Context.WIFI_SERVICE);
         this.setRetainInstance(true);
 
@@ -121,17 +126,13 @@ public class RecyclerViewFragment extends ARecyclerViewFragment implements IFrag
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Log.d("RecyclerViewFragment ", "onCreateView ");
-
-        presenter.setTask(this.task);
-        presenter.setProtocol(this.protocol);
-        presenter.setTag(this.tag);
+        Log.d("RecyclerViewFragment ", "onCreateView fragment");
 
 
         View view = inflater.inflate(R.layout.recycler_view_frag, null);
         recyclerView = setRecyclerView(view, R.id.rl);
         this.setHasOptionsMenu(true);
-        presenter.onAttachedToView();
+        presenter.onCreateView();
         if(checkBox != null && wifiManager != null){
             checkBox.setChecked(wifiManager.isWifiEnabled());
         }

@@ -7,7 +7,7 @@ import android.os.AsyncTask;
  * Created by e.konobeeva on 23.08.2016.
  */
 public interface IFragmentPresenter {
-    void onAttachedToView();
+    void onCreateView();
     void onRecViewScroll(int dy, int lastVisibleItemPosition);
     void onCreateFragment();
     void onFragmentDestroy();
