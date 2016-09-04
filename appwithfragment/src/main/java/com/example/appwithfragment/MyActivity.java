@@ -24,7 +24,6 @@ import com.example.appwithfragment.TabsFragments.TabsFragment;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 
 /**
  * Created by Евгения on 15.08.2016.
@@ -54,7 +53,7 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
 
 
     @Override
-    public void doAction(int pos, List<ListContent> list, IOnLikePhotoListener onLPListener) {
+    public void doAction(int pos, List<PhotoObjectInfo> list, IOnLikePhotoListener onLPListener) {
 
         Log.i("FrgFullScreenPicture", "create new FragmentFullScreenPicture");
         viewPagerFragment = new ViewPagerFragment();
@@ -62,7 +61,7 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
 
         bundle.putInt(keyPosition, pos);
         bundle.putSerializable(keyContext, this);
-        bundle.putSerializable(keyList, new ArrayList<ListContent>(list));
+        bundle.putSerializable(keyList, new ArrayList<PhotoObjectInfo>(list));
         bundle.putSerializable(keyLikeListener, onLPListener);
 
         viewPagerFragment.setArguments(bundle);

@@ -8,7 +8,7 @@ import java.util.Map;
  * интерфейс получения и обработки результата после выполнения AsyncTask для загрузки url фотографий
  */
 public interface GettingResults {
-    void onGettingResult(Map<String, String> photosInfo,  boolean isEnded);
+    void onGettingResult(ArrayList photosInfo,  boolean isEnded);
     int getCurCluster_id();
     void setCurCluster_id(int clusters_id);
 }

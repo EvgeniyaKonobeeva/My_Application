@@ -1,24 +1,21 @@
 package com.example.appwithfragment;
 
-import android.graphics.drawable.Drawable;
-
 import java.io.Serializable;
-import java.lang.ref.WeakReference;
 
 /**
  * Created by e.konobeeva on 28.07.2016.
  */
-public class ListContent implements Serializable{
+public class PhotoObjectInfo implements Serializable{
     private String fullTitle;
     private String imgUrl;
 
 
-    public ListContent(String imgUrl, String title){
+    public PhotoObjectInfo(String imgUrl, String title){
         this.fullTitle = title;
         this.imgUrl = imgUrl;
 
     }
-    public ListContent(){}
+    public PhotoObjectInfo(){}
 
     public void setFullTitle(String fullTitle) {
         this.fullTitle = fullTitle;
@@ -42,7 +39,7 @@ public class ListContent implements Serializable{
 
     @Override
     public boolean equals(Object obj) {
-        ListContent lc = (ListContent)obj;
+        PhotoObjectInfo lc = (PhotoObjectInfo)obj;
         if(this.getImgUrl().equals(lc.getImgUrl()) && this.getFullTitle().equals(lc.getFullTitle()))
             return true;
         else return false;

@@ -43,8 +43,8 @@ public class MyImageLoader {
         dc = DiskCashing.getInstance(ctx);
         handler = new MyHandler();
         mapLoadingImg = new HashMap<>();
-        queue = new LIFOQueue(100);
-        executorService = new ThreadPoolExecutor(threadPoolSize, threadPoolSize, 50L, TimeUnit.SECONDS, queue);
+        queue = new LIFOQueue(500);
+        executorService = new ThreadPoolExecutor(threadPoolSize, threadPoolSize, 500L, TimeUnit.SECONDS, queue);
     }
 
     public MyImageLoader setResourceUrl(String url){
@@ -55,30 +55,28 @@ public class MyImageLoader {
     public MyImageLoader setImgInto(final ImageView iv) {
         //Log.d("MyImageLoader", "call MyImageLoader");
         iv.setTag(resUrl);
-        if (!oc.setImageTo(resUrl.hashCode(), iv)) {
+
+        //if (!oc.setImageTo(resUrl.hashCode(), iv)) {
            if (!mapLoadingImg.containsKey(resUrl.hashCode())) {
                //Log.d("HERE", "running thread");
                 mapLoadingImg.put(resUrl.hashCode(), resUrl);
-                LoadImgRunnable loadImgRunnable = new LoadImgRunnable(handler, resUrl, iv, dc);
+                LoadImgRunnable loadImgRunnable = new LoadImgRunnable(handler, resUrl, iv, oc);
                 executorService.execute(loadImgRunnable);
            }
-        }
+        //}
 
         return this;
     }
 
+
+/*msg.arg1 == 1 фото есть в дисковом кэше и мы удаляем из карты загрузок
+* msg.arg1 == 2 фото загрузилось из интернета и мы удаляем из карты загрузок
+* msg.arg1 == -1 фото не загрузилось и мы удаляем его из карты загрузок
+* пока в любом случае получения сообщения удаляем из карты загрузок*/
     public class MyHandler extends Handler {
         @Override
         public void handleMessage(final Message msg) {
-            //Log.d("HERE","terminating thread");
-                if(msg.arg1 == 2 || msg.arg1 == 1){
-                    oc.putImage(msg.what, (Bitmap) msg.obj);
-                    mapLoadingImg.remove(msg.what);
-                }else{
-                    mapLoadingImg.remove(msg.what);
-                }
-
-
+            mapLoadingImg.remove(msg.what);
         }
 
     }

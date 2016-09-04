@@ -12,7 +12,7 @@ import android.support.v4.content.Loader;
 import android.util.Log;
 
 import com.example.appwithfragment.DataBasePack.DBHelper;
-import com.example.appwithfragment.ListContent;
+import com.example.appwithfragment.PhotoObjectInfo;
 import com.example.appwithfragment.MVPPattern.IFragment;
 import com.example.appwithfragment.MyActivity;
 
@@ -23,7 +23,7 @@ import java.util.ArrayList;
  * Created by Евгения on 24.08.2016.
  */
 public class OnLikePhotoListener implements IOnLikePhotoListener, Serializable, LoaderManager.LoaderCallbacks<Cursor>, Parcelable {
-    private ArrayList<ListContent> likedList;
+    private ArrayList<PhotoObjectInfo> likedList;
     DBHelper dbHelper;
     String category;
     private static int LOADER_ID = 1;
@@ -86,7 +86,7 @@ public class OnLikePhotoListener implements IOnLikePhotoListener, Serializable, 
             String url = cursor.getString(cursor.getColumnIndex(DBHelper.likesUrl));
             String title = cursor.getString(cursor.getColumnIndex(DBHelper.title));
             //int id = cursor.getInt(cursor.getColumnIndex(DBHelper.likesId));
-            likedList.add(new ListContent(url, title));
+            likedList.add(new PhotoObjectInfo(url, title));
         }
         cursor.close();
         fragment.setList(likedList);
@@ -103,7 +103,7 @@ public class OnLikePhotoListener implements IOnLikePhotoListener, Serializable, 
 
     }
 
-    public void onLikePhotoListener(final ListContent lc){
+    public void onLikePhotoListener(final PhotoObjectInfo lc){
 
         new Thread(new Runnable() {
             @Override
@@ -124,7 +124,7 @@ public class OnLikePhotoListener implements IOnLikePhotoListener, Serializable, 
 
 
     //метод вызывается для получения списка фотографий фрагментом LikedPhotosFragment
-    public ArrayList<ListContent> getLikedPhotos(){
+    public ArrayList<PhotoObjectInfo> getLikedPhotos(){
         return likedList;
     }
 
@@ -135,7 +135,7 @@ public class OnLikePhotoListener implements IOnLikePhotoListener, Serializable, 
 
 
     @Override
-    public boolean isLikedPhoto(ListContent lc) {
+    public boolean isLikedPhoto(PhotoObjectInfo lc) {
 
         if(likedList.contains(lc)){
             Log.d("OnLikePhotoListener", "isLikedPhoto true");
@@ -149,7 +149,7 @@ public class OnLikePhotoListener implements IOnLikePhotoListener, Serializable, 
 
 
 
-    public void removePhoto(final ListContent lc){
+    public void removePhoto(final PhotoObjectInfo lc){
         if(likedList.contains(lc)){
             likedList.remove(lc);
         }else Log.e("OnLikePhotoListener", "removePhoto");

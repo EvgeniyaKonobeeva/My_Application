@@ -3,35 +3,26 @@ package com.example.appwithfragment.RecyclerViewFragment.Tasks;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.example.appwithfragment.MVPPattern.RecViewFragPresenter;
+import com.example.appwithfragment.PhotoObjectInfo;
 import com.example.appwithfragment.RecyclerViewFragment.GettingResults;
-import com.example.appwithfragment.RecyclerViewFragment.ParserJSONToPhotoUrl;
+import com.example.appwithfragment.RecyclerViewFragment.ParserJSONTo;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by Евгения on 18.08.2016.
  * таск , который соответствует одному фрагменту,для загрузки данных с сервера
- * перед первым использованием в фрагменте необходимо вызвать инициализацию всех статических параметров методом setTaskParams
- * дальнейшие экземпляры тасков создаются обычным конструктором
+ *
  */
-public class LoadTask extends AsyncTask<Object, Integer, Map>{
+public class LoadTask extends AsyncTask<Object, Integer, ArrayList> {
     private static final String errorTag = "ERROR Task";
     private int loadingPhotosPerOnce = 50;
     private boolean photoEnds = false;
-
 
 
     private String protocol;
@@ -41,47 +32,43 @@ public class LoadTask extends AsyncTask<Object, Integer, Map>{
     private int startPageNum;
 
 
-    public LoadTask(GettingResults fragment, String protocol, String tag ){
+    public LoadTask(GettingResults fragment, String protocol, String tag) {
         this.fragment = fragment;
         this.protocol = protocol;
         this.tag = tag;
         //Log.d("LoadTask ", tag);
     }
 
-    public LoadTask() {}
+    public LoadTask() {
+    }
 
     @Override
-    protected Map doInBackground(Object... voids) {
-        Map<String, String> map = new HashMap<>();
-        if(!isCancelled()) {
+    protected ArrayList doInBackground(Object... voids) {
+        ArrayList<PhotoObjectInfo> wholePhotosList = new ArrayList<>();
+        if (!isCancelled()) {
             try {
-                ArrayList<String> clustersId = clustersIdQuery(protocol);
-                map = photoArrQuery(clustersId, tag);
+                ArrayList<String> clustersId = getClustersIdArrayList(protocol);
+                wholePhotosList = getPhotoArrayList(clustersId, tag);
             } catch (IOException ioEx) {
                 Log.d("LoadTask ER ", ioEx.toString());
             } catch (JSONException jsonEx) {
                 Log.d("LoadTask ER ", jsonEx.toString());
             }
-        }else Thread.currentThread().interrupt();
-        return map;
+        } else Thread.currentThread().interrupt();
+        return wholePhotosList;
     }
 
-    @Override
-    protected void onPostExecute(Map aVoid) {
-        if(fragment != null && aVoid.size() != 0) {
-            fragment.onGettingResult(aVoid, photoEnds);
-        }
-    }
 
-    public void setFragment(GettingResults fragment){
+
+    public void setFragment(GettingResults fragment) {
         this.fragment = fragment;
     }
 
 
-    public  ArrayList<String> clustersIdQuery(String protocol)throws IOException{
+    public ArrayList<String> getClustersIdArrayList(String protocol) throws IOException {
         ArrayList<String> clusters_id = new ArrayList<>();
         try {
-            JSONObject clusters = getJSONRootPoint(protocol).getJSONObject("clusters"); // clusters
+            JSONObject clusters = ParserJSONTo.getJSONRootPoint(protocol).getJSONObject("clusters"); // clusters
             JSONArray cluster = clusters.getJSONArray("cluster");
             for (int i = 0; i < cluster.length(); i++) {
                 JSONArray tag = cluster.getJSONObject(i).getJSONArray("tag");
@@ -90,13 +77,13 @@ public class LoadTask extends AsyncTask<Object, Integer, Map>{
                     clusters_id.add(tag.getJSONObject(j).getString("_content"));
                 }*/
             }
-        }catch (JSONException jsonEx){
-            Log.d("LoadTask", "clustersIdQuery " +jsonEx.toString());
+        } catch (JSONException jsonEx) {
+            Log.d("LoadTask", "getClustersIdArrayList " + jsonEx.toString());
         }
         return clusters_id;
     }
 
-    public Map photoArrQuery(ArrayList<String> clusters_id, String tag)throws IOException, JSONException{
+    public ArrayList getPhotoArrayList(ArrayList<String> clusters_id, String tag) throws IOException, JSONException {
 
         String protocol = " https://api.flickr.com/services/rest/?method=flickr.tags.getClusterPhotos&" +
                 "api_key=b14e644ffd373999f625f4d2ba244522&format=json&nojsoncallback=1&tag=";
@@ -108,65 +95,49 @@ public class LoadTask extends AsyncTask<Object, Integer, Map>{
         int curCluster_id = fragment.getCurCluster_id();
         startPageNum = curCluster_id;
 
-        Map<String,String> map = new HashMap<>();
+        ArrayList<PhotoObjectInfo> wholePhotosList = new ArrayList<>();
+        ArrayList<PhotoObjectInfo> onePagePhotosList = new ArrayList<>();
 
         int countLoadingPhotos = 0;
 
-        while(countLoadingPhotos < loadingPhotosPerOnce){
-            if(curCluster_id <  clusters_id.size()) {
-                String str = protocol+clusters_id.get(curCluster_id++);
-                JSONObject photos = getJSONRootPoint(str).getJSONObject("photos");
-                Object[] urlArr = ParserJSONToPhotoUrl.getUrlArray(photos.getJSONArray("photo"));
-                Object[] titles =  ParserJSONToPhotoUrl.getTitleArray(photos.getJSONArray("photo"));
-                for (int i = 0; i <urlArr.length; i++) {
-                    map.put(urlArr[i].toString(), titles[i].toString());
-                }
-                countLoadingPhotos += urlArr.length;
-            }else {
+        while (countLoadingPhotos < loadingPhotosPerOnce) {
+            if (curCluster_id < clusters_id.size()) {
+                String str = protocol + clusters_id.get(curCluster_id++);
+                JSONObject photos = ParserJSONTo.getJSONRootPoint(str).getJSONObject("photos");
+                JSONArray photo = photos.getJSONArray("photo");
+                onePagePhotosList = ParserJSONTo.PhotoArrayList(photo);
+                addWHoleArrayToAnotherArray(onePagePhotosList, wholePhotosList);
+                countLoadingPhotos += onePagePhotosList.size();
+            } else {
                 photoEnds = true;
                 break;
             }
         }
         fragment.setCurCluster_id(curCluster_id);
-        return map;
 
+        return wholePhotosList;
+
+    }
+
+    @Override
+    protected void onPostExecute(ArrayList aVoid) {
+        if (fragment != null && aVoid.size() != 0) {
+            fragment.onGettingResult(aVoid, photoEnds);
+        }
     }
 
     @Override
     protected void onCancelled() {
         Log.d("LoadTask", "onCancelled");
-        if(fragment != null) {
+        if (fragment != null) {
             fragment.setCurCluster_id(startPageNum);
         }
         super.onCancelled();
     }
 
-    private HttpURLConnection setConnection(String protocol)throws IOException {
-        URL url = new URL(protocol);
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setReadTimeout(20000);
-        connection.setConnectTimeout(20000);
-        connection.setRequestMethod("GET");
-        connection.setDoInput(true);
-        return connection;
-    }
-    public JSONObject getJSONRootPoint(String protocol) throws IOException, JSONException {
-
-        HttpURLConnection connection = setConnection(protocol);
-        connection.connect();
-        InputStream is = connection.getInputStream();
-        StringBuffer buf = new StringBuffer();
-        String photosData;
-        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-
-        while ((photosData = reader.readLine()) != null) {
-            buf.append(photosData);
+    public void addWHoleArrayToAnotherArray(ArrayList putArr, ArrayList addToArr){
+        for(int i = 0; i < putArr.size(); i++){
+            addToArr.add(putArr.get(i));
         }
-        is.close();
-        connection.disconnect();
-        JSONObject obj = new JSONObject(buf.toString());
-        //Log.d("LoadTask jsonObject", obj.toString());
-        return obj;
-
     }
 }

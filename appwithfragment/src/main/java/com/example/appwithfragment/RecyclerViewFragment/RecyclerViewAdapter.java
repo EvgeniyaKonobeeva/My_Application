@@ -8,9 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
-import com.example.appwithfragment.ListContent;
+import com.example.appwithfragment.PhotoObjectInfo;
 import com.example.appwithfragment.ImageLoader.MyImageLoader;
 import com.example.appwithfragment.R;
 
@@ -21,13 +20,13 @@ import java.util.List;
  * Created by e.konobeeva on 29.07.2016.
  */
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private List<ListContent> list;
+    private List<PhotoObjectInfo> list;
     private MyImageLoader iml;
     private static int PROGRESS_TYPE = 1;
     private static int IMAGE_TYPE = 0;
 
 
-    public RecyclerViewAdapter(List<ListContent> list, Context ctx){
+    public RecyclerViewAdapter(List<PhotoObjectInfo> list, Context ctx){
         this.list = list;
         iml = new MyImageLoader(ctx);
     }

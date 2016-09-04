@@ -14,7 +14,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.example.appwithfragment.BroadcastReciever.InternetStateReceiver;
-import com.example.appwithfragment.ListContent;
+import com.example.appwithfragment.PhotoObjectInfo;
 import com.example.appwithfragment.RecyclerViewFragment.GettingResults;
 import com.example.appwithfragment.RecyclerViewFragment.Tasks.LoadFromFlickrTask;
 import com.example.appwithfragment.RecyclerViewFragment.Tasks.LoadTask;
@@ -87,19 +87,16 @@ public class RecViewFragPresenter implements GettingResults, IFragmentPresenter{
     }
 
     @Override
-    public void onGettingResult(Map<String, String> photosInfo, boolean isEnded) {
-        ArrayList<ListContent> list = fragment.getList();
+    public void onGettingResult(ArrayList photosInfo, boolean isEnded) {
+        ArrayList list = fragment.getList();
         int size = list.size();
-        for (Map.Entry<String,String> entry : photosInfo.entrySet()){
-            //Log.d("RecvFrag" , "onGettingResult key : " + entry.getKey() + " value : " + entry.getValue());
-            ListContent listContent = new ListContent(entry.getKey(), entry.getValue());
-            list.add(size, listContent);
-            fragment.getRecyclerView().getAdapter().notifyItemChanged(size);
-            size++;
+        for(int i = 0; i < photosInfo.size(); i++){
+            list.add(photosInfo.get(i));
+            fragment.getRecyclerView().getAdapter().notifyItemChanged(size++);
         }
+
         lastTaskTerminated = isEnded;
         loadingFinished = true;
-
         fragment.setList(list);
     }
 

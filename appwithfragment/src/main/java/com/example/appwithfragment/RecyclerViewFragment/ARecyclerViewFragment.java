@@ -6,7 +6,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
-import com.example.appwithfragment.ListContent;
+import com.example.appwithfragment.PhotoObjectInfo;
 import com.example.appwithfragment.TabsFragments.IOnLikePhotoListener;
 import com.example.appwithfragment.supportLib.ItemClickSupport;
 
@@ -37,7 +37,7 @@ public abstract class ARecyclerViewFragment extends Fragment{
         }
     }
 
-    public void setOnItemClickListener(RecyclerView recyclerView, final List<ListContent> list, final IOnLikePhotoListener likePhotoListener){
+    public void setOnItemClickListener(RecyclerView recyclerView, final List<PhotoObjectInfo> list, final IOnLikePhotoListener likePhotoListener){
         ItemClickSupport.addTo(recyclerView).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
             @Override
             public void onItemClicked(RecyclerView recyclerView, int position, View v) {

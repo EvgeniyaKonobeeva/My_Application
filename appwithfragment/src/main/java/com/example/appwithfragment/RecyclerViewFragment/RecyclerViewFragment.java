@@ -23,11 +23,11 @@ import com.example.appwithfragment.MVPPattern.IFragment;
 import com.example.appwithfragment.MVPPattern.IFragmentPresenter;
 import com.example.appwithfragment.MVPPattern.RecViewFragPresenter;
 import com.example.appwithfragment.MyActivity;
+import com.example.appwithfragment.PhotoObjectInfo;
 import com.example.appwithfragment.RecyclerViewFragment.Tasks.LoadFromFlickrTask;
 import com.example.appwithfragment.RecyclerViewFragment.Tasks.LoadTask;
 import com.example.appwithfragment.TabsFragments.IOnLikePhotoListener;
 import com.example.appwithfragment.TabsFragments.OnLikePhotoListener;
-import com.example.appwithfragment.ListContent;
 import com.example.appwithfragment.R;
 
 
@@ -41,7 +41,7 @@ import java.util.ArrayList;
  */
 public class RecyclerViewFragment extends ARecyclerViewFragment implements IFragment, Serializable {
 
-    private ArrayList<ListContent> list;
+    private ArrayList<PhotoObjectInfo> list;
     private RecyclerView recyclerView;
     private static String logTag = "RecyclerViewFragment";
 
@@ -222,7 +222,7 @@ public class RecyclerViewFragment extends ARecyclerViewFragment implements IFrag
     //метод менеджера - установка в зависимости от позиции viewholder - его определенный тип - колонки или строка
 
     @Override
-    public ArrayList<ListContent> getList()
+    public ArrayList<PhotoObjectInfo> getList()
     {
         return list;
     }
@@ -233,7 +233,7 @@ public class RecyclerViewFragment extends ARecyclerViewFragment implements IFrag
 
 
     @Override
-    public void setList(ArrayList<ListContent> list) {
+    public void setList(ArrayList<PhotoObjectInfo> list) {
         this.list = list;
     }
 

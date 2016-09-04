@@ -2,7 +2,6 @@ package com.example.appwithfragment.TabsFragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -10,15 +9,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.appwithfragment.ListContent;
+import com.example.appwithfragment.PhotoObjectInfo;
 import com.example.appwithfragment.MVPPattern.IFragment;
 import com.example.appwithfragment.R;
 import com.example.appwithfragment.RecyclerViewFragment.ARecyclerViewFragment;
-import com.example.appwithfragment.RecyclerViewFragment.OnRecyclerViewClickListener;
 import com.example.appwithfragment.RecyclerViewFragment.RecyclerViewAdapter;
 import com.example.appwithfragment.RecyclerViewFragment.RecyclerViewDecorator;
-import com.example.appwithfragment.RecyclerViewFragment.RecyclerViewFragment;
-import com.example.appwithfragment.supportLib.ItemClickSupport;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -31,7 +27,7 @@ public class LikedPhotosFragment extends ARecyclerViewFragment implements IFragm
     public static final String keyLikeListener = "keyLikeListener";
     private RecyclerView recyclerView;
     private IOnLikePhotoListener likePhotoListener;
-    private List<ListContent> list;
+    private List<PhotoObjectInfo> list;
 
     public static LikedPhotosFragment getNewInstance(IOnLikePhotoListener likePhotoListener){
         Bundle bundle = new Bundle();
@@ -79,8 +75,8 @@ public class LikedPhotosFragment extends ARecyclerViewFragment implements IFragm
     }
 
     @Override
-    public ArrayList<ListContent> getList() {
-        return (ArrayList<ListContent>) list;
+    public ArrayList<PhotoObjectInfo> getList() {
+        return (ArrayList<PhotoObjectInfo>) list;
     }
 
     @Override
@@ -88,7 +84,7 @@ public class LikedPhotosFragment extends ARecyclerViewFragment implements IFragm
         return recyclerView;
     }
 
-    public void setList(ArrayList<ListContent> list) {
+    public void setList(ArrayList<PhotoObjectInfo> list) {
         //this.list = list;
         this.list.clear();
         this.list.addAll(list);

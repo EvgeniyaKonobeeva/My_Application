@@ -2,11 +2,10 @@ package com.example.appwithfragment.FullScreenPicture;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.util.Log;
 
-import com.example.appwithfragment.ListContent;
+import com.example.appwithfragment.PhotoObjectInfo;
 import com.example.appwithfragment.MyActivity;
 import com.example.appwithfragment.TabsFragments.IOnLikePhotoListener;
 
@@ -17,13 +16,13 @@ import java.util.List;
  * Created by e.konobeeva on 16.08.2016.
  */
 public class ViewPagerAdapter extends FragmentStatePagerAdapter {
-    private List<ListContent> list;
+    private List<PhotoObjectInfo> list;
     private Fragment viewPagerFragment;
 
     public ViewPagerAdapter(FragmentManager fm, Fragment viewPagerFragment){
         super(fm);
         Log.d("ViewPagerAdapter", "Create adapter");
-        this.list = (ArrayList<ListContent>) viewPagerFragment.getArguments().get(MyActivity.keyList);
+        this.list = (ArrayList<PhotoObjectInfo>) viewPagerFragment.getArguments().get(MyActivity.keyList);
         this.viewPagerFragment = viewPagerFragment;
     }
 

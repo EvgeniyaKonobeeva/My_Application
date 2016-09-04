@@ -34,7 +34,7 @@ public class DiskCashing {
 
     public static DiskCashing getInstance(Context ctx){
         if(diskCashing == null){
-            return new DiskCashing(ctx);
+            return (diskCashing = new DiskCashing(ctx));
         }else return diskCashing;
     }
 

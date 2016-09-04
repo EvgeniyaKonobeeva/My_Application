@@ -1,9 +1,6 @@
 package com.example.appwithfragment.FullScreenPicture;
 
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -17,7 +14,7 @@ import android.widget.TextView;
 
 import com.example.appwithfragment.BroadcastReciever.InternetStateReceiver;
 import com.example.appwithfragment.ImageLoader.MyImageLoader;
-import com.example.appwithfragment.ListContent;
+import com.example.appwithfragment.PhotoObjectInfo;
 import com.example.appwithfragment.MyActivity;
 import com.example.appwithfragment.R;
 import com.example.appwithfragment.TabsFragments.IOnLikePhotoListener;
@@ -27,7 +24,7 @@ import com.example.appwithfragment.TabsFragments.IOnLikePhotoListener;
  */
 public class FragmentFullScreenPicture extends Fragment {
     public static final String TAG = "FrgFullScreenPicture";
-    private static final String keyListContent = "ListContent";
+    private static final String keyListContent = "PhotoObjectInfo";
     private static final String keyIsLiked = "liked";
     private IOnLikePhotoListener onLikePhotoListener;
     private boolean isLiked = false;
@@ -36,7 +33,7 @@ public class FragmentFullScreenPicture extends Fragment {
     private String url;
 
 
-    public static FragmentFullScreenPicture newInstance(ListContent lc, MyActivity ctx, IOnLikePhotoListener onLikePhotoListener){
+    public static FragmentFullScreenPicture newInstance(PhotoObjectInfo lc, MyActivity ctx, IOnLikePhotoListener onLikePhotoListener){
         Log.d("FragmentFullPicture", "Create single pic");
         FragmentFullScreenPicture f = new FragmentFullScreenPicture();
 
@@ -96,7 +93,7 @@ public class FragmentFullScreenPicture extends Fragment {
 
         MyImageLoader iml = new MyImageLoader((Context) getArguments().get(MyActivity.keyContext));
 
-        final ListContent lc = (ListContent) getArguments().get(keyListContent);
+        final PhotoObjectInfo lc = (PhotoObjectInfo) getArguments().get(keyListContent);
         url = lc.getImgUrl();
 
         iml.setResourceUrl(url.replace("_m", ""));
