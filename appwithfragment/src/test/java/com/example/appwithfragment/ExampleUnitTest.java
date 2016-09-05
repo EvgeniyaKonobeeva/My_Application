@@ -31,7 +31,7 @@ public class ExampleUnitTest {
         arrayList.add(new PhotoObjectInfo("ddd1", "ddd2"));
         arrayList.add(new PhotoObjectInfo("eee1", "eee2"));
         arrayList.add(new PhotoObjectInfo("eee1", "eee2"));
-        ParserJSONTo.removeRepeatingElements(arrayList);
+        //ParserJSONTo.removeRepeatingElements(arrayList);
 
 
         assertEquals("TEST RESULT : ", expectedArr, arrayList);

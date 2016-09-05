@@ -1,6 +1,9 @@
 package com.example.appwithfragment;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.PersistableBundle;
 import android.support.design.widget.NavigationView;
@@ -14,7 +17,9 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
+import com.example.appwithfragment.BackgroundService.NotificationService;
 import com.example.appwithfragment.DataBasePack.DBHelper;
 import com.example.appwithfragment.FullScreenPicture.ViewPagerFragment;
 import com.example.appwithfragment.RecyclerViewFragment.OnRecyclerViewClickListener;
@@ -83,6 +88,7 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
         setSupportActionBar(myToolbar);
         context = getApplicationContext();
         dBHelper = DBHelper.getInstance(context);
+        dBHelper.open();
 
         drawerLayout = setDrawerLayout();
 
@@ -102,6 +108,8 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
             tabsFragment = (TabsFragment) isOpen;
             setTitle(tabsFragment.getCategory());
         }
+
+        startAlarm();
 
 
 
@@ -218,7 +226,6 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
     public void itemSelected(MenuItem item){
         Log.d("MyActivity" , "itemSelected " + item.getItemId());
         int position = item.getItemId();
-        //actionBarDrawerToggle.setDrawerIndicatorEnabled(true);
         Fragment frg = getSupportFragmentManager().findFragmentByTag("list_img");
         if(frg == null){
             tabsFragment = new TabsFragment();
@@ -230,29 +237,6 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
             replaceFragment(tabsFragment, R.id.LL, "list_img");
         }
         tabsFragment.setCategory(item.getTitle().toString());
-
-
-//        switch (position){
-//            case R.id.interestingness:
-//                Log.d("MyActivity" , "position " + position);
-//                tabsFragment.setCategory(item.getTitle().toString());
-//                break;
-//            case R.id.plants:
-//                tabsFragment.setCategory(item.getTitle().toString());
-//                break;
-//            case R.id.animals:
-//                tabsFragment.setCategory(item.getTitle().toString());
-//                break;
-//            case R.id.people:
-//                tabsFragment.setCategory(item.getTitle().toString());
-//                break;
-//            case R.id.cities:
-//                tabsFragment.setCategory(item.getTitle().toString());
-//                break;
-//            case R.id.nature:
-//                tabsFragment.setCategory(item.getTitle().toString());
-//                break;
-//        }
 
     }
 
@@ -274,5 +258,14 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
             FragmentManager.BackStackEntry first = manager.getBackStackEntryAt(0);
             manager.popBackStack(first.getId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
         }
+    }
+
+    public void startAlarm(){
+        Toast.makeText(this, "run alarm", Toast.LENGTH_SHORT).show();
+        AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        Intent serviceIntent = new Intent(this, NotificationService.class);
+        PendingIntent servicePendingIntent = PendingIntent.getService(this, 0, serviceIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+        am.cancel(servicePendingIntent);
+        am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 10000, servicePendingIntent);
     }
 }

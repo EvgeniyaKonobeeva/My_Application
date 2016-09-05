@@ -1,8 +1,12 @@
 package com.example.appwithfragment.RecyclerViewFragment.Tasks;
 
+import android.content.ContentValues;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.example.appwithfragment.DataBasePack.DBHelper;
+import com.example.appwithfragment.MyActivity;
 import com.example.appwithfragment.PhotoObjectInfo;
 import com.example.appwithfragment.RecyclerViewFragment.GettingResults;
 import com.example.appwithfragment.RecyclerViewFragment.ParserJSONTo;
@@ -68,9 +72,6 @@ public class LoadFromFlickrTask extends AsyncTask<Object, Integer, ArrayList> {
                 }
                 fragment.setCurCluster_id(curPage);
 
-                return wholePhotosList;
-
-
             } catch (JSONException jsonException) {
                 Log.e(errorTag, jsonException.getMessage());
                 Log.d("LoadFromFlickrTask", "Exception interrupted");
@@ -83,6 +84,9 @@ public class LoadFromFlickrTask extends AsyncTask<Object, Integer, ArrayList> {
         } else {
             Log.d("LoadFromFlickrTask", "interrupted");
             this.cancel(true);
+        }
+        if(startPageNum == 0){
+            addNewPhotosToDB(wholePhotosList);
         }
         return wholePhotosList;
     }
@@ -113,6 +117,23 @@ public class LoadFromFlickrTask extends AsyncTask<Object, Integer, ArrayList> {
     public void addWHoleArrayToAnotherArray(ArrayList putArr, ArrayList addToArr){
         for(int i = 0; i < putArr.size(); i++){
             addToArr.add(putArr.get(i));
+        }
+    }
+
+    public void addNewPhotosToDB(ArrayList<PhotoObjectInfo> list){
+        DBHelper dbHelper = DBHelper.getInstance(MyActivity.context);
+        SQLiteDatabase sqLiteDatabase = dbHelper.getSSQLiteDatabase();
+        ContentValues contentValues = new ContentValues();
+        if(list.size() > 10) {
+            for (int i = 0; i < 10; i++) {
+                contentValues.put(DBHelper.photoUrl, list.get(i).getImgUrl());
+                contentValues.put(DBHelper.photoTitle, list.get(i).getFullTitle());
+                contentValues.put(DBHelper.date, System.currentTimeMillis()/60000);
+                sqLiteDatabase.update(DBHelper.interestingTableName,
+                        contentValues,
+                        DBHelper.date + " < ?",
+                        new String[]{Long.toString(System.currentTimeMillis()/60000)});
+            }
         }
     }
 

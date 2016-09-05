@@ -21,6 +21,7 @@ public class DBHelper extends SQLiteOpenHelper implements Serializable {
 
     private SQLiteDatabase sqLiteDatabase;
     private static DBHelper dbHelper;
+    private static boolean isOpen = false;
 
     /*col category table*/
     public final static String tableName = "categories";
@@ -36,6 +37,14 @@ public class DBHelper extends SQLiteOpenHelper implements Serializable {
     public final static String title = "title";
     public final static String categoryId = "category_id";
 
+    /*col interestingness category table*/
+    public final static String interestingTableName = "interestingness";
+    public final static String interestingId = "interesting_id";
+    public final static String photoUrl = "url";
+    public final static String photoTitle = "title";
+    public final static String date = "date"; /*date in ms*/
+
+
 
     private String createCategoryTableQuery = "create table " + tableName + " ( " + category_id +
             " integer primary key autoincrement, " + category_col +
@@ -47,6 +56,12 @@ public class DBHelper extends SQLiteOpenHelper implements Serializable {
             " title text not null," +
             " isliked boolean not null," +
             " category_id integer);";
+
+    private String createInterestingTableQuery = "create table " + interestingTableName +
+            " ( " + interestingId + " integer primary key autoincrement, " +
+            photoUrl + " text not null, " +
+            photoTitle + " text not null, " +
+            date + " integer not null );";
 
     public DBHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version){
         super(context, name, factory, version);
@@ -63,20 +78,21 @@ public class DBHelper extends SQLiteOpenHelper implements Serializable {
 
     public void open(){
         sqLiteDatabase = this.getWritableDatabase();
+        //sqLiteDatabase.execSQL(createInterestingTableQuery);
+        isOpen = true;
     }
     public SQLiteDatabase getSSQLiteDatabase(){
         return sqLiteDatabase;
     }
     public void close(){
         sqLiteDatabase.close();
+        isOpen = false;
     }
     public static DBHelper getInstance(Context context){
         if(dbHelper == null){
             dbHelper = new DBHelper(context);
-            dbHelper.open();
             return dbHelper;
         }else {
-            dbHelper.open();
             return dbHelper;
         }
 
@@ -87,6 +103,7 @@ public class DBHelper extends SQLiteOpenHelper implements Serializable {
         Log.d("DBHelper", "onCreate");
         sqLiteDatabase.execSQL(createCategoryTableQuery);
         sqLiteDatabase.execSQL(createLikesTableQuery);
+
         putCategories(sqLiteDatabase);
     }
 
@@ -101,6 +118,10 @@ public class DBHelper extends SQLiteOpenHelper implements Serializable {
             conValues.put(category_col, cats.toString());
             sqLiteDatabase.insert(tableName, null, conValues);
         }
+    }
+
+    public boolean isOpen(){
+        return isOpen;
     }
 
 

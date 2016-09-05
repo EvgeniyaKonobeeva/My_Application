@@ -95,6 +95,7 @@ public class RecViewFragPresenter implements GettingResults, IFragmentPresenter{
             fragment.getRecyclerView().getAdapter().notifyItemChanged(size++);
         }
 
+
         lastTaskTerminated = isEnded;
         loadingFinished = true;
         fragment.setList(list);
