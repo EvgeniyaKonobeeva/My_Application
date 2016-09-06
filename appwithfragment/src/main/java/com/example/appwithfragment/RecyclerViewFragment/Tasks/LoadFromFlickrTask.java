@@ -10,13 +10,21 @@ import com.example.appwithfragment.MyActivity;
 import com.example.appwithfragment.PhotoObjectInfo;
 import com.example.appwithfragment.RecyclerViewFragment.GettingResults;
 import com.example.appwithfragment.RecyclerViewFragment.ParserJSONTo;
+import com.example.appwithfragment.RetrofitPack.FlickrAPI;
+import com.example.appwithfragment.RetrofitPack.Photo;
+import com.example.appwithfragment.RetrofitPack.PhotosApi;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Created by e.konobeeva on 05.08.2016.
@@ -52,16 +60,31 @@ public class LoadFromFlickrTask extends AsyncTask<Object, Integer, ArrayList> {
         int countLoadingPhotos = 0;
         int loadingPhotosPerOnce = 50;
         int pages;
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(MyActivity.baseURL).addConverterFactory(GsonConverterFactory.create()).build();
+        FlickrAPI flickrAPI = retrofit.create(FlickrAPI.class);
 
         if (!isCancelled()) {
             try {
-                JSONObject photos = ParserJSONTo.getJSONRootPoint(protocol + ++curPage).getJSONObject("photos");
-                pages = photos.getInt("pages");
+
 
                 while (countLoadingPhotos < loadingPhotosPerOnce) {
                     if (curPage <= pages) {
-                        photos = ParserJSONTo.getJSONRootPoint(protocol + curPage++).getJSONObject("photos");
-                        JSONArray photo = photos.getJSONArray("photo");
+                        Call<PhotosApi> call = flickrAPI.getPhotos(MyActivity.clusters, Integer.toString(20), Integer.toString(curPage++));
+                        call.enqueue(new Callback<PhotosApi>() {
+                            @Override
+                            public void onResponse(Call<PhotosApi> call, Response<PhotosApi> response) {
+                                response.body();
+                                Photo[] photo = response.body().getPhotos().getPhoto();
+                                for(int i = 0; i < photo.length; i++){
+                                    //textView.append(photo[i].getTitle() + "\n");
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<PhotosApi> call, Throwable t) {
+                                Log.d("Main", t.getMessage());
+                            }
+                        });
                         onePagePhotosList = ParserJSONTo.PhotoArrayList(photo);
                         addWHoleArrayToAnotherArray(onePagePhotosList, wholePhotosList);
                         countLoadingPhotos += onePagePhotosList.size();

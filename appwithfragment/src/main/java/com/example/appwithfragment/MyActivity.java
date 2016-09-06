@@ -4,12 +4,11 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
-import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -29,7 +28,9 @@ import com.example.appwithfragment.TabsFragments.TabsFragment;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Евгения on 15.08.2016.
@@ -46,8 +47,22 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
 
     public static final String protocolInterestingness = "https://api.flickr.com/services/rest/?method=flickr.interestingness.getList&" +
             "api_key=b14e644ffd373999f625f4d2ba244522&format=json&nojsoncallback=1";
-    public static final String protocol = "https://api.flickr.com/services/rest/?method=flickr.tags.getClusters&" +
-            "api_key=b14e644ffd373999f625f4d2ba244522&format=json&nojsoncallback=1";
+
+    private Map<String, String> queryData = new HashMap<>();
+
+    private void setQueryData(){
+        queryData.put("api_key", "b14e644ffd373999f625f4d2ba244522");
+        queryData.put("format", "json");
+        queryData.put("nojsoncallback","1");
+    }
+
+
+    public static Map<String, String> interesting = new HashMap<>();
+    public static Map<String, String> clusters = new HashMap<>();
+    public static Map<String, String> tags = new HashMap<>();
+
+    public static String baseURL = "https://api.flickr.com";
+
 
 
     private ActionBarDrawerToggle actionBarDrawerToggle;
@@ -82,6 +97,12 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
         super.onCreate(savedInstanceState);
         Log.d("MyActivity", "onCreate");
         setContentView(R.layout.activity_main);
+
+
+        setQueryData();
+        setInterestingMap();
+        setTagsMap();
+        setClustersMap();
 
 // /data/data/com.example.appwithfragment/cache
 
@@ -272,23 +293,22 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
 
     @Override
     protected void onResume() {
-        /*SharedPreferences prefs = getApplicationContext().getSharedPreferences("appName", 0);
-        SharedPreferences.Editor editor = prefs.edit();
-        Intent intent;
-        if (prefs.getBoolean("isInitialAppLaunch", false))
-        {
-            onDestroy();
-            intent = new Intent(this, MyActivity.class);
-            startActivity(intent);
-        }
-        else
-        {
-            //First Time App launched, you are putting isInitialAppLaunch to false and calling create password activity.
-            editor.putBoolean("isInitialAppLaunch", false);
-            intent = new Intent(this, MyActivity.class);
-            startActivity(intent);
-        }*/
         Log.d("MyActivity", "onResume");
         super.onResume();
+    }
+
+    public void setInterestingMap(){
+        interesting.put("method", "flickr.interestingness.getList");
+        interesting.putAll(queryData);
+    }
+
+    public void setClustersMap(){
+        clusters.put("method", "method=flickr.tags.getClusters");
+        clusters.putAll(queryData);
+    }
+
+    public void setTagsMap(){
+        tags.put("method", "flickr.tags.getClusterPhotos");
+        tags.putAll(queryData);
     }
 }

@@ -1,8 +1,8 @@
 package com.example.appwithfragment.RecyclerViewFragment;
 
 import com.example.appwithfragment.PhotoObjectInfo;
+import com.example.appwithfragment.RetrofitPack.Photo;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -19,39 +19,38 @@ import java.util.ArrayList;
  */
 public class ParserJSONTo {
 
-    public static String[] getPhotoInfo(JSONArray array, int i) throws JSONException {
-
+    public static String[] getPhotoInfo(Photo array) throws JSONException {
         return new String[]{
-                array.getJSONObject(i).getString("farm"),
-                array.getJSONObject(i).getString("server"),
-                array.getJSONObject(i).getString("id"),
-                array.getJSONObject(i).getString("secret"),
-                array.getJSONObject(i).getString("title")
+                Integer.toString(array.getFarm()),
+                array.getServer(),
+                array.getId(),
+                array.getSecret(),
+                array.getTitle()
         };
     }
-    public static String getUrl(JSONArray array, int i)throws JSONException{
+    public static String getUrl(Photo array)throws JSONException{
         String imgUrl = "https://farm[0].staticflickr.com/[1]/[2]_[3]_m.jpg";
 
-        String[] info = getPhotoInfo(array,i);
+        String[] info = getPhotoInfo(array);
         return imgUrl.replace("[0]", info[0]).replace("[1]", info[1]).replace("[2]", info[2]).replace("[3]", info[3]);
     }
 
-    private static String[] getUrlArray(JSONArray array) throws JSONException{
-        String urlArr[] = new String[array.length()];
-        for(int i = 0; i < array.length(); i++){
-            urlArr[i] = getUrl(array, i);
+    private static String[] getUrlArray(Photo[] array) throws JSONException{
+        String urlArr[] = new String[array.length];
+        for(int i = 0; i < array.length; i++){
+            urlArr[i] = getUrl(array[i]);
         }
         return urlArr;
     }
-    private static String[] getTitleArray(JSONArray array)throws JSONException{
-        String urlArr[] = new String[array.length()];
-        for(int i = 0; i < array.length(); i++){
-            urlArr[i] = getPhotoInfo(array, i)[4];
+    private static String[] getTitleArray(Photo[] array)throws JSONException{
+        String urlArr[] = new String[array.length];
+        for(int i = 0; i < array.length; i++){
+            urlArr[i] = getPhotoInfo(array[i])[4];
         }
         return urlArr;
     }
 
-    public static ArrayList PhotoArrayList(JSONArray jsonArray)throws IOException, JSONException{
+    public static ArrayList PhotoArrayList(Photo[] jsonArray)throws IOException, JSONException{
 
         String[] url = getUrlArray(jsonArray);
         String[] titles = getTitleArray(jsonArray);
