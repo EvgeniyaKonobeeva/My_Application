@@ -124,15 +124,12 @@ public class LoadFromFlickrTask extends AsyncTask<Object, Integer, ArrayList> {
         DBHelper dbHelper = DBHelper.getInstance(MyActivity.context);
         SQLiteDatabase sqLiteDatabase = dbHelper.getSSQLiteDatabase();
         ContentValues contentValues = new ContentValues();
+        sqLiteDatabase.delete(DBHelper.interestingTableName, null, null);
         if(list.size() > 10) {
             for (int i = 0; i < 10; i++) {
                 contentValues.put(DBHelper.photoUrl, list.get(i).getImgUrl());
                 contentValues.put(DBHelper.photoTitle, list.get(i).getFullTitle());
-                contentValues.put(DBHelper.date, System.currentTimeMillis()/60000);
-                sqLiteDatabase.update(DBHelper.interestingTableName,
-                        contentValues,
-                        DBHelper.date + " < ?",
-                        new String[]{Long.toString(System.currentTimeMillis()/60000)});
+                sqLiteDatabase.insert(DBHelper.interestingTableName, null, contentValues);
             }
         }
     }

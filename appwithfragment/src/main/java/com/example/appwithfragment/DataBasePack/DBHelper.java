@@ -42,7 +42,6 @@ public class DBHelper extends SQLiteOpenHelper implements Serializable {
     public final static String interestingId = "interesting_id";
     public final static String photoUrl = "url";
     public final static String photoTitle = "title";
-    public final static String date = "date"; /*date in ms*/
 
 
 
@@ -60,8 +59,7 @@ public class DBHelper extends SQLiteOpenHelper implements Serializable {
     private String createInterestingTableQuery = "create table " + interestingTableName +
             " ( " + interestingId + " integer primary key autoincrement, " +
             photoUrl + " text not null, " +
-            photoTitle + " text not null, " +
-            date + " integer not null );";
+            photoTitle + " text not null );";
 
     public DBHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version){
         super(context, name, factory, version);
@@ -82,6 +80,9 @@ public class DBHelper extends SQLiteOpenHelper implements Serializable {
         isOpen = true;
     }
     public SQLiteDatabase getSSQLiteDatabase(){
+        if(!isOpen()){
+            this.open();
+        }
         return sqLiteDatabase;
     }
     public void close(){
@@ -103,6 +104,7 @@ public class DBHelper extends SQLiteOpenHelper implements Serializable {
         Log.d("DBHelper", "onCreate");
         sqLiteDatabase.execSQL(createCategoryTableQuery);
         sqLiteDatabase.execSQL(createLikesTableQuery);
+        sqLiteDatabase.execSQL(createInterestingTableQuery);
 
         putCategories(sqLiteDatabase);
     }

@@ -40,15 +40,16 @@ public class NotificationService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Toast.makeText(this, "run service", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "run service", Toast.LENGTH_SHORT).show();
         new Thread(new Runnable() {
             @Override
             public void run() {
                 ArrayList newPhotos = getNewPhotos();
                 ArrayList oldPhotos = getOldPhotos();
-                if(newPhotos.equals(oldPhotos)){
+                int result = compareLists(newPhotos, oldPhotos);
+                if(result == 1){
                     sendNotification("no new");
-                }else {
+                }else if(result == 0){
                     sendNotification("has new");
                 }
             }
@@ -63,15 +64,15 @@ public class NotificationService extends Service {
     }
 
     public void sendNotification(String text){
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(MyActivity.context);
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getApplicationContext());
+
+        Intent activityIntent = new Intent(getApplicationContext(), MyActivity.class);
+        PendingIntent activityPendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, activityIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+        notificationBuilder.setContentIntent(activityPendingIntent);
         notificationBuilder.setContentTitle("Flickr photos");
         notificationBuilder.setContentText(text);
         notificationBuilder.setSmallIcon(R.mipmap.ic_launcher);
         notificationBuilder.setAutoCancel(true);
-
-        Intent activityIntent = new Intent(this, MyActivity.class);
-        PendingIntent activityPendingIntent = PendingIntent.getActivity(MyActivity.context, 0, activityIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-        notificationBuilder.setContentIntent(activityPendingIntent);
 
         NotificationManager mNotificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -90,6 +91,8 @@ public class NotificationService extends Service {
         }catch (JSONException jsonException){
             Log.e(tag, jsonException.getMessage());
         }
+        //onePagePhotosList.remove(0);
+        //onePagePhotosList.add(0, new PhotoObjectInfo("hhhhhhhhh", "title"));
         return onePagePhotosList;
     }
 
@@ -101,28 +104,31 @@ public class NotificationService extends Service {
         }
         SQLiteDatabase sqLiteDatabase = dbHelper.getSSQLiteDatabase();
         int countRecords = 0;
-        Cursor cursor = sqLiteDatabase.query(DBHelper.interestingTableName, new String[]{DBHelper.photoUrl, DBHelper.photoTitle}, null, null, null, null, DBHelper.date + " asc");
+        Cursor cursor = sqLiteDatabase.query(DBHelper.interestingTableName, new String[]{DBHelper.photoUrl, DBHelper.photoTitle}, null, null, null, null, null);
         while (cursor.moveToNext() && countRecords < 10){
             String url = cursor.getString(cursor.getColumnIndex(DBHelper.photoUrl));
             String title = cursor.getString(cursor.getColumnIndex(DBHelper.photoTitle));
             list.add(new PhotoObjectInfo(url, title));
             countRecords++;
         }
+        dbHelper.close();
         return list;
     }
 
-    public boolean compareLists(ArrayList list1, ArrayList list2){
-        boolean res = false;
+/*-1 - null objects
+* 0 - not equals
+* 1 - equals*/
+    public int compareLists(ArrayList list1, ArrayList list2){
+        int res = -1;
         if(list1 != null && list2 != null) {
             if (list1.size() == list2.size()) {
                for(int i = 0; i < list1.size(); i++){
                    if(!list2.contains(list1.get(i))){
-                       res = false;
-                       break;
-                   }else res = true;
+                       return 0;
+                   }else res = 1;
                }
-            }
-        }
+            }else return 0;
+        }else return -1;
         return res;
     }
 

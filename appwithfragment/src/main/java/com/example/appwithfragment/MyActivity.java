@@ -4,6 +4,7 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.PersistableBundle;
 import android.support.design.widget.NavigationView;
@@ -243,7 +244,7 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
 
     @Override
     protected void onDestroy() {
-        if(dBHelper != null)
+        if(dBHelper != null && dBHelper.isOpen())
             dBHelper.close();
         super.onDestroy();
     }
@@ -267,5 +268,27 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
         PendingIntent servicePendingIntent = PendingIntent.getService(this, 0, serviceIntent, PendingIntent.FLAG_CANCEL_CURRENT);
         am.cancel(servicePendingIntent);
         am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 10000, servicePendingIntent);
+    }
+
+    @Override
+    protected void onResume() {
+        /*SharedPreferences prefs = getApplicationContext().getSharedPreferences("appName", 0);
+        SharedPreferences.Editor editor = prefs.edit();
+        Intent intent;
+        if (prefs.getBoolean("isInitialAppLaunch", false))
+        {
+            onDestroy();
+            intent = new Intent(this, MyActivity.class);
+            startActivity(intent);
+        }
+        else
+        {
+            //First Time App launched, you are putting isInitialAppLaunch to false and calling create password activity.
+            editor.putBoolean("isInitialAppLaunch", false);
+            intent = new Intent(this, MyActivity.class);
+            startActivity(intent);
+        }*/
+        Log.d("MyActivity", "onResume");
+        super.onResume();
     }
 }
