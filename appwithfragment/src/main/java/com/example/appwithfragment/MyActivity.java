@@ -202,6 +202,7 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
                 }
             }else {
                 Log.d("MyActivity", "else 1 fullScrFrag");
+                this.setDrawerIndicatorEnabled(true);
                 super.onBackPressed();
             }
         }

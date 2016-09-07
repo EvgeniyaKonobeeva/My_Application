@@ -12,10 +12,9 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.appwithfragment.BroadcastReciever.InternetStateReceiver;
 import com.example.appwithfragment.ImageLoader.MyImageLoader;
-import com.example.appwithfragment.PhotoObjectInfo;
 import com.example.appwithfragment.MyActivity;
+import com.example.appwithfragment.PhotoObjectInfo;
 import com.example.appwithfragment.R;
 import com.example.appwithfragment.TabsFragments.IOnLikePhotoListener;
 
@@ -29,7 +28,6 @@ public class FragmentFullScreenPicture extends Fragment {
     private IOnLikePhotoListener onLikePhotoListener;
     private boolean isLiked = false;
     private ImageButton imgButton;
-    private InternetStateReceiver receiver;
     private String url;
 
 
@@ -37,6 +35,7 @@ public class FragmentFullScreenPicture extends Fragment {
         Log.d("FragmentFullPicture", "Create single pic");
         FragmentFullScreenPicture f = new FragmentFullScreenPicture();
 
+        ctx.setDrawerIndicatorEnabled(false);
         Bundle b = new Bundle();
         b.putSerializable(keyListContent, lc);
         b.putSerializable(MyActivity.keyContext, ctx);
@@ -57,7 +56,7 @@ public class FragmentFullScreenPicture extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
+        Log.d("FragmentFullPicture", "onCreateView");
         MyActivity mainActivity=(MyActivity)getActivity();
         mainActivity.setDrawerIndicatorEnabled(false);
         View view = inflater.inflate(R.layout.single_pic_frag, null);
@@ -70,12 +69,11 @@ public class FragmentFullScreenPicture extends Fragment {
         return view;
     }
 
+
     @Override
     public void onDestroy() {
-        MyActivity mainActivity=(MyActivity)getActivity();
-        mainActivity.setDrawerIndicatorEnabled(true);
         super.onDestroy();
-        //Log.i(TAG,"onCreatonDestroyeView");
+        Log.d("FragmentFullPicture", "onDestroy");
     }
 
     @Override
@@ -140,7 +138,6 @@ public class FragmentFullScreenPicture extends Fragment {
 
     @Override
     public void onPause() {
-
         super.onPause();
     }
 
