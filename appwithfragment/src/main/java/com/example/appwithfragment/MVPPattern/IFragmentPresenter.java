@@ -1,6 +1,5 @@
 package com.example.appwithfragment.MVPPattern;
 
-import android.app.Activity;
 import android.os.AsyncTask;
 
 /**
@@ -13,7 +12,6 @@ public interface IFragmentPresenter {
     void onFragmentDestroy();
     void runLoadImageUrlsTask();
     void setTag(String tag);
-    void setProtocol(String protocol);
     void setTask(AsyncTask task);
     void onPauseFragment();
     void onResume();

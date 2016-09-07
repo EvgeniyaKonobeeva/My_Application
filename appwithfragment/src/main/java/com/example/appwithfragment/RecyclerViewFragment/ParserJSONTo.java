@@ -19,7 +19,7 @@ import java.util.ArrayList;
  */
 public class ParserJSONTo {
 
-    public static String[] getPhotoInfo(Photo array) throws JSONException {
+    public static String[] getPhotoInfo(Photo array){
         return new String[]{
                 Integer.toString(array.getFarm()),
                 array.getServer(),
@@ -28,21 +28,21 @@ public class ParserJSONTo {
                 array.getTitle()
         };
     }
-    public static String getUrl(Photo array)throws JSONException{
+    public static String getUrl(Photo array){
         String imgUrl = "https://farm[0].staticflickr.com/[1]/[2]_[3]_m.jpg";
 
         String[] info = getPhotoInfo(array);
         return imgUrl.replace("[0]", info[0]).replace("[1]", info[1]).replace("[2]", info[2]).replace("[3]", info[3]);
     }
 
-    private static String[] getUrlArray(Photo[] array) throws JSONException{
+    private static String[] getUrlArray(Photo[] array){
         String urlArr[] = new String[array.length];
         for(int i = 0; i < array.length; i++){
             urlArr[i] = getUrl(array[i]);
         }
         return urlArr;
     }
-    private static String[] getTitleArray(Photo[] array)throws JSONException{
+    private static String[] getTitleArray(Photo[] array){
         String urlArr[] = new String[array.length];
         for(int i = 0; i < array.length; i++){
             urlArr[i] = getPhotoInfo(array[i])[4];
@@ -50,7 +50,7 @@ public class ParserJSONTo {
         return urlArr;
     }
 
-    public static ArrayList PhotoArrayList(Photo[] jsonArray)throws IOException, JSONException{
+    public static ArrayList PhotoArrayList(Photo[] jsonArray){
 
         String[] url = getUrlArray(jsonArray);
         String[] titles = getTitleArray(jsonArray);
@@ -81,7 +81,7 @@ public class ParserJSONTo {
         }
     }
 
-    public static HttpURLConnection setConnection(String protocol)throws IOException {
+    private static HttpURLConnection setConnection(String protocol)throws IOException {
         URL url = new URL(protocol);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setReadTimeout(20000);
@@ -91,7 +91,7 @@ public class ParserJSONTo {
         return connection;
     }
 
-    public static JSONObject getJSONRootPoint(String protocol) throws IOException, JSONException {
+    private static JSONObject getJSONRootPoint(String protocol) throws IOException, JSONException {
 
         HttpURLConnection connection = setConnection(protocol);
         connection.connect();

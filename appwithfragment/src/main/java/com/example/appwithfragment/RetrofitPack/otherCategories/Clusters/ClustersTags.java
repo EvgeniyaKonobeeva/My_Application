@@ -9,13 +9,13 @@ package com.example.appwithfragment.RetrofitPack.otherCategories.Clusters;
             countClicks++;
                 Retrofit retrofit = new Retrofit.Builder().baseUrl(baseURL).addConverterFactory(GsonConverterFactory.create()).build();
                 FlickrAPI flickrAPI = retrofit.create(FlickrAPI.class);
-                Call<PhotosApi> call = flickrAPI.getPhotos("flickr.interestingness.getList", "b14e644ffd373999f625f4d2ba244522", "json", "1", "3", Integer.toString(countClicks));
+                Call<PhotosApi> call = flickrAPI.getInterestingPhotos("flickr.interestingness.getList", "b14e644ffd373999f625f4d2ba244522", "json", "1", "3", Integer.toString(countClicks));
                 call.enqueue(new Callback<PhotosApi>() {
                     @Override
                     public void onResponse(Call<PhotosApi> call, Response<PhotosApi> response) {
                         response.body();
                         textView.append(response.body().toString() + "\n");
-                        Photo[] photo = response.body().getPhotos().getPhoto();
+                        Photo[] photo = response.body().getInterestingPhotos().getPhoto();
                         textView.append("page " + countClicks + "\n");
                         for(int i = 0; i < photo.length; i++){
                             textView.append(photo[i].getTitle() + "\n");

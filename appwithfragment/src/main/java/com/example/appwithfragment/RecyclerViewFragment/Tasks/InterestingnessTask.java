@@ -14,40 +14,37 @@ import com.example.appwithfragment.RetrofitPack.FlickrAPI;
 import com.example.appwithfragment.RetrofitPack.Photo;
 import com.example.appwithfragment.RetrofitPack.PhotosApi;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Map;
 
 import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Created by e.konobeeva on 05.08.2016.
  */
-public class LoadFromFlickrTask extends AsyncTask<Object, Integer, ArrayList> {
+public class InterestingnessTask extends AsyncTask<Object, Integer, ArrayList> {
 
     private static final String errorTag = "LoadFFTask";
     private boolean photoEnds;
-    private String protocol;
     private GettingResults fragment;
-    private int startPageNum;
+    private int taskStartsWithPageNum;
+    private Map protocol;
+    private String baseURL;
 
 
-    public LoadFromFlickrTask(GettingResults fragment, String protocol){
-        StringBuilder sb = new StringBuilder(protocol);
-        sb.append("&per_page=20&page=");
-        protocol = sb.toString();
+
+
+    public InterestingnessTask(GettingResults fragment, Map protocol, String baseURL){
         this.fragment = fragment;
-        this.protocol = protocol;
         photoEnds = false;
+        this.protocol = protocol;
+        this.baseURL = baseURL;
     }
 
-    public LoadFromFlickrTask(){}
+    public InterestingnessTask(){}
 
     @Override
     protected ArrayList<PhotoObjectInfo> doInBackground(Object... voids) {
@@ -56,59 +53,45 @@ public class LoadFromFlickrTask extends AsyncTask<Object, Integer, ArrayList> {
         ArrayList<PhotoObjectInfo> onePagePhotosList = new ArrayList<>();
 
         int curPage = fragment.getCurCluster_id();
-        startPageNum = curPage;
+        taskStartsWithPageNum = curPage;
         int countLoadingPhotos = 0;
         int loadingPhotosPerOnce = 50;
         int pages;
-        Retrofit retrofit = new Retrofit.Builder().baseUrl(MyActivity.baseURL).addConverterFactory(GsonConverterFactory.create()).build();
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(baseURL).addConverterFactory(GsonConverterFactory.create()).build();
         FlickrAPI flickrAPI = retrofit.create(FlickrAPI.class);
 
         if (!isCancelled()) {
             try {
-
+                Call<PhotosApi> call = flickrAPI.getInterestingPhotos(protocol, Integer.toString(20), Integer.toString(++curPage));
+                Log.d("InterestingnessTask", call.request().url() + "");
+                pages = Integer.valueOf(call.execute().body().getPhotos().getPages());
 
                 while (countLoadingPhotos < loadingPhotosPerOnce) {
                     if (curPage <= pages) {
-                        Call<PhotosApi> call = flickrAPI.getPhotos(MyActivity.clusters, Integer.toString(20), Integer.toString(curPage++));
-                        call.enqueue(new Callback<PhotosApi>() {
-                            @Override
-                            public void onResponse(Call<PhotosApi> call, Response<PhotosApi> response) {
-                                response.body();
-                                Photo[] photo = response.body().getPhotos().getPhoto();
-                                for(int i = 0; i < photo.length; i++){
-                                    //textView.append(photo[i].getTitle() + "\n");
-                                }
-                            }
-
-                            @Override
-                            public void onFailure(Call<PhotosApi> call, Throwable t) {
-                                Log.d("Main", t.getMessage());
-                            }
-                        });
-                        onePagePhotosList = ParserJSONTo.PhotoArrayList(photo);
-                        addWHoleArrayToAnotherArray(onePagePhotosList, wholePhotosList);
-                        countLoadingPhotos += onePagePhotosList.size();
+                        call = flickrAPI.getInterestingPhotos(protocol, Integer.toString(20), Integer.toString(curPage++));
+                        PhotosApi photosApi;
+                        if((photosApi = call.execute().body()) != null) {
+                            Photo[] photo = photosApi.getPhotos().getPhoto();
+                            onePagePhotosList = ParserJSONTo.PhotoArrayList(photo);
+                            addWHoleArrayToAnotherArray(onePagePhotosList, wholePhotosList);
+                            countLoadingPhotos += onePagePhotosList.size();
+                        }
                     } else {
                         photoEnds = true;
                         break;
                     }
                 }
                 fragment.setCurCluster_id(curPage);
-
-            } catch (JSONException jsonException) {
-                Log.e(errorTag, jsonException.getMessage());
-                Log.d("LoadFromFlickrTask", "Exception interrupted");
-                this.cancel(true);
             } catch (IOException ioException) {
                 Log.e(errorTag, ioException.getMessage());
-                Log.d("LoadFromFlickrTask", "Exception interrupted");
+                Log.d("InterestingnessTask", "Exception interrupted");
                 this.cancel(true);
             }
         } else {
-            Log.d("LoadFromFlickrTask", "interrupted");
+            Log.d("InterestingnessTask", "interrupted");
             this.cancel(true);
         }
-        if(startPageNum == 0){
+        if(taskStartsWithPageNum == 0){
             addNewPhotosToDB(wholePhotosList);
         }
         return wholePhotosList;
@@ -125,12 +108,11 @@ public class LoadFromFlickrTask extends AsyncTask<Object, Integer, ArrayList> {
 
     @Override
     protected void onCancelled() {
-        Log.d("LoadFromFlickrTask", "onCancelled");
+        Log.d("InterestingnessTask", "onCancelled");
         if(fragment != null) {
-            fragment.setCurCluster_id(startPageNum);
+            fragment.setCurCluster_id(taskStartsWithPageNum);
         }
         super.onCancelled();
-
     }
 
     public void setFragment(GettingResults fragment){
@@ -156,5 +138,6 @@ public class LoadFromFlickrTask extends AsyncTask<Object, Integer, ArrayList> {
             }
         }
     }
+
 
 }

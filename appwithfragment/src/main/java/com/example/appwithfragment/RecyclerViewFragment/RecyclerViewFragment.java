@@ -4,7 +4,6 @@ import android.content.Context;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-
 import android.support.annotation.Nullable;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,14 +21,12 @@ import com.example.appwithfragment.DataBasePack.DBHelper;
 import com.example.appwithfragment.MVPPattern.IFragment;
 import com.example.appwithfragment.MVPPattern.IFragmentPresenter;
 import com.example.appwithfragment.MVPPattern.RecViewFragPresenter;
-import com.example.appwithfragment.MyActivity;
 import com.example.appwithfragment.PhotoObjectInfo;
-import com.example.appwithfragment.RecyclerViewFragment.Tasks.LoadFromFlickrTask;
-import com.example.appwithfragment.RecyclerViewFragment.Tasks.LoadTask;
+import com.example.appwithfragment.R;
+import com.example.appwithfragment.RecyclerViewFragment.Tasks.InterestingnessTask;
+import com.example.appwithfragment.RecyclerViewFragment.Tasks.TaggedPhotosTask;
 import com.example.appwithfragment.TabsFragments.IOnLikePhotoListener;
 import com.example.appwithfragment.TabsFragments.OnLikePhotoListener;
-import com.example.appwithfragment.R;
-
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -37,7 +34,7 @@ import java.util.ArrayList;
 /**
  * Created by e.konobeeva on 02.08.2016.
  * фрагмент, содержащий RecyclerView.
- * выполняет задания по загрузке url изображений - LoadFromFlickrTask
+ * выполняет задания по загрузке url изображений - InterestingnessTask
  */
 public class RecyclerViewFragment extends ARecyclerViewFragment implements IFragment, Serializable {
 
@@ -46,7 +43,6 @@ public class RecyclerViewFragment extends ARecyclerViewFragment implements IFrag
     private static String logTag = "RecyclerViewFragment";
 
     private String tag;
-    private String protocol;
     private AsyncTask task;
     private DBHelper dbHelper;
 
@@ -59,14 +55,14 @@ public class RecyclerViewFragment extends ARecyclerViewFragment implements IFrag
     public static RecyclerViewFragment getNewInstance(String tag, DBHelper dbHelper){
         Log.d("RecyclerViewFragment", "getNewInstance tag " + tag);
         if(tag.equals("interestingness")){
-            Log.d("RecyclerViewFragment", "getNewInstance LoadFromFlickrTask " + tag);
-            RecyclerViewFragment fragment = new RecyclerViewFragment().setProtocol(MyActivity.protocolInterestingness)
-                    .setTask(new LoadFromFlickrTask()).setDbHelper(dbHelper);
+            Log.d("RecyclerViewFragment", "getNewInstance InterestingnessTask " + tag);
+            RecyclerViewFragment fragment = new RecyclerViewFragment()
+                    .setTask(new InterestingnessTask()).setDbHelper(dbHelper);
             return fragment;
         }else {
-            Log.d("RecyclerViewFragment", "getNewInstance LoadTask " + tag);
-            RecyclerViewFragment fragment = new RecyclerViewFragment().setProtocol(MyActivity.protocol)
-                    .setTask(new LoadTask()).setTag(tag).setDbHelper(dbHelper);
+            Log.d("RecyclerViewFragment", "getNewInstance TaggedPhotosTask " + tag);
+            RecyclerViewFragment fragment = new RecyclerViewFragment()
+                    .setTask(new TaggedPhotosTask()).setTag(tag).setDbHelper(dbHelper);
             return fragment;
         }
 
@@ -74,11 +70,6 @@ public class RecyclerViewFragment extends ARecyclerViewFragment implements IFrag
 
     }
 
-    public RecyclerViewFragment setProtocol(String protocol){
-        Log.d("setProtocol ", this.getClass().getName());
-        this.protocol = protocol;
-        return this;
-    }
 
     public RecyclerViewFragment setTag(String _tag){
         this.tag = _tag;
@@ -112,7 +103,6 @@ public class RecyclerViewFragment extends ARecyclerViewFragment implements IFrag
 
         presenter = new RecViewFragPresenter(this);
         presenter.setTask(this.task);
-        presenter.setProtocol(this.protocol);
         presenter.setTag(this.tag);
 
 

@@ -6,40 +6,50 @@ import android.util.Log;
 import com.example.appwithfragment.PhotoObjectInfo;
 import com.example.appwithfragment.RecyclerViewFragment.GettingResults;
 import com.example.appwithfragment.RecyclerViewFragment.ParserJSONTo;
+import com.example.appwithfragment.RetrofitPack.FlickrAPI;
+import com.example.appwithfragment.RetrofitPack.Photo;
+import com.example.appwithfragment.RetrofitPack.otherCategories.CategoriesPhoto;
+import com.example.appwithfragment.RetrofitPack.otherCategories.Clusters.Cluster;
+import com.example.appwithfragment.RetrofitPack.otherCategories.Clusters.ClustersTags;
 
-import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Map;
+
+import retrofit2.Call;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Created by Евгения on 18.08.2016.
  * таск , который соответствует одному фрагменту,для загрузки данных с сервера
  *
  */
-public class LoadTask extends AsyncTask<Object, Integer, ArrayList> {
+public class TaggedPhotosTask extends AsyncTask<Object, Integer, ArrayList> {
     private static final String errorTag = "ERROR Task";
     private int loadingPhotosPerOnce = 50;
     private boolean photoEnds = false;
 
 
-    private String protocol;
+    private Map protocol;
+    private Map protocolPhoto;
     private GettingResults fragment;
     private String tag;
-
     private int startPageNum;
+    private String baseURL;
 
 
-    public LoadTask(GettingResults fragment, String protocol, String tag) {
+    public TaggedPhotosTask(GettingResults fragment, Map protocol, Map protocolPhoto, String tag, String baseURL) {
         this.fragment = fragment;
         this.protocol = protocol;
         this.tag = tag;
-        //Log.d("LoadTask ", tag);
+        this.baseURL = baseURL;
+        this.protocolPhoto = protocolPhoto;
     }
 
-    public LoadTask() {
+    public TaggedPhotosTask() {
     }
 
     @Override
@@ -50,9 +60,9 @@ public class LoadTask extends AsyncTask<Object, Integer, ArrayList> {
                 ArrayList<String> clustersId = getClustersIdArrayList(protocol);
                 wholePhotosList = getPhotoArrayList(clustersId, tag);
             } catch (IOException ioEx) {
-                Log.d("LoadTask ER ", ioEx.toString());
+                Log.d("TaggedPhotosTask ER ", ioEx.toString());
             } catch (JSONException jsonEx) {
-                Log.d("LoadTask ER ", jsonEx.toString());
+                Log.d("TaggedPhotosTask ER ", jsonEx.toString());
             }
         } else Thread.currentThread().interrupt();
         return wholePhotosList;
@@ -65,49 +75,48 @@ public class LoadTask extends AsyncTask<Object, Integer, ArrayList> {
     }
 
 
-    public ArrayList<String> getClustersIdArrayList(String protocol) throws IOException {
+    public ArrayList<String> getClustersIdArrayList(Map protocol) throws IOException {
         ArrayList<String> clusters_id = new ArrayList<>();
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(baseURL).addConverterFactory(GsonConverterFactory.create()).build();
+        FlickrAPI flickrAPI = retrofit.create(FlickrAPI.class);
         try {
-            JSONObject clusters = ParserJSONTo.getJSONRootPoint(protocol).getJSONObject("clusters"); // clusters
-            JSONArray cluster = clusters.getJSONArray("cluster");
-            for (int i = 0; i < cluster.length(); i++) {
-                JSONArray tag = cluster.getJSONObject(i).getJSONArray("tag");
-                clusters_id.add(tag.getJSONObject(0).getString("_content"));
-                /*for (int j = 0; j < tag.length(); j++) {
-                    clusters_id.add(tag.getJSONObject(j).getString("_content"));
-                }*/
+            Call<ClustersTags> call = flickrAPI.getClustersTags(protocol, tag);
+
+            Cluster[] cluster = call.execute().body().getClusters().getCluster();
+            for(int i = 0; i < cluster.length; i++){
+                clusters_id.add(cluster[i].getTag()[0].get_content());
             }
-        } catch (JSONException jsonEx) {
-            Log.d("LoadTask", "getClustersIdArrayList " + jsonEx.toString());
+        } catch (IOException ioEx) {
+            Log.d("TaggedPhotosTask", "getClustersIdArrayList " + ioEx.toString());
+            onCancelled();
         }
         return clusters_id;
     }
 
     public ArrayList getPhotoArrayList(ArrayList<String> clusters_id, String tag) throws IOException, JSONException {
 
-        String protocol = " https://api.flickr.com/services/rest/?method=flickr.tags.getClusterPhotos&" +
-                "api_key=b14e644ffd373999f625f4d2ba244522&format=json&nojsoncallback=1&tag=";
-
-        StringBuilder sb = new StringBuilder(protocol);
-        sb.append(tag).append("&cluster_id=");
-        protocol = sb.toString();
-
         int curCluster_id = fragment.getCurCluster_id();
         startPageNum = curCluster_id;
 
         ArrayList<PhotoObjectInfo> wholePhotosList = new ArrayList<>();
-        ArrayList<PhotoObjectInfo> onePagePhotosList = new ArrayList<>();
+        ArrayList<PhotoObjectInfo> onePagePhotosList;
 
         int countLoadingPhotos = 0;
 
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(baseURL).addConverterFactory(GsonConverterFactory.create()).build();
+        FlickrAPI flickrAPI = retrofit.create(FlickrAPI.class);
+
         while (countLoadingPhotos < loadingPhotosPerOnce) {
             if (curCluster_id < clusters_id.size()) {
-                String str = protocol + clusters_id.get(curCluster_id++);
-                JSONObject photos = ParserJSONTo.getJSONRootPoint(str).getJSONObject("photos");
-                JSONArray photo = photos.getJSONArray("photo");
+
+                Call<CategoriesPhoto> call = flickrAPI.getPhotosTags(protocolPhoto, tag, clusters_id.get(curCluster_id++));
+                Log.d("TaggedPhotosTask", call.request().url() + "");
+                CategoriesPhoto categoriesPhoto = call.execute().body();
+                Photo[] photo = categoriesPhoto.getPhotoss().getPhoto();
                 onePagePhotosList = ParserJSONTo.PhotoArrayList(photo);
                 addWHoleArrayToAnotherArray(onePagePhotosList, wholePhotosList);
                 countLoadingPhotos += onePagePhotosList.size();
+
             } else {
                 photoEnds = true;
                 break;
@@ -128,7 +137,7 @@ public class LoadTask extends AsyncTask<Object, Integer, ArrayList> {
 
     @Override
     protected void onCancelled() {
-        Log.d("LoadTask", "onCancelled");
+        Log.d("TaggedPhotosTask", "onCancelled");
         if (fragment != null) {
             fragment.setCurCluster_id(startPageNum);
         }

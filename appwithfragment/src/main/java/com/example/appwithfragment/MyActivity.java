@@ -285,10 +285,14 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
     public void startAlarm(){
         Toast.makeText(this, "run alarm", Toast.LENGTH_SHORT).show();
         AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
         Intent serviceIntent = new Intent(this, NotificationService.class);
+        serviceIntent.putExtra("map", (Serializable) interesting);
+        serviceIntent.putExtra("baseURL", baseURL);
+
         PendingIntent servicePendingIntent = PendingIntent.getService(this, 0, serviceIntent, PendingIntent.FLAG_CANCEL_CURRENT);
         am.cancel(servicePendingIntent);
-        am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 10000, servicePendingIntent);
+        am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(),5000, servicePendingIntent);
     }
 
     @Override
@@ -303,7 +307,7 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
     }
 
     public void setClustersMap(){
-        clusters.put("method", "method=flickr.tags.getClusters");
+        clusters.put("method", "flickr.tags.getClusters");
         clusters.putAll(queryData);
     }
 

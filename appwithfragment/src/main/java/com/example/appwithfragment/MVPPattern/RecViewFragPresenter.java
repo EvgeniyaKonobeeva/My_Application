@@ -14,12 +14,11 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.example.appwithfragment.BroadcastReciever.InternetStateReceiver;
-import com.example.appwithfragment.PhotoObjectInfo;
+import com.example.appwithfragment.MyActivity;
 import com.example.appwithfragment.RecyclerViewFragment.GettingResults;
-import com.example.appwithfragment.RecyclerViewFragment.Tasks.LoadFromFlickrTask;
-import com.example.appwithfragment.RecyclerViewFragment.Tasks.LoadTask;
 import com.example.appwithfragment.RecyclerViewFragment.RecyclerViewAdapter;
-
+import com.example.appwithfragment.RecyclerViewFragment.Tasks.InterestingnessTask;
+import com.example.appwithfragment.RecyclerViewFragment.Tasks.TaggedPhotosTask;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -32,7 +31,7 @@ public class RecViewFragPresenter implements GettingResults, IFragmentPresenter{
     private AsyncTask task;
     private boolean loadingFinished;
     private boolean lastTaskTerminated;
-    private String protocol;
+    private Map protocol;
     private String tag;
     private int curCluster_id;
     private boolean firstTaskExecution = true;
@@ -54,36 +53,25 @@ public class RecViewFragPresenter implements GettingResults, IFragmentPresenter{
         this.task = task;
     }
 
-    public void setProtocol(String protocol){
-        this.protocol = protocol;
-
-    }
 
     public void setTag(String tag){
         this.tag = tag;
-        if(tag != null){
-            if(!tag.equals("interestingness")) {
-                StringBuilder sb = new StringBuilder(protocol);
-                sb.append("&tag=").append(tag);
-                protocol = sb.toString();
-                this.tag = tag;
-            }
-        }
     }
-
 
 
     @Override
     public void runLoadImageUrlsTask() {
         loadingFinished = false;
-        if(task instanceof LoadFromFlickrTask){
-            task = new LoadFromFlickrTask(this, protocol);
+        if(task instanceof InterestingnessTask){
+            task = new InterestingnessTask(this, MyActivity.interesting, MyActivity.baseURL);
             task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
         }else{
-            task = new LoadTask(this, protocol,tag);
+            task = new TaggedPhotosTask(this, MyActivity.clusters, MyActivity.tags,tag, MyActivity.baseURL);
             task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
+        if(firstTaskExecution)
+            firstTaskExecution = false;
     }
 
     @Override
@@ -111,10 +99,10 @@ public class RecViewFragPresenter implements GettingResults, IFragmentPresenter{
 
     public void onFragmentDestroy(){
         if (task != null) {
-            if(task instanceof LoadFromFlickrTask){
-                ((LoadFromFlickrTask)task).setFragment(null);
+            if(task instanceof InterestingnessTask) {
+                ((InterestingnessTask) task).setFragment(null);
             }else
-                ((LoadTask)task).setFragment(null);
+                ((TaggedPhotosTask)task).setFragment(null);
 
             task.cancel(false);
         }
@@ -133,7 +121,8 @@ public class RecViewFragPresenter implements GettingResults, IFragmentPresenter{
         if(receiver == null) {
             receiver = getReceiverInstance();
         }
-        runFirstTask();
+        if(firstTaskExecution)
+            runLoadImageUrlsTask();
         curCluster_id = 0;
     }
 
@@ -148,11 +137,6 @@ public class RecViewFragPresenter implements GettingResults, IFragmentPresenter{
         }
     }
 
-    public void runFirstTask(){
-        Log.d("RecViewFragPresenter", "runFirstTask");
-        firstTaskExecution = false;
-        runLoadImageUrlsTask();
-    }
 
     public void onResume(){
         Log.d(tagg, "onResume");
@@ -182,7 +166,6 @@ public class RecViewFragPresenter implements GettingResults, IFragmentPresenter{
                     if (task.isCancelled() || firstTaskExecution) {
                         Log.d("RecViewFragPresenter", " run task again ");
                         runLoadImageUrlsTask();
-                        firstTaskExecution = false;
                     }
                 } else {
                     if (task.getStatus() == AsyncTask.Status.RUNNING) {
