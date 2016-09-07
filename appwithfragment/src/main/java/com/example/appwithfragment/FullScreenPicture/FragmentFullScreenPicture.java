@@ -32,13 +32,12 @@ public class FragmentFullScreenPicture extends Fragment {
     private String url;
 
 
-    public static FragmentFullScreenPicture newInstance(PhotoObjectInfo lc, MyActivity ctx, IOnLikePhotoListener onLikePhotoListener){
+    public static FragmentFullScreenPicture newInstance(PhotoObjectInfo lc, IOnLikePhotoListener onLikePhotoListener){
         Log.d("FragmentFullPicture", "Create single pic");
         FragmentFullScreenPicture f = new FragmentFullScreenPicture();
 
         Bundle b = new Bundle();
         b.putSerializable(keyListContent, lc);
-        b.putSerializable(MyActivity.keyContext, ctx);
         b.putSerializable(MyActivity.keyLikeListener, onLikePhotoListener);
         b.putBoolean(keyIsLiked, onLikePhotoListener.isLikedPhoto(lc));
 

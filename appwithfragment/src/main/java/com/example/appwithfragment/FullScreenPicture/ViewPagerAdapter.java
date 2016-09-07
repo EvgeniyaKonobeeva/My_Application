@@ -29,9 +29,8 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public Fragment getItem(int position) {
         Log.d("ViewPagerAdapter", "get item 1 : " + position);
-        MyActivity ctx = (MyActivity) viewPagerFragment.getArguments().get(MyActivity.keyContext);
         IOnLikePhotoListener onLPListener = (IOnLikePhotoListener) viewPagerFragment.getArguments().get(MyActivity.keyLikeListener);
-        return FragmentFullScreenPicture.newInstance(list.get(position), ctx, onLPListener);
+        return FragmentFullScreenPicture.newInstance(list.get(position), onLPListener);
     }
 
     @Override

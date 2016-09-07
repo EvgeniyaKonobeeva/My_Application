@@ -45,26 +45,6 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
 
     private NavigationView navigationView;
 
-    public static final String protocolInterestingness = "https://api.flickr.com/services/rest/?method=flickr.interestingness.getList&" +
-            "api_key=b14e644ffd373999f625f4d2ba244522&format=json&nojsoncallback=1";
-
-    private Map<String, String> queryData = new HashMap<>();
-
-    private void setQueryData(){
-        queryData.put("api_key", "b14e644ffd373999f625f4d2ba244522");
-        queryData.put("format", "json");
-        queryData.put("nojsoncallback","1");
-    }
-
-
-    public static Map<String, String> interesting = new HashMap<>();
-    public static Map<String, String> clusters = new HashMap<>();
-    public static Map<String, String> tags = new HashMap<>();
-
-    public static String baseURL = "https://api.flickr.com";
-
-
-
     private ActionBarDrawerToggle actionBarDrawerToggle;
     private DrawerLayout drawerLayout;
     private ViewPagerFragment viewPagerFragment;
@@ -98,11 +78,6 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
         Log.d("MyActivity", "onCreate");
         setContentView(R.layout.activity_main);
 
-
-        setQueryData();
-        setInterestingMap();
-        setTagsMap();
-        setClustersMap();
 
 // /data/data/com.example.appwithfragment/cache
 
@@ -219,19 +194,7 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
             }
         });
 
-        actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout,null, R.string.isOpen, R.string.isClosed){
-            @Override
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-            }
-
-            @Override
-            public void onDrawerClosed(View drawerView) {
-                super.onDrawerClosed(drawerView);
-                //getSupportActionBar().setHomeAsUpIndicator(android.R.drawable.ic_menu_today);
-            }
-        };
-        //actionBarDrawerToggle.setDrawerIndicatorEnabled(false);
+        actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout,null, R.string.isOpen, R.string.isClosed);
         actionBarDrawerToggle.syncState();
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
 
@@ -282,8 +245,6 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
         AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
         Intent serviceIntent = new Intent(this, NotificationService.class);
-        serviceIntent.putExtra("map", (Serializable) interesting);
-        serviceIntent.putExtra("baseURL", baseURL);
 
         PendingIntent servicePendingIntent = PendingIntent.getService(this, 0, serviceIntent, PendingIntent.FLAG_CANCEL_CURRENT);
         am.cancel(servicePendingIntent);
@@ -294,20 +255,5 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
     protected void onResume() {
         Log.d("MyActivity", "onResume");
         super.onResume();
-    }
-
-    public void setInterestingMap(){
-        interesting.put("method", "flickr.interestingness.getList");
-        interesting.putAll(queryData);
-    }
-
-    public void setClustersMap(){
-        clusters.put("method", "flickr.tags.getClusters");
-        clusters.putAll(queryData);
-    }
-
-    public void setTagsMap(){
-        tags.put("method", "flickr.tags.getClusterPhotos");
-        tags.putAll(queryData);
     }
 }

@@ -13,10 +13,6 @@ import com.example.appwithfragment.RecyclerViewFragment.RecyclerViewFragment;
  * Created by e.konobeeva on 23.08.2016.
  */
 
-//TODO make singlton
-// get fragment manager
-// when add to fm - set Tag, when get from fm - find by tag previous version
-
 public class TabViewPagerAdapter extends FragmentPagerAdapter {
     private static TabViewPagerAdapter tabViewPagerAdapter;
     private static String tag = "";

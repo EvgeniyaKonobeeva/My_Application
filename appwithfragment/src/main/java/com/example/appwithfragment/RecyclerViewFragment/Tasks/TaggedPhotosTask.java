@@ -16,6 +16,7 @@ import org.json.JSONException;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 import retrofit2.Call;
@@ -38,15 +39,12 @@ public class TaggedPhotosTask extends AsyncTask<Object, Integer, ArrayList> {
     private GettingResults fragment;
     private String tag;
     private int startPageNum;
-    private String baseURL;
+    public static String baseURL = "https://api.flickr.com";
 
 
-    public TaggedPhotosTask(GettingResults fragment, Map protocol, Map protocolPhoto, String tag, String baseURL) {
+    public TaggedPhotosTask(GettingResults fragment ,String tag) {
         this.fragment = fragment;
-        this.protocol = protocol;
         this.tag = tag;
-        this.baseURL = baseURL;
-        this.protocolPhoto = protocolPhoto;
     }
 
     public TaggedPhotosTask() {
@@ -57,7 +55,7 @@ public class TaggedPhotosTask extends AsyncTask<Object, Integer, ArrayList> {
         ArrayList<PhotoObjectInfo> wholePhotosList = new ArrayList<>();
         if (!isCancelled()) {
             try {
-                ArrayList<String> clustersId = getClustersIdArrayList(protocol);
+                ArrayList<String> clustersId = getClustersIdArrayList(getClusterMap());
                 wholePhotosList = getPhotoArrayList(clustersId, tag);
             } catch (IOException ioEx) {
                 Log.d("TaggedPhotosTask ER ", ioEx.toString());
@@ -109,7 +107,7 @@ public class TaggedPhotosTask extends AsyncTask<Object, Integer, ArrayList> {
         while (countLoadingPhotos < loadingPhotosPerOnce) {
             if (curCluster_id < clusters_id.size()) {
 
-                Call<CategoriesPhoto> call = flickrAPI.getPhotosTags(protocolPhoto, tag, clusters_id.get(curCluster_id++));
+                Call<CategoriesPhoto> call = flickrAPI.getPhotosTags(getTagMap(), tag, clusters_id.get(curCluster_id++));
                 Log.d("TaggedPhotosTask", call.request().url() + "");
                 CategoriesPhoto categoriesPhoto = call.execute().body();
                 Photo[] photo = categoriesPhoto.getPhotoss().getPhoto();
@@ -148,5 +146,22 @@ public class TaggedPhotosTask extends AsyncTask<Object, Integer, ArrayList> {
         for(int i = 0; i < putArr.size(); i++){
             addToArr.add(putArr.get(i));
         }
+    }
+    public Map getClusterMap(){
+        Map<String, String> clusters = new HashMap<>();
+        clusters.put("api_key", "b14e644ffd373999f625f4d2ba244522");
+        clusters.put("format", "json");
+        clusters.put("nojsoncallback","1");
+        clusters.put("method", "flickr.tags.getClusters");
+        return clusters;
+    }
+
+    public Map getTagMap(){
+        Map<String, String> clusters = new HashMap<>();
+        clusters.put("api_key", "b14e644ffd373999f625f4d2ba244522");
+        clusters.put("format", "json");
+        clusters.put("nojsoncallback","1");
+        clusters.put("method", "flickr.tags.getClusterPhotos");
+        return clusters;
     }
 }

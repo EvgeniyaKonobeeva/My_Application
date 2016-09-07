@@ -63,11 +63,11 @@ public class RecViewFragPresenter implements GettingResults, IFragmentPresenter{
     public void runLoadImageUrlsTask() {
         loadingFinished = false;
         if(task instanceof InterestingnessTask){
-            task = new InterestingnessTask(this, MyActivity.interesting, MyActivity.baseURL);
+            task = new InterestingnessTask(this);
             task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
         }else{
-            task = new TaggedPhotosTask(this, MyActivity.clusters, MyActivity.tags,tag, MyActivity.baseURL);
+            task = new TaggedPhotosTask(this,tag);
             task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
         if(firstTaskExecution)

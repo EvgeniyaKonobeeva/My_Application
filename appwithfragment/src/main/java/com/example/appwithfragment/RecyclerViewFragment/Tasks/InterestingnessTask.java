@@ -16,6 +16,7 @@ import com.example.appwithfragment.RetrofitPack.PhotosApi;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 import retrofit2.Call;
@@ -31,17 +32,13 @@ public class InterestingnessTask extends AsyncTask<Object, Integer, ArrayList> {
     private boolean photoEnds;
     private GettingResults fragment;
     private int taskStartsWithPageNum;
-    private Map protocol;
-    private String baseURL;
+    public static String baseURL = "https://api.flickr.com";
 
 
 
-
-    public InterestingnessTask(GettingResults fragment, Map protocol, String baseURL){
+    public InterestingnessTask(GettingResults fragment){
         this.fragment = fragment;
         photoEnds = false;
-        this.protocol = protocol;
-        this.baseURL = baseURL;
     }
 
     public InterestingnessTask(){}
@@ -62,13 +59,13 @@ public class InterestingnessTask extends AsyncTask<Object, Integer, ArrayList> {
 
         if (!isCancelled()) {
             try {
-                Call<PhotosApi> call = flickrAPI.getInterestingPhotos(protocol, Integer.toString(20), Integer.toString(++curPage));
+                Call<PhotosApi> call = flickrAPI.getInterestingPhotos(getInterestingMap(), Integer.toString(20), Integer.toString(++curPage));
                 Log.d("InterestingnessTask", call.request().url() + "");
                 pages = Integer.valueOf(call.execute().body().getPhotos().getPages());
 
                 while (countLoadingPhotos < loadingPhotosPerOnce) {
                     if (curPage <= pages) {
-                        call = flickrAPI.getInterestingPhotos(protocol, Integer.toString(20), Integer.toString(curPage++));
+                        call = flickrAPI.getInterestingPhotos(getInterestingMap(), Integer.toString(20), Integer.toString(curPage++));
                         PhotosApi photosApi;
                         if((photosApi = call.execute().body()) != null) {
                             Photo[] photo = photosApi.getPhotos().getPhoto();
@@ -137,6 +134,15 @@ public class InterestingnessTask extends AsyncTask<Object, Integer, ArrayList> {
                 sqLiteDatabase.insert(DBHelper.interestingTableName, null, contentValues);
             }
         }
+    }
+
+    public Map getInterestingMap(){
+        Map<String, String> interesting = new HashMap<>();
+        interesting.put("api_key", "b14e644ffd373999f625f4d2ba244522");
+        interesting.put("format", "json");
+        interesting.put("nojsoncallback","1");
+        interesting.put("method", "flickr.interestingness.getList");
+        return interesting;
     }
 
 
