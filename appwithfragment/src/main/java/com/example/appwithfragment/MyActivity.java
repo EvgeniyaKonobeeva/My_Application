@@ -133,11 +133,6 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
 
         startAlarm();
 
-
-
-
-
-
     }
 
 

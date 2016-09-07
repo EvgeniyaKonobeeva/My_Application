@@ -108,7 +108,7 @@ public class RecViewFragPresenter implements GettingResults, IFragmentPresenter{
         }
 
         RecyclerViewAdapter ra = (RecyclerViewAdapter) recyclerView.getAdapter();
-        ra.getMyImageLoader().terminateAllProcess();
+        //ra.getMyImageLoader().terminateAllProcess();
     }
 
     public void onCreateView(){

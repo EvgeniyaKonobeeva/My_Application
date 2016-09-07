@@ -10,8 +10,8 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.example.appwithfragment.PhotoObjectInfo;
-import com.example.appwithfragment.ImageLoader.MyImageLoader;
 import com.example.appwithfragment.R;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -21,14 +21,17 @@ import java.util.List;
  */
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<PhotoObjectInfo> list;
-    private MyImageLoader iml;
+    //private MyImageLoader iml;
     private static int PROGRESS_TYPE = 1;
     private static int IMAGE_TYPE = 0;
+    private Context context;
 
 
     public RecyclerViewAdapter(List<PhotoObjectInfo> list, Context ctx){
         this.list = list;
-        iml = new MyImageLoader(ctx);
+        this.context = ctx;
+        //iml = new MyImageLoader(ctx);
+
     }
 
     @Override
@@ -55,10 +58,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof ImageViewHolder) {
             ImageViewHolder ivh = ((ImageViewHolder) holder);
-            ivh.imageView.setImageDrawable(null);
             String keyUrl = list.get(position).getImgUrl();
-            iml.setResourceUrl(keyUrl).setImgInto(ivh.imageView);
-            //ivh.textView.setText(list.get(position).getShortTitle());
+            Picasso.with(context)
+                    .load(keyUrl)
+                    .error(R.mipmap.ic_launcher)
+                    .into(ivh.imageView);
         } else if (holder instanceof ProgressViewHolder) {
             ProgressViewHolder pvh = (ProgressViewHolder) holder;
             pvh.progressBar.setIndeterminate(true);
@@ -94,9 +98,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         Log.d("RecyclerViewAdapter", "onDetachedFromRecyclerView");
     }
 
-    public MyImageLoader getMyImageLoader(){
-        return iml;
-    }
+//    public MyImageLoader getMyImageLoader(){
+//        return iml;
+//    }
 
     @Override
     public int getItemViewType(int position) {

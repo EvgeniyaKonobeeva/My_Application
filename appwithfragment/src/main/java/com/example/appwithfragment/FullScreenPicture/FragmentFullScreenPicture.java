@@ -1,6 +1,5 @@
 package com.example.appwithfragment.FullScreenPicture;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -13,11 +12,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.appwithfragment.BroadcastReciever.InternetStateReceiver;
-import com.example.appwithfragment.ImageLoader.MyImageLoader;
-import com.example.appwithfragment.PhotoObjectInfo;
 import com.example.appwithfragment.MyActivity;
+import com.example.appwithfragment.PhotoObjectInfo;
 import com.example.appwithfragment.R;
 import com.example.appwithfragment.TabsFragments.IOnLikePhotoListener;
+import com.squareup.picasso.Picasso;
 
 /**
  * Created by e.konobeeva on 02.08.2016.
@@ -91,13 +90,18 @@ public class FragmentFullScreenPicture extends Fragment {
 
         final TextView txt =(TextView)view.findViewById(textViewId);
 
-        MyImageLoader iml = new MyImageLoader((Context) getArguments().get(MyActivity.keyContext));
+        //MyImageLoader iml = new MyImageLoader((Context) getArguments().get(MyActivity.keyContext));
 
         final PhotoObjectInfo lc = (PhotoObjectInfo) getArguments().get(keyListContent);
-        url = lc.getImgUrl();
+        url = lc.getImgUrl().replace("_m", "");
 
-        iml.setResourceUrl(url.replace("_m", ""));
-        iml.setImgInto(imgView);
+        Picasso.with(getActivity())
+                .load(url)
+                .error(R.mipmap.ic_launcher)
+                .into(imgView);
+
+//        iml.setResourceUrl(url.replace("_m", ""));
+//        iml.setImgInto(imgView);
 
         txt.post(new Runnable() {
             @Override

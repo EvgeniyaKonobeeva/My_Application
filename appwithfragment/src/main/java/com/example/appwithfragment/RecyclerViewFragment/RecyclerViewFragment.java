@@ -160,7 +160,7 @@ public class RecyclerViewFragment extends ARecyclerViewFragment implements IFrag
 
         if(item.getItemId() == R.id.item1){
             RecyclerViewAdapter ra = (RecyclerViewAdapter) recyclerView.getAdapter();
-            ra.getMyImageLoader().getDiskCashing().cleanDisk();
+            //ra.getMyImageLoader().getDiskCashing().cleanDisk();
         }else{
             Log.d(logTag, "item " + ((CheckBox)item.getActionView()).isChecked());
         }
