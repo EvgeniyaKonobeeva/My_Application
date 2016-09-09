@@ -10,8 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-
-import com.example.appwithfragment.DataBasePack.DBHelper;
 import com.example.appwithfragment.R;
 
 /**
@@ -22,7 +20,6 @@ public class TabsFragment extends Fragment {
 
     private ViewPager viewPager;
     private TabViewPagerAdapter adapter;
-    private DBHelper dbHelper;
     private String category;
 
     @Nullable
@@ -35,7 +32,6 @@ public class TabsFragment extends Fragment {
         viewPager.setOffscreenPageLimit(1);
         adapter = new TabViewPagerAdapter(getChildFragmentManager());
         viewPager.setAdapter(adapter);
-        adapter.setDbHelper(dbHelper);
         adapter.setTag(category);
         adapter.notifyDataSetChanged();
 
@@ -64,10 +60,6 @@ public class TabsFragment extends Fragment {
 
 
     }
-    public void setDBHelper(DBHelper dbHelper){
-        this.dbHelper = dbHelper;
-    }
-
     public ViewPager getViewPager(){
         return viewPager;
     }

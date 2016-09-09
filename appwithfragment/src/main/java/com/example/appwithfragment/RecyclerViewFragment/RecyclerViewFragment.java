@@ -44,7 +44,6 @@ public class RecyclerViewFragment extends ARecyclerViewFragment implements IFrag
 
     private String tag;
     private AsyncTask task;
-    private DBHelper dbHelper;
 
     private IOnLikePhotoListener likePhotoListener;
 
@@ -52,17 +51,17 @@ public class RecyclerViewFragment extends ARecyclerViewFragment implements IFrag
     private WifiManager wifiManager;
     private CheckBox checkBox;
 
-    public static RecyclerViewFragment getNewInstance(String tag, DBHelper dbHelper){
+    public static RecyclerViewFragment getNewInstance(String tag){
         Log.d("RecyclerViewFragment", "getNewInstance tag " + tag);
         if(tag.equals("interestingness")){
             Log.d("RecyclerViewFragment", "getNewInstance InterestingnessTask " + tag);
             RecyclerViewFragment fragment = new RecyclerViewFragment()
-                    .setTask(new InterestingnessTask()).setDbHelper(dbHelper);
+                    .setTask(new InterestingnessTask());
             return fragment;
         }else {
             Log.d("RecyclerViewFragment", "getNewInstance TaggedPhotosTask " + tag);
             RecyclerViewFragment fragment = new RecyclerViewFragment()
-                    .setTask(new TaggedPhotosTask()).setTag(tag).setDbHelper(dbHelper);
+                    .setTask(new TaggedPhotosTask()).setTag(tag);
             return fragment;
         }
 
@@ -82,7 +81,6 @@ public class RecyclerViewFragment extends ARecyclerViewFragment implements IFrag
     }
 
     public RecyclerViewFragment setDbHelper(DBHelper dbHelper){
-        this.dbHelper = dbHelper;
         return this;
     }
 
@@ -98,7 +96,7 @@ public class RecyclerViewFragment extends ARecyclerViewFragment implements IFrag
         Log.d("RecyclerViewFragment", "onCreate");
         list = new ArrayList<>();
         if(likePhotoListener == null){
-            likePhotoListener = new OnLikePhotoListener(dbHelper, tag);
+            likePhotoListener = new OnLikePhotoListener(tag);
         }
 
         presenter = new RecViewFragPresenter(this);
@@ -230,7 +228,6 @@ public class RecyclerViewFragment extends ARecyclerViewFragment implements IFrag
     public IOnLikePhotoListener getLikePhotoListener(){
         Bundle bundle = new Bundle();
         bundle.putString("category", tag);
-        bundle.putSerializable("dbHelper", dbHelper);
         likePhotoListener = new OnLikePhotoListener(bundle);
         return likePhotoListener;
     }

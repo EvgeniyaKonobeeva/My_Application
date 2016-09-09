@@ -6,7 +6,6 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.example.appwithfragment.DataBasePack.DBHelper;
-import com.example.appwithfragment.MyActivity;
 import com.example.appwithfragment.PhotoObjectInfo;
 import com.example.appwithfragment.RecyclerViewFragment.GettingResults;
 import com.example.appwithfragment.RecyclerViewFragment.ParserJSONTo;
@@ -33,6 +32,7 @@ public class InterestingnessTask extends AsyncTask<Object, Integer, ArrayList> {
     private GettingResults fragment;
     private int taskStartsWithPageNum;
     public static String baseURL = "https://api.flickr.com";
+
 
 
 
@@ -123,7 +123,7 @@ public class InterestingnessTask extends AsyncTask<Object, Integer, ArrayList> {
     }
 
     public void addNewPhotosToDB(ArrayList<PhotoObjectInfo> list){
-        DBHelper dbHelper = DBHelper.getInstance(MyActivity.context);
+        DBHelper dbHelper = DBHelper.getInstance(fragment.getFragment().getActivity());
         SQLiteDatabase sqLiteDatabase = dbHelper.getSSQLiteDatabase();
         ContentValues contentValues = new ContentValues();
         sqLiteDatabase.delete(DBHelper.interestingTableName, null, null);

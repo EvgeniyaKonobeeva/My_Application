@@ -17,7 +17,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d("MyActivity", "create activity");
+        Log.d("MainActivity", "create activity");
     }
 
     @Override
@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
     }
 
     public void replaceFragment(Fragment fragment, int containerView, String tag){
-        Log.d("MyActivity", "REPLACE");
+        Log.d("MainActivity", "REPLACE");
         FragmentTransaction fragTrans = getSupportFragmentManager().beginTransaction();
         fragTrans.replace(containerView, fragment, tag);
         fragTrans.addToBackStack(null);

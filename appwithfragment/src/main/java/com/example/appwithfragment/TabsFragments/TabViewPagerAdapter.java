@@ -18,7 +18,6 @@ public class TabViewPagerAdapter extends FragmentPagerAdapter {
     private static String tag = "";
     private final static int countItems = 2;
     private IOnLikePhotoListener likePhotoListener;
-    private DBHelper dbHelper;
 
     //private FragmentManager fragmentManager;
 
@@ -39,7 +38,7 @@ public class TabViewPagerAdapter extends FragmentPagerAdapter {
 
         if(position % 2 == 0){
             Log.d("TabViewPagerAdapter", "getItem tag " + tag);
-            Fragment f= RecyclerViewFragment.getNewInstance(tag, dbHelper);
+            Fragment f= RecyclerViewFragment.getNewInstance(tag);
             likePhotoListener = ((RecyclerViewFragment)f).getLikePhotoListener();
             return f;
         }else{
@@ -87,7 +86,4 @@ public class TabViewPagerAdapter extends FragmentPagerAdapter {
         Log.d("TabViewPagerAdapter", "setCategory 2 " + this.tag);
     }
 
-    public void setDbHelper(DBHelper dbHelper){
-        this.dbHelper = dbHelper;
-    }
 }

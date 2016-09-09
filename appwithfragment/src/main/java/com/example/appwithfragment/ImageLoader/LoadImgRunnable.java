@@ -1,16 +1,11 @@
 package com.example.appwithfragment.ImageLoader;
 
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.os.Looper;
 import android.util.Log;
 import android.widget.ImageView;
+
+import com.example.appwithfragment.ImageLoader.MyImageLoader.MyHandler;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,19 +13,12 @@ import java.io.InterruptedIOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import com.example.appwithfragment.BroadcastReciever.InternetStateReceiver;
-import com.example.appwithfragment.ImageLoader.MyImageLoader.*;
-import com.example.appwithfragment.MVPPattern.IFragment;
-import com.example.appwithfragment.MyActivity;
-
 
 /**
  * Created by e.konobeeva on 08.08.2016.
  */
 public class LoadImgRunnable implements Runnable {
     private static final String errorTag = "ERROR LoadImgRunnable";
-    //private static final String KEYDrawable = "Drawable";
-    //private static final String KEYUrl = "URL";
     private MyHandler handler;
     private String url;
     private ImageView iv;
@@ -39,11 +27,11 @@ public class LoadImgRunnable implements Runnable {
 
 
 
-    public LoadImgRunnable(MyHandler handler, String url, ImageView iv, OMCash oc){
+    public LoadImgRunnable(MyHandler handler, String url, ImageView iv, OMCash oc, DiskCashing dc){
         this.handler = handler;
         this.url = url;
         this.iv = iv;
-        this.dc = DiskCashing.getInstance(MyActivity.context);
+        this.dc = dc;
         this.oc = oc;
 
     }

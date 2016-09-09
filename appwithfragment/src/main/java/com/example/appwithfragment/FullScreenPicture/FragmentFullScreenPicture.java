@@ -11,8 +11,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.appwithfragment.BroadcastReciever.InternetStateReceiver;
-import com.example.appwithfragment.MyActivity;
 import com.example.appwithfragment.PhotoObjectInfo;
 import com.example.appwithfragment.R;
 import com.example.appwithfragment.TabsFragments.IOnLikePhotoListener;
@@ -25,10 +23,10 @@ public class FragmentFullScreenPicture extends Fragment {
     public static final String TAG = "FrgFullScreenPicture";
     private static final String keyListContent = "PhotoObjectInfo";
     private static final String keyIsLiked = "liked";
+    public static final String keyLikeListener = "likeListener";
     private IOnLikePhotoListener onLikePhotoListener;
     private boolean isLiked = false;
     private ImageButton imgButton;
-    private InternetStateReceiver receiver;
     private String url;
 
 
@@ -38,7 +36,7 @@ public class FragmentFullScreenPicture extends Fragment {
 
         Bundle b = new Bundle();
         b.putSerializable(keyListContent, lc);
-        b.putSerializable(MyActivity.keyLikeListener, onLikePhotoListener);
+        b.putSerializable(keyLikeListener, onLikePhotoListener);
         b.putBoolean(keyIsLiked, onLikePhotoListener.isLikedPhoto(lc));
 
         f.setArguments(b);
@@ -55,41 +53,28 @@ public class FragmentFullScreenPicture extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
-        MyActivity mainActivity=(MyActivity)getActivity();
-        mainActivity.setDrawerIndicatorEnabled(false);
         View view = inflater.inflate(R.layout.single_pic_frag, null);
-
         setViews(view, R.id.fullImage, R.id.title);
-
-
-
 
         return view;
     }
 
     @Override
     public void onDestroy() {
-        MyActivity mainActivity=(MyActivity)getActivity();
-        mainActivity.setDrawerIndicatorEnabled(true);
         super.onDestroy();
-        //Log.i(TAG,"onCreatonDestroyeView");
+        Log.i(TAG,"onDestroy");
     }
 
     @Override
     public void onDestroyView() {
-        //Log.i(TAG,"onDestroyView");
+        Log.i(TAG,"onDestroyView");
         super.onDestroyView();
     }
 
     public void setViews(View view, int imageViewId, int textViewId){
 
         ImageView imgView = (ImageView)view.findViewById(imageViewId);
-        //imgView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
-
         final TextView txt =(TextView)view.findViewById(textViewId);
-
-        //MyImageLoader iml = new MyImageLoader((Context) getArguments().get(MyActivity.keyContext));
 
         final PhotoObjectInfo lc = (PhotoObjectInfo) getArguments().get(keyListContent);
         url = lc.getImgUrl().replace("_m", "");
@@ -99,9 +84,6 @@ public class FragmentFullScreenPicture extends Fragment {
                 .error(R.mipmap.ic_launcher)
                 .into(imgView);
 
-//        iml.setResourceUrl(url.replace("_m", ""));
-//        iml.setImgInto(imgView);
-
         txt.post(new Runnable() {
             @Override
             public void run() {
@@ -109,9 +91,8 @@ public class FragmentFullScreenPicture extends Fragment {
             }
         });
 
-
         isLiked = (boolean)getArguments().get(keyIsLiked);
-        onLikePhotoListener = (IOnLikePhotoListener)getArguments().get(MyActivity.keyLikeListener);
+        onLikePhotoListener = (IOnLikePhotoListener)getArguments().get(keyLikeListener);
 
         imgButton = (ImageButton)view.findViewById(R.id.imageButton);
         if (isLiked) {
@@ -139,11 +120,9 @@ public class FragmentFullScreenPicture extends Fragment {
     }
 
 
-
-
     @Override
     public void onPause() {
-
+        Log.d(TAG, "onPause");
         super.onPause();
     }
 

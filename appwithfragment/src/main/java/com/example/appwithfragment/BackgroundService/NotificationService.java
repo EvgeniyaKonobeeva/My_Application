@@ -11,7 +11,6 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.example.appwithfragment.DataBasePack.DBHelper;
 import com.example.appwithfragment.MyActivity;
@@ -69,18 +68,18 @@ public class NotificationService extends Service {
         protocol.put("nojsoncallback","1");
         protocol.put("method", "flickr.interestingness.getList");
 
-        Toast.makeText(this, "run service", Toast.LENGTH_SHORT).show();
         new Thread(new Runnable() {
             @Override
             public void run() {
                 ArrayList newPhotos = getNewPhotos(baseURL, protocol);
                 ArrayList oldPhotos = getOldPhotos();
                 int result = compareLists(newPhotos, oldPhotos);
-                if(result == NOT_EQUALS){
+                if(result == NOT_EQUALS) {
                     sendNotification("has new");
-                }else if(result == EQUALS){
-                    sendNotification("no new");
                 }
+//                }else if(result == EQUALS){
+//                    sendNotification("no new");
+//                }
             }
         }).start();
 

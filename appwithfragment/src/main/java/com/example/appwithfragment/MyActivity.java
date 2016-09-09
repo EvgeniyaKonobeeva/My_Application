@@ -16,11 +16,8 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Toast;
 
 import com.example.appwithfragment.BackgroundService.NotificationService;
-import com.example.appwithfragment.DataBasePack.DBHelper;
 import com.example.appwithfragment.FullScreenPicture.ViewPagerFragment;
 import com.example.appwithfragment.RecyclerViewFragment.OnRecyclerViewClickListener;
 import com.example.appwithfragment.TabsFragments.IOnLikePhotoListener;
@@ -28,20 +25,16 @@ import com.example.appwithfragment.TabsFragments.TabsFragment;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Евгения on 15.08.2016.
  */
 public class MyActivity extends MainActivity implements OnRecyclerViewClickListener, Serializable {
-    public static final String keyContext = "Context";
-    public static final String keyPosition = "position";
-    public static final String keyList = "recyclerViewFragmentList";
-    public static final String keyLikeListener = "likeListener";
-
-    public static Context context;
+    private static final String keyContext = "Context";
+    private static final String keyPosition = "position";
+    private static final String keyList = "recyclerViewFragmentList";
+    private static final String keyLikeListener = "likeListener";
 
     private NavigationView navigationView;
 
@@ -49,7 +42,7 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
     private DrawerLayout drawerLayout;
     private ViewPagerFragment viewPagerFragment;
     private TabsFragment tabsFragment;
-    private DBHelper dBHelper;
+    public static Context context;
 
 
 
@@ -61,12 +54,13 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
         Bundle bundle = new Bundle();
 
         bundle.putInt(keyPosition, pos);
-        bundle.putSerializable(keyContext, this);
         bundle.putSerializable(keyList, new ArrayList<PhotoObjectInfo>(list));
         bundle.putSerializable(keyLikeListener, onLPListener);
 
         viewPagerFragment.setArguments(bundle);
         replaceFragment(viewPagerFragment, R.id.LL, "single_img");
+
+        actionBarDrawerToggle.setDrawerIndicatorEnabled(false);
 
     }
 
@@ -83,9 +77,8 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
 
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(myToolbar);
+        MyApp.getDBHelper().open();
         context = getApplicationContext();
-        dBHelper = DBHelper.getInstance(context);
-        dBHelper.open();
 
         drawerLayout = setDrawerLayout();
 
@@ -95,7 +88,6 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
         if(isOpen == null) {
             Log.d("MyActivity", "onCreate isOpen " + isOpen);
             tabsFragment = new TabsFragment();
-            tabsFragment.setDBHelper(dBHelper);
             tabsFragment.setCategory("interestingness");
             tabsFragment.setRetainInstance(true);
             navigationView.setCheckedItem(R.id.interestingness);
@@ -172,6 +164,7 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
                 }
             }else {
                 Log.d("MyActivity", "else 1 fullScrFrag");
+              //  actionBarDrawerToggle.setDrawerIndicatorEnabled(true);
                 super.onBackPressed();
             }
         }
@@ -209,7 +202,6 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
         Fragment frg = getSupportFragmentManager().findFragmentByTag("list_img");
         if(frg == null){
             tabsFragment = new TabsFragment();
-            tabsFragment.setDBHelper(dBHelper);
             tabsFragment.setCategory("");
             replaceFragment(tabsFragment, R.id.LL, "list_img");
         }else {
@@ -223,14 +215,10 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
 
     @Override
     protected void onDestroy() {
-        if(dBHelper != null && dBHelper.isOpen())
-            dBHelper.close();
+        MyApp.getDBHelper().close();
         super.onDestroy();
     }
 
-    public void setDrawerIndicatorEnabled(boolean set) {
-        this.actionBarDrawerToggle.setDrawerIndicatorEnabled(set);
-    }
 
     private void clearBackStack() {
         FragmentManager manager = getSupportFragmentManager();
@@ -241,19 +229,24 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
     }
 
     public void startAlarm(){
-        Toast.makeText(this, "run alarm", Toast.LENGTH_SHORT).show();
         AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
-        Intent serviceIntent = new Intent(this, NotificationService.class);
+        Intent serviceIntent = new Intent(getApplicationContext(), NotificationService.class);
 
-        PendingIntent servicePendingIntent = PendingIntent.getService(this, 0, serviceIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent servicePendingIntent = PendingIntent.getService(getApplicationContext(), 0, serviceIntent, PendingIntent.FLAG_CANCEL_CURRENT);
         am.cancel(servicePendingIntent);
-        am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(),5000, servicePendingIntent);
+        am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(),20000, servicePendingIntent);
     }
 
     @Override
     protected void onResume() {
         Log.d("MyActivity", "onResume");
         super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        Log.d("MyActivity", "onPause");
+        super.onPause();
     }
 }

@@ -14,10 +14,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
 
-        <activity android:name=".MainActivity"
-            android:launchMode="singleInstance">
 
-        </activity>
+
+
         <activity android:name=".MyActivity"
             android:launchMode="singleInstance">
             <intent-filter>

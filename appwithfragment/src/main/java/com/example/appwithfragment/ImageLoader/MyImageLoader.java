@@ -1,12 +1,8 @@
 package com.example.appwithfragment.ImageLoader;
 
 import android.content.Context;
-
-import android.graphics.Bitmap;
-
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.widget.ImageView;
 
 import java.util.HashMap;
@@ -60,7 +56,7 @@ public class MyImageLoader {
            if (!mapLoadingImg.containsKey(resUrl.hashCode())) {
                //Log.d("HERE", "running thread");
                 mapLoadingImg.put(resUrl.hashCode(), resUrl);
-                LoadImgRunnable loadImgRunnable = new LoadImgRunnable(handler, resUrl, iv, oc);
+                LoadImgRunnable loadImgRunnable = new LoadImgRunnable(handler, resUrl, iv, oc, dc);
                 executorService.execute(loadImgRunnable);
            }
         //}

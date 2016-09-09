@@ -9,14 +9,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.appwithfragment.MyActivity;
 import com.example.appwithfragment.R;
 
 /**
  * Created by e.konobeeva on 16.08.2016.
  */
 public class ViewPagerFragment extends Fragment {
-
+    private static final String keyPosition = "position";
     ViewPager vp;
 
 
@@ -35,7 +34,7 @@ public class ViewPagerFragment extends Fragment {
         vp.setOffscreenPageLimit(4);
         final ViewPagerAdapter vpAdapter = new ViewPagerAdapter(this.getChildFragmentManager(), this);
         vp.setAdapter(vpAdapter);
-        vp.setCurrentItem((int)getArguments().get(MyActivity.keyPosition));
+        vp.setCurrentItem((int)getArguments().get(keyPosition));
 
         return view;
     }

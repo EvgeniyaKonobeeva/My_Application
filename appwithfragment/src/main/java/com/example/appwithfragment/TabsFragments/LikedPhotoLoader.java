@@ -6,24 +6,23 @@ import android.database.sqlite.SQLiteDatabase;
 import android.support.v4.content.CursorLoader;
 
 import com.example.appwithfragment.DataBasePack.DBHelper;
+import com.example.appwithfragment.MyApp;
 
 /**
  * Created by Евгения on 28.08.2016.
  */
 public class LikedPhotoLoader extends CursorLoader {
-    private DBHelper dbHelper;
     private String category;
-    public LikedPhotoLoader(Context context, DBHelper dbHelper, String category){
+    public LikedPhotoLoader(Context context, String category){
         super(context);
-        this.dbHelper = dbHelper;
         this.category = category;
     }
 
     @Override
     public Cursor loadInBackground() {
-        Cursor cursor = dbHelper.getSSQLiteDatabase().query(DBHelper.likesTableN, null,
+        Cursor cursor = MyApp.getDBHelper().getSSQLiteDatabase().query(DBHelper.likesTableN, null,
                 DBHelper.isliked + " = ? and " + DBHelper.categoryId + " = ? ",
-                new String[]{"1", Integer.toString(catIdQuery(dbHelper.getSSQLiteDatabase(), category))}, null, null, null);
+                new String[]{"1", Integer.toString(catIdQuery(MyApp.getDBHelper().getSSQLiteDatabase(), category))}, null, null, null);
 
         return cursor;
     }

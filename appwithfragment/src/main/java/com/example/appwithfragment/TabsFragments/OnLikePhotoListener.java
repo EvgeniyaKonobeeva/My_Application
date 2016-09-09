@@ -12,6 +12,7 @@ import android.support.v4.content.Loader;
 import android.util.Log;
 
 import com.example.appwithfragment.DataBasePack.DBHelper;
+import com.example.appwithfragment.MyApp;
 import com.example.appwithfragment.PhotoObjectInfo;
 import com.example.appwithfragment.MVPPattern.IFragment;
 import com.example.appwithfragment.MyActivity;
@@ -24,7 +25,6 @@ import java.util.ArrayList;
  */
 public class OnLikePhotoListener implements IOnLikePhotoListener, Serializable, LoaderManager.LoaderCallbacks<Cursor>, Parcelable {
     private ArrayList<PhotoObjectInfo> likedList;
-    DBHelper dbHelper;
     String category;
     private static int LOADER_ID = 1;
 
@@ -53,30 +53,24 @@ public class OnLikePhotoListener implements IOnLikePhotoListener, Serializable, 
 
     public OnLikePhotoListener(Bundle bundle){
         String category = bundle.getString("category");
-        DBHelper dbHelper = (DBHelper) bundle.getSerializable("dbHelper");
+       // DBHelper dbHelper = (DBHelper) bundle.getSerializable("dbHelper");
+
         Log.d("OnLikePhotoListener", "onLikePhotoListener create");
         likedList = new ArrayList<>();
         setCategory(category);
-        if(dbHelper != null){
-            this.dbHelper = dbHelper;
-        }
 
     }
-    public OnLikePhotoListener(DBHelper dbHelper, String category){
+    public OnLikePhotoListener(String category){
         Log.d("OnLikePhotoListener", "onLikePhotoListener create");
         likedList = new ArrayList<>();
         setCategory(category);
-        if(dbHelper != null){
-            this.dbHelper = dbHelper;
-        }
-
     }
 
 
 
     public void setFragment(IFragment f){
         fragment = f;
-        getLikedPhotosFromDB(dbHelper, category);
+        getLikedPhotosFromDB(MyApp.getDBHelper(),category);
     }
 
     @Override
@@ -95,7 +89,7 @@ public class OnLikePhotoListener implements IOnLikePhotoListener, Serializable, 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Log.d("OnLikePhotoListener", "onCreateLoader");
-        return new LikedPhotoLoader(MyActivity.context,dbHelper, category);
+        return new LikedPhotoLoader(MyActivity.context, category);
     }
 
     @Override
@@ -112,9 +106,9 @@ public class OnLikePhotoListener implements IOnLikePhotoListener, Serializable, 
                 contentValues.put(DBHelper.likesUrl, lc.getImgUrl());
                 contentValues.put(DBHelper.title, lc.getFullTitle());
                 contentValues.put(DBHelper.isliked, true);
-                contentValues.put(DBHelper.categoryId, catIdQuery(dbHelper.getSSQLiteDatabase(), category));
+                contentValues.put(DBHelper.categoryId, catIdQuery(MyApp.getDBHelper().getSSQLiteDatabase(), category));
 
-                dbHelper.getSSQLiteDatabase().insert(DBHelper.likesTableN, null, contentValues);
+                MyApp.getDBHelper().getSSQLiteDatabase().insert(DBHelper.likesTableN, null, contentValues);
             }
         }).start();
 
@@ -161,7 +155,7 @@ public class OnLikePhotoListener implements IOnLikePhotoListener, Serializable, 
                 ContentValues contentValues = new ContentValues();
                 contentValues.put(DBHelper.isliked, 0);
 
-                dbHelper.getSSQLiteDatabase().update(DBHelper.likesTableN, contentValues, DBHelper.likesUrl + " = ? ", new String[]{lc.getImgUrl()});
+                MyApp.getDBHelper().getSSQLiteDatabase().update(DBHelper.likesTableN, contentValues, DBHelper.likesUrl + " = ? ", new String[]{lc.getImgUrl()});
             }
         }).start();
 

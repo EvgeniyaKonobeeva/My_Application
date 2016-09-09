@@ -14,7 +14,6 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.example.appwithfragment.BroadcastReciever.InternetStateReceiver;
-import com.example.appwithfragment.MyActivity;
 import com.example.appwithfragment.RecyclerViewFragment.GettingResults;
 import com.example.appwithfragment.RecyclerViewFragment.RecyclerViewAdapter;
 import com.example.appwithfragment.RecyclerViewFragment.Tasks.InterestingnessTask;
@@ -196,5 +195,9 @@ public class RecViewFragPresenter implements GettingResults, IFragmentPresenter{
             alertDialog.show();
             isShownDialog = true;
         }
+    }
+
+    public IFragment getFragment(){
+        return fragment;
     }
 }
