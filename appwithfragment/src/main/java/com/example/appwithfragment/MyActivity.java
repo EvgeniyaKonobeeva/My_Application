@@ -31,7 +31,6 @@ import java.util.List;
  * Created by Евгения on 15.08.2016.
  */
 public class MyActivity extends MainActivity implements OnRecyclerViewClickListener, Serializable {
-    private static final String keyContext = "Context";
     private static final String keyPosition = "position";
     private static final String keyList = "recyclerViewFragmentList";
     private static final String keyLikeListener = "likeListener";
@@ -159,12 +158,11 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
                     if(getSupportFragmentManager().getBackStackEntryCount() == 1){
                         this.finish();
                     }
-                    //clearBackStack();
                     super.onBackPressed();
                 }
             }else {
                 Log.d("MyActivity", "else 1 fullScrFrag");
-              //  actionBarDrawerToggle.setDrawerIndicatorEnabled(true);
+                actionBarDrawerToggle.setDrawerIndicatorEnabled(true);
                 super.onBackPressed();
             }
         }
@@ -235,7 +233,7 @@ public class MyActivity extends MainActivity implements OnRecyclerViewClickListe
 
         PendingIntent servicePendingIntent = PendingIntent.getService(getApplicationContext(), 0, serviceIntent, PendingIntent.FLAG_CANCEL_CURRENT);
         am.cancel(servicePendingIntent);
-        am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(),20000, servicePendingIntent);
+        am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(),AlarmManager.INTERVAL_HALF_DAY, servicePendingIntent);
     }
 
     @Override

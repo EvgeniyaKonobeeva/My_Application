@@ -18,7 +18,8 @@
 
 
         <activity android:name=".MyActivity"
-            android:launchMode="singleInstance">
+            android:launchMode="singleInstance"
+            android:clearTaskOnLaunch = "true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
